@@ -8,12 +8,13 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include "beep.h"
+
 static Adafruit_SSD1306 display(128, 32, &Wire1, /* OLED_RESET */ -1);
-static int i = 0;
+static Beep beep;
 
 void feedback(void *) {
   vTaskCoreAffinitySet(nullptr, 1 << 1);
-  // vTaskDelay(1000 / port_TICK_MS);
 
   pinMode(18, OUTPUT_12MA);
   pinMode(19, OUTPUT_12MA);
@@ -31,14 +32,13 @@ void feedback(void *) {
     display.display();
 
     digitalWrite(LED_BUILTIN, HIGH);
-    // digitalWrite(18, LOW);
-    // digitalWrite(19, HIGH);
+    digitalWrite(18, LOW);
+    digitalWrite(19, HIGH);
     delay(420);
     digitalWrite(LED_BUILTIN, LOW);
-    // digitalWrite(18, HIGH);
-    // digitalWrite(19, LOW);
+    digitalWrite(18, HIGH);
+    digitalWrite(19, LOW);
     delay(420);
-    // Serial.println(i++);
   }
 
   vTaskDelete(nullptr);
@@ -65,7 +65,8 @@ void setup() {
   display.clearDisplay();
 
   xTaskCreate(feedback, "feedback", 2048, nullptr, 1, nullptr);
-  xTaskCreate(usb, "usb", 2048, nullptr, 1, nullptr);
+  xTaskCreate(Beep::task, "beep", 2048, &beep, 1, nullptr);
+  // xTaskCreate(usb, "usb", 2048, nullptr, 1, nullptr);
 
   while (!Serial);
   Serial.write("\r\n\r\nSun input emulator");
@@ -73,5 +74,8 @@ void setup() {
 
 void loop() {}
 
-// void serialEvent() {
-// }
+void serialEvent() {
+  beep.pop();
+  while (Serial.available() > 0)
+    Serial.read();
+}
