@@ -1,3 +1,7 @@
+#define DISPLAY_SCL 17
+#define DISPLAY_SDA 16
+#define DISPLAY_ROTATION 0
+
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
 #define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
 #define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
@@ -17,7 +21,7 @@ Adafruit_USBH_Host USBHost;
 // holding device descriptor
 tusb_desc_device_t desc_device;
 
-static Adafruit_SSD1306 display(128, 32, &Wire1, /* OLED_RESET */ -1);
+static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
 void setup() {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
@@ -26,8 +30,10 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
+  Wire.setSCL(DISPLAY_SCL);
+  Wire.setSDA(DISPLAY_SDA);
   display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
-  display.setRotation(2);
+  display.setRotation(DISPLAY_ROTATION);
   display.cp437(true);
   display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.clearDisplay();
