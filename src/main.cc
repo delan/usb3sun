@@ -23,6 +23,13 @@ tusb_desc_device_t desc_device;
 
 static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
+struct {
+  bool caps;
+  bool compose;
+  bool scroll;
+  bool num;
+} state;
+
 void setup() {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
@@ -43,17 +50,29 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
+void drawStatus(int16_t x, int16_t y, const char *label, bool on) {
+  if (on) {
+    display.fillRoundRect(x, y, 24, 14, 4, SSD1306_WHITE);
+    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    display.setCursor(x + 3, y + 4);
+    display.print(label);
+  } else {
+    display.drawRoundRect(x, y, 24, 14, 4, SSD1306_WHITE);
+    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+    display.setCursor(x + 3, y + 4);
+    display.print(label);
+  }
+}
+
 void loop() {
   display.clearDisplay();
   display.setCursor(0, 0);
   static int i = 0;
   display.printf("%d", i++);
-  display.setCursor(0, 12);
-  display.print("CAP  CMP  SCR  NUM");
-  display.drawRoundRect(0, 20, 18, 12, 4, SSD1306_WHITE);
-  display.drawRoundRect(30, 20, 18, 12, 4, SSD1306_WHITE);
-  display.drawRoundRect(60, 20, 18, 12, 4, SSD1306_WHITE);
-  display.drawRoundRect(90, 20, 18, 12, 4, SSD1306_WHITE);
+  drawStatus(0, 18, "CAP", state.caps);
+  drawStatus(25, 18, "CMP", state.compose);
+  drawStatus(50, 18, "SCR", state.scroll);
+  drawStatus(75, 18, "NUM", state.num);
   display.display();
   delay(1000);
 }
