@@ -41,7 +41,7 @@
   #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
 
   #define BUZZER_PIN 28         // must be a GP#
-  #define BUZZER_VOLUME 1       // [0,100]
+  #define BUZZER_VOLUME 50       // [0,100]
   #define DISPLAY_SCL 17
   #define DISPLAY_SDA 16
   #define DISPLAY_ROTATION 0
@@ -184,11 +184,24 @@ void loop() {
   display.setCursor(0, 0);
   static int i = 0;
   display.printf("#%d @%lu", i++, t / 1'000);
+  drawStatus(78, 0, "CLK", state.clickEnabled);
+  drawStatus(104, 0, "BEL", state.bell);
   drawStatus(0, 18, "CAP", state.caps);
   drawStatus(26, 18, "CMP", state.compose);
   drawStatus(52, 18, "SCR", state.scroll);
   drawStatus(78, 18, "NUM", state.num);
-  drawStatus(104, 18, "BEL", state.bell || t - state.clickingSince < 100'000uL);
+  if (state.bell || t - state.clickingSince < 100'000uL) {
+    const auto x = 106;
+    const auto y = 16;
+    display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
+    display.fillRect(x + 5, y + 2, 4, 10, SSD1306_WHITE);
+    display.fillRect(x + 4, y + 4, 6, 8, SSD1306_WHITE);
+    display.fillRect(x + 2, y + 9, 10, 3, SSD1306_WHITE);
+    display.fillRect(x + 1, y + 10, 12, 2, SSD1306_WHITE);
+    display.fillRect(x + 5, y + 13, 4, 1, SSD1306_WHITE);
+  } else {
+    display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
+  }
   display.display();
   delay(10);
 
@@ -319,7 +332,6 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
   buzzerClick();
-  state.bell = true;
 
   Sprintf("report");
   for (uint16_t i = 0; i < len; i++)
