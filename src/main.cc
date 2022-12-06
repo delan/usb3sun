@@ -19,7 +19,7 @@
   // wait for some GPIO to be grounded on boot
   #define WAIT_PIN 22
   // wait for serial input on boot
-  #define WAIT_SERIAL
+  // #define WAIT_SERIAL
 
   #define SUN_PIN1 SUN_PURPLE   // 0 V
   #define SUN_PIN2 SUN_BROWN    // 0 V
