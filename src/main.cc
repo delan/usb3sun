@@ -183,9 +183,11 @@ void buzzerUpdate() {
 void loop() {
   const auto t = micros();
   display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.setCursor(0, 0);
-  static int i = 0;
-  display.printf("#%d @%lu", i++, t / 1'000);
+  // static int i = 0;
+  // display.printf("#%d @%lu", i++, t / 1'000);
+  display.printf("sun3usb%c", t / 500'000 % 2 == 1 ? '.' : ' ');
   drawStatus(78, 0, "CLK", state.clickEnabled);
   drawStatus(104, 0, "BEL", state.bell);
   drawStatus(0, 18, "CAP", state.caps);
