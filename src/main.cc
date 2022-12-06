@@ -4,24 +4,37 @@
 #define SUN_MTX SUN_PIN4
 #define SUN_KRX SUN_PIN5
 #define SUN_KTX SUN_PIN6
-#define SUN_PIN1 SUN_PURPLE   // 0 V
-#define SUN_PIN2 SUN_BROWN    // 0 V
-#define SUN_PIN3 SUN_BLUE     // +5 Vdc
-#define SUN_PIN4 SUN_GRAY     // mouse tx
-#define SUN_PIN5 SUN_RED      // keyboard rx
-#define SUN_PIN6 SUN_GREEN    // keyboard tx
-#define SUN_PIN7 SUN_YELLOW   // 0 V
-#define SUN_PIN8 SUN_ORANGE   // +5 Vdc
-#define SUN_GRAY 14
-#define SUN_GREEN 15
-#define SUN_RED 18
-#define DISPLAY_SCL 17
-#define DISPLAY_SDA 16
-#define DISPLAY_ROTATION 0
+
+// begin pinouts/configs
+  // wait for some GPIO to be grounded on boot
+  #define WAIT_PIN 22
+  // wait for serial input on boot
+  #define WAIT_SERIAL
+
+  #define SUN_PIN1 SUN_PURPLE   // 0 V
+  #define SUN_PIN2 SUN_BROWN    // 0 V
+  #define SUN_PIN3 SUN_BLUE     // +5 Vdc
+  #define SUN_PIN4 SUN_GRAY     // mouse tx
+  #define SUN_PIN5 SUN_RED      // keyboard rx
+  #define SUN_PIN6 SUN_GREEN    // keyboard tx
+  #define SUN_PIN7 SUN_YELLOW   // 0 V
+  #define SUN_PIN8 SUN_ORANGE   // +5 Vdc
+
+  #define SUN_GRAY 8            // must be a GP# valid for UART1 TX
+  #define SUN_MRX_UNUSED 9      // must be a GP# valid for UART1 RX
+  #define SUN_GREEN 12          // must be a GP# valid for UART0 TX
+  #define SUN_RED 13            // must be a GP# valid for UART0 RX
+
+  #define DISPLAY_SCL 17
+  #define DISPLAY_SDA 16
+  #define DISPLAY_ROTATION 0
+// end pinouts/configs
 
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
 #define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
 #define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
+
+#include <atomic>
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -45,6 +58,10 @@ tusb_desc_device_t desc_device;
 
 static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
+#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
+std::atomic<bool> wait = true;
+#endif
+
 struct {
   bool caps;
   bool compose;
@@ -61,9 +78,16 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
-  pinMode(SUN_MTX, OUTPUT);
-  pinMode(SUN_KRX, INPUT);
-  pinMode(SUN_KTX, OUTPUT);
+#ifdef WAIT_PIN
+  pinMode(WAIT_PIN, INPUT_PULLUP);
+  while (digitalRead(WAIT_PIN));
+#endif
+#ifdef WAIT_SERIAL
+  while (Serial.read() == -1);
+#endif
+#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
+  wait = false;
+#endif
   Wire.setSCL(DISPLAY_SCL);
   Wire.setSDA(DISPLAY_SDA);
   display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
@@ -105,6 +129,10 @@ void loop() {
 }
 
 void setup1() {
+#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
+  while (wait);
+#endif
+
   // Check for CPU frequency, must be multiple of 120Mhz for bit-banging USB
   uint32_t cpu_hz = clock_get_hz(clk_sys);
   if ( cpu_hz != 120000000UL && cpu_hz != 240000000UL ) {
