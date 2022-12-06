@@ -1,6 +1,16 @@
 #define USBK_RESERVED 0
 #define USBK_ERROR_ROLLOVER 1
 #define USBK_FIRST_KEYCODE 4
+#define SUNK_RESET 0x01
+#define SUNK_BELL_ON 0x02
+#define SUNK_BELL_OFF 0x03
+#define SUNK_CLICK_ON 0x0A
+#define SUNK_CLICK_OFF 0x0B
+#define SUNK_LED 0x0E
+#define SUNK_LAYOUT 0x0F
+#define SUNK_IDLE 0x7F
+#define SUNK_LAYOUT_RESPONSE 0xFE
+#define SUNK_RESET_RESPONSE 0xFF
 #define SUN_MTX SUN_PIN4
 #define SUN_KRX SUN_PIN5
 #define SUN_KTX SUN_PIN6
@@ -24,6 +34,11 @@
   #define SUN_MRX_UNUSED 9      // must be a GP# valid for UART1 RX
   #define SUN_GREEN 12          // must be a GP# valid for UART0 TX
   #define SUN_RED 13            // must be a GP# valid for UART0 RX
+
+  // fake Sun host for loopback testing (disables mouse support)
+  #define FAKE_SUN_ENABLE
+  #define FAKE_SUN_KRX 4        // must be a GP# valid for UART1 TX
+  #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
 
   #define DISPLAY_SCL 17
   #define DISPLAY_SDA 16
@@ -63,6 +78,8 @@ std::atomic<bool> wait = true;
 #endif
 
 struct {
+  bool bell;
+  bool click;
   bool caps;
   bool compose;
   bool scroll;
@@ -70,6 +87,9 @@ struct {
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
 } state;
+struct {
+  bool ok;
+} fake;
 
 void setup() {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
@@ -88,6 +108,18 @@ void setup() {
 #if defined(WAIT_PIN) || defined(WAIT_SERIAL)
   wait = false;
 #endif
+
+  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
+  Serial1.setPinout(SUN_KTX, SUN_KRX);
+  Serial1.begin(1200, SERIAL_8N1);
+#ifdef FAKE_SUN_ENABLE
+  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
+  Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
+  Serial2.begin(1200, SERIAL_8N1);
+#endif
+
   Wire.setSCL(DISPLAY_SCL);
   Wire.setSDA(DISPLAY_SDA);
   display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
@@ -125,8 +157,76 @@ void loop() {
   drawStatus(52, 18, "SCR", state.scroll);
   drawStatus(78, 18, "NUM", state.num);
   display.display();
-  delay(1000);
+  delay(10);
+
+#ifdef FAKE_SUN_ENABLE
+  if (!fake.ok) {
+    Serial2.write(SUNK_RESET);
+  } else {
+    ;
+  }
+#endif
 }
+
+void serialEvent1() {
+  while (Serial1.available() > 0) {
+    uint8_t command = Serial1.read();
+    Sprintf("command %u\n", command);
+    switch (command) {
+      case SUNK_RESET:
+        // self test fail:
+        // Serial.write(0x7E);
+        // Serial.write(0x01);
+        Serial1.write(SUNK_RESET_RESPONSE);
+        Serial1.write(0x04);
+        Serial1.write(0x7F); // TODO optional make code
+        break;
+      case SUNK_BELL_ON:
+        state.bell = true;
+        break;
+      case SUNK_BELL_OFF:
+        state.bell = false;
+        break;
+      case SUNK_CLICK_ON:
+        state.click = true;
+        break;
+      case SUNK_CLICK_OFF:
+        state.click = false;
+        break;
+      case SUNK_LED: {
+        uint8_t status = Serial.read();
+        state.num = status << 0 & 1;
+        state.compose = status << 1 & 1;
+        state.scroll = status << 2 & 1;
+        state.caps = status << 3 & 1;
+      } break;
+      case SUNK_LAYOUT: {
+        Serial1.write(SUNK_LAYOUT_RESPONSE);
+        // UNITED STATES (TODO alternate layouts)
+        uint8_t layout = 0b00000000;
+        Serial1.write(&layout, 1);
+      } break;
+    }
+  }
+}
+
+#ifdef FAKE_SUN_ENABLE
+void serialEvent2() {
+  while (Serial2.available() > 0) {
+    uint8_t command = Serial2.read();
+    Sprintf("fake: command %u\n", command);
+    switch (command) {
+      case SUNK_IDLE:
+        break;
+      case SUNK_LAYOUT_RESPONSE:
+        break;
+      case SUNK_RESET_RESPONSE:
+        fake.ok = true;
+        break;
+    }
+  }
+}
+#endif
 
 void setup1() {
 #if defined(WAIT_PIN) || defined(WAIT_SERIAL)
