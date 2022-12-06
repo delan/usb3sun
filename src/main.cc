@@ -1,6 +1,7 @@
 #define USBK_RESERVED 0
 #define USBK_ERROR_ROLLOVER 1
 #define USBK_FIRST_KEYCODE 4
+#define USBK_NUMLOCK 0x53
 #define SUNK_RESET 0x01
 #define SUNK_BELL_ON 0x02
 #define SUNK_BELL_OFF 0x03
@@ -11,6 +12,7 @@
 #define SUNK_IDLE 0x7F
 #define SUNK_LAYOUT_RESPONSE 0xFE
 #define SUNK_RESET_RESPONSE 0xFF
+#define SUNK_NUMLOCK 0x62
 #define SUN_MTX SUN_PIN4
 #define SUN_KRX SUN_PIN5
 #define SUN_KTX SUN_PIN6
@@ -271,6 +273,9 @@ void serialEvent2() {
       case SUNK_RESET_RESPONSE:
         fake.ok = true;
         break;
+      case SUNK_NUMLOCK:
+        state.num = !state.num;
+        break;
     }
   }
 }
@@ -363,8 +368,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
         if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE)
           Sprintf(" -%u", state.lastKeys[i]);
-        if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE)
+        if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" +%u", kreport->keycode[i]);
+          switch (kreport->keycode[i]) {
+            case USBK_NUMLOCK:
+              Serial1.write(SUNK_NUMLOCK);
+              break;
+          }
+        }
       }
 
       state.lastModifiers = kreport->modifier;
