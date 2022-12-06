@@ -135,11 +135,9 @@ void setup1() {
 
   // Check for CPU frequency, must be multiple of 120Mhz for bit-banging USB
   uint32_t cpu_hz = clock_get_hz(clk_sys);
-  if ( cpu_hz != 120000000UL && cpu_hz != 240000000UL ) {
-    while ( !Serial ) delay(10);   // wait for native usb
-    Sprintf("Error: CPU Clock = %u, PIO USB require CPU clock must be multiple of 120 Mhz\r\n", cpu_hz);
-    Sprintf("Change your CPU Clock to either 120 or 240 Mhz in Menu->CPU Speed \r\n", cpu_hz);
-    while(1) delay(1);
+  if (cpu_hz != 120000000UL && cpu_hz != 240000000UL) {
+    Sprintf("error: cpu frequency %u, set [env:pico] board_build.f_cpu = 120000000L\n", cpu_hz);
+    while (true) delay(1);
   }
 
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
@@ -166,21 +164,20 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   (void)desc_len;
   uint16_t vid, pid;
   tuh_vid_pid_get(dev_addr, &vid, &pid);
+  Sprintf("mount dev_addr=%u instance=%u vid:pid=%04x:%04x\n", dev_addr, instance, vid, pid);
 
   tuh_hid_report_info_t infos[16];
-  Sprintf("%u\n", tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len));
-  Sprintf("report_id=%u, usage=%u, usage_page=%u\n", infos[0].report_id, infos[0].usage, infos[0].usage_page);
+  size_t infos_len = tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len);
+  for (size_t i = 0; i < infos_len; i++)
+    Sprintf("      report[%zu] report_id=%u usage=%u usage_page=%u\n", infos[i].report_id, infos[i].usage, infos[i].usage_page);
 
-  Sprintf("HID device address = %d, instance = %d is mounted\r\n", dev_addr, instance);
-  Sprintf("VID = %04x, PID = %04x\r\n", vid, pid);
-  if (!tuh_hid_receive_report(dev_addr, instance)) {
-    Sprintf("Error: cannot request to receive report\r\n");
-  }
+  if (!tuh_hid_receive_report(dev_addr, instance))
+    Sprintf("error: failed to request to receive report\n");
 }
 
 // Invoked when device with hid interface is un-mounted
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-  Sprintf("HID device address = %d, instance = %d is unmounted\r\n", dev_addr, instance);
+  Sprintf("unmount dev_addr=%u instance=%u\n", dev_addr, instance);
 }
 
 // Invoked when received report from device via interrupt endpoint
@@ -230,7 +227,6 @@ out:
 
   Sprintln();
   // continue to request to receive report
-  if (!tuh_hid_receive_report(dev_addr, instance)) {
-    Sprintf("Error: cannot request to receive report\r\n");
-  }
+  if (!tuh_hid_receive_report(dev_addr, instance))
+    Sprintf("error: failed to request to receive report\n");
 }
