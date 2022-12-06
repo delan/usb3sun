@@ -40,6 +40,8 @@
   #define FAKE_SUN_KRX 4        // must be a GP# valid for UART1 TX
   #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
 
+  #define BUZZER_PIN 28         // must be a GP#
+  #define BUZZER_VOLUME 1       // [0,100]
   #define DISPLAY_SCL 17
   #define DISPLAY_SDA 16
   #define DISPLAY_ROTATION 0
@@ -79,13 +81,14 @@ std::atomic<bool> wait = true;
 
 struct {
   bool bell;
-  bool click;
+  bool clickEnabled = true;
   bool caps;
   bool compose;
   bool scroll;
   bool num;
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
+  std::atomic<unsigned long> clickingSince;
 } state;
 struct {
   bool ok;
@@ -97,6 +100,7 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
+  analogWriteRange(100);
 
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
@@ -147,15 +151,44 @@ void drawStatus(int16_t x, int16_t y, const char *label, bool on) {
   }
 }
 
+void buzzerClick() {
+  if (!state.clickEnabled)
+    return;
+
+  // violation of sparc keyboard spec :) but distinguishable from bell!
+  // tone(BUZZER_PIN, 1'000u, 5uL);
+  analogWriteFreq(1'000u);
+  analogWrite(BUZZER_PIN, BUZZER_VOLUME);
+  state.clickingSince = micros();
+}
+
+void buzzerUpdate() {
+  const auto t = micros();
+  const unsigned long clickingSince = state.clickingSince;
+  if (state.clickingSince >= 5'000uL && t - state.clickingSince < 5'000uL)
+    return;
+  if (state.bell) {
+    // tone(BUZZER_PIN, 1'000'000u / 480u);
+    analogWriteFreq(1'000'000u / 480u);
+    analogWrite(BUZZER_PIN, BUZZER_VOLUME);
+  } else {
+    // noTone(BUZZER_PIN);
+    // analogWrite(BUZZER_PIN, 0);
+    digitalWrite(BUZZER_PIN, false);
+  }
+}
+
 void loop() {
+  const auto t = micros();
   display.clearDisplay();
   display.setCursor(0, 0);
   static int i = 0;
-  display.printf("%d", i++);
+  display.printf("#%d @%lu", i++, t / 1'000);
   drawStatus(0, 18, "CAP", state.caps);
   drawStatus(26, 18, "CMP", state.compose);
   drawStatus(52, 18, "SCR", state.scroll);
   drawStatus(78, 18, "NUM", state.num);
+  drawStatus(104, 18, "BEL", state.bell || t - state.clickingSince < 100'000uL);
   display.display();
   delay(10);
 
@@ -183,15 +216,17 @@ void serialEvent1() {
         break;
       case SUNK_BELL_ON:
         state.bell = true;
+        buzzerUpdate();
         break;
       case SUNK_BELL_OFF:
         state.bell = false;
+        buzzerUpdate();
         break;
       case SUNK_CLICK_ON:
-        state.click = true;
+        state.clickEnabled = true;
         break;
       case SUNK_CLICK_OFF:
-        state.click = false;
+        state.clickEnabled = false;
         break;
       case SUNK_LED: {
         uint8_t status = Serial.read();
@@ -235,7 +270,7 @@ void setup1() {
 
   // Check for CPU frequency, must be multiple of 120Mhz for bit-banging USB
   uint32_t cpu_hz = clock_get_hz(clk_sys);
-  if (cpu_hz != 120000000UL && cpu_hz != 240000000UL) {
+  if (cpu_hz != 120000000uL && cpu_hz != 240000000uL) {
     Sprintf("error: cpu frequency %u, set [env:pico] board_build.f_cpu = 120000000L\n", cpu_hz);
     while (true) delay(1);
   }
@@ -252,6 +287,7 @@ void setup1() {
 
 void loop1() {
   USBHost.task();
+  buzzerUpdate();
 }
 
 // Invoked when device with hid interface is mounted
@@ -282,6 +318,9 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
 
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
+  buzzerClick();
+  state.bell = true;
+
   Sprintf("report");
   for (uint16_t i = 0; i < len; i++)
     Sprintf(" %02Xh", report[i]);
