@@ -2,6 +2,12 @@
 #define USBK_ERROR_ROLLOVER 1
 #define USBK_FIRST_KEYCODE 4
 #define USBK_NUMLOCK 0x53
+#define USBK_RIGHT 0x4F
+#define USBK_LEFT 0x50
+#define USBK_DOWN 0x51
+#define USBK_UP 0x52
+#define USBK_RETURN 0x28
+#define USBK_ENTER 0x58
 #define SUNK_RESET 0x01
 #define SUNK_BELL_ON 0x02
 #define SUNK_BELL_OFF 0x03
@@ -91,6 +97,8 @@ struct {
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
   std::atomic<unsigned long> clickingSince;
+  bool inMenu = false;
+  unsigned selectedMenuItem = 0u;
 } state;
 struct {
   bool ok;
@@ -153,6 +161,19 @@ void drawStatus(int16_t x, int16_t y, const char *label, bool on) {
   }
 }
 
+void drawMenuItem(int16_t x, int16_t y, const char *label, bool on) {
+  if (on) {
+    display.fillRect(x + 4, y, 120, 8, SSD1306_WHITE);
+    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    display.setCursor(x + 8, y);
+    display.print(label);
+  } else {
+    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+    display.setCursor(x + 8, y);
+    display.print(label);
+  }
+}
+
 void buzzerClick() {
   if (!state.clickEnabled)
     return;
@@ -187,24 +208,30 @@ void loop() {
   display.setCursor(0, 0);
   // static int i = 0;
   // display.printf("#%d @%lu", i++, t / 1'000);
-  display.printf("sun3usb%c", t / 500'000 % 2 == 1 ? '.' : ' ');
-  drawStatus(78, 0, "CLK", state.clickEnabled);
-  drawStatus(104, 0, "BEL", state.bell);
-  drawStatus(0, 18, "CAP", state.caps);
-  drawStatus(26, 18, "CMP", state.compose);
-  drawStatus(52, 18, "SCR", state.scroll);
-  drawStatus(78, 18, "NUM", state.num);
-  if (state.bell || t - state.clickingSince < 100'000uL) {
-    const auto x = 106;
-    const auto y = 16;
-    display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
-    display.fillRect(x + 5, y + 2, 4, 10, SSD1306_WHITE);
-    display.fillRect(x + 4, y + 4, 6, 8, SSD1306_WHITE);
-    display.fillRect(x + 2, y + 9, 10, 3, SSD1306_WHITE);
-    display.fillRect(x + 1, y + 10, 12, 2, SSD1306_WHITE);
-    display.fillRect(x + 5, y + 13, 4, 1, SSD1306_WHITE);
+  display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
+  if (state.inMenu) {
+    display.setCursor(0, 8);
+    drawMenuItem(0, 8, "Go back", state.selectedMenuItem == 0u);
+    drawMenuItem(0, 16, "Disable click", state.selectedMenuItem == 1u);
   } else {
-    display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
+    drawStatus(78, 0, "CLK", state.clickEnabled);
+    drawStatus(104, 0, "BEL", state.bell);
+    drawStatus(0, 18, "CAP", state.caps);
+    drawStatus(26, 18, "CMP", state.compose);
+    drawStatus(52, 18, "SCR", state.scroll);
+    drawStatus(78, 18, "NUM", state.num);
+    if (state.bell || t - state.clickingSince < 100'000uL) {
+      const auto x = 106;
+      const auto y = 16;
+      display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
+      display.fillRect(x + 5, y + 2, 4, 10, SSD1306_WHITE);
+      display.fillRect(x + 4, y + 4, 6, 8, SSD1306_WHITE);
+      display.fillRect(x + 2, y + 9, 10, 3, SSD1306_WHITE);
+      display.fillRect(x + 1, y + 10, 12, 2, SSD1306_WHITE);
+      display.fillRect(x + 5, y + 13, 4, 1, SSD1306_WHITE);
+    } else {
+      display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
+    }
   }
   display.display();
   delay(10);
@@ -361,6 +388,11 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i))
           Sprintf(" %c%s", kreport->modifier & 1 << i ? '+' : '-', MODIFIER_NAMES[i]);
 
+      if (kreport->modifier == 0b00001111) {
+        state.inMenu = !state.inMenu;
+        state.selectedMenuItem = 0u;
+      }
+
       for (int i = 0; i < 6; i++) {
         bool oldInNews = false;
         bool newInOlds = false;
@@ -374,6 +406,33 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           Sprintf(" -%u", state.lastKeys[i]);
         if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" +%u", kreport->keycode[i]);
+          if (state.inMenu) {
+            switch (kreport->keycode[i]) {
+              case USBK_RIGHT:
+                break;
+              case USBK_LEFT:
+                break;
+              case USBK_DOWN:
+                if (state.selectedMenuItem < 2u - 1u)
+                  state.selectedMenuItem += 1u;
+                break;
+              case USBK_UP:
+                if (state.selectedMenuItem > 0u)
+                  state.selectedMenuItem -= 1u;
+                break;
+              case USBK_RETURN:
+              case USBK_ENTER:
+                switch (state.selectedMenuItem) {
+                  case 0:
+                    break;
+                  case 1:
+                    state.clickEnabled = !state.clickEnabled;
+                    break;
+                }
+                state.inMenu = false;
+                break;
+            }
+          }
           switch (kreport->keycode[i]) {
             case USBK_NUMLOCK:
               Serial1.write(SUNK_NUMLOCK);
