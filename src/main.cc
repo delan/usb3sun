@@ -367,8 +367,6 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
 
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-  buzzerClick();
-
   Sprintf("report");
   for (uint16_t i = 0; i < len; i++)
     Sprintf(" %02Xh", report[i]);
@@ -376,6 +374,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
   switch (tuh_hid_interface_protocol(dev_addr, instance)) {
     case HID_ITF_PROTOCOL_KEYBOARD: {
       hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
+    buzzerClick();
 
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
@@ -445,8 +444,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       for (int i = 0; i < 6; i++)
         state.lastKeys[i] = kreport->keycode[i];
     } break;
-    case HID_ITF_PROTOCOL_MOUSE:
-      break;
+    case HID_ITF_PROTOCOL_MOUSE: {
+      hid_mouse_report_t *mreport = (hid_mouse_report_t *) report;
+      Sprintf(" buttons=%u x=%d y=%d", mreport->buttons, mreport->x, mreport->y);
+    } break;
   }
 out:
 
