@@ -70,9 +70,9 @@ void loop() {
   static int i = 0;
   display.printf("%d", i++);
   drawStatus(0, 18, "CAP", state.caps);
-  drawStatus(25, 18, "CMP", state.compose);
-  drawStatus(50, 18, "SCR", state.scroll);
-  drawStatus(75, 18, "NUM", state.num);
+  drawStatus(26, 18, "CMP", state.compose);
+  drawStatus(52, 18, "SCR", state.scroll);
+  drawStatus(78, 18, "NUM", state.num);
   display.display();
   delay(1000);
 }
