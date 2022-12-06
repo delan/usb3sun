@@ -271,6 +271,8 @@ void serialEvent2() {
       case SUNK_LAYOUT_RESPONSE:
         break;
       case SUNK_RESET_RESPONSE:
+        while (Serial2.read() == -1) delay(1);
+        while (Serial2.read() == -1) delay(1);
         fake.ok = true;
         break;
       case SUNK_NUMLOCK:
