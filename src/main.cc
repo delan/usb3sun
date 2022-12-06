@@ -1,3 +1,6 @@
+#define USBK_RESERVED 0
+#define USBK_ERROR_ROLLOVER 1
+#define USBK_FIRST_KEYCODE 4
 #define SUN_MTX SUN_PIN4
 #define SUN_KRX SUN_PIN5
 #define SUN_KTX SUN_PIN6
@@ -30,6 +33,11 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_TinyUSB.h>
 
+const char *const MODIFIER_NAMES[] = {
+  "CtrlL", "ShiftL", "AltL", "SuperL",
+  "CtrlR", "ShiftR", "AltR", "SuperR",
+};
+
 // USB Host object
 Adafruit_USBH_Host USBHost;
 // holding device descriptor
@@ -42,6 +50,8 @@ struct {
   bool compose;
   bool scroll;
   bool num;
+  uint8_t lastModifiers;
+  uint8_t lastKeys[6];
 } state;
 
 void setup() {
@@ -129,6 +139,10 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   uint16_t vid, pid;
   tuh_vid_pid_get(dev_addr, &vid, &pid);
 
+  tuh_hid_report_info_t infos[16];
+  Sprintf("%u\n", tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len));
+  Sprintf("report_id=%u, usage=%u, usage_page=%u\n", infos[0].report_id, infos[0].usage, infos[0].usage_page);
+
   Sprintf("HID device address = %d, instance = %d is mounted\r\n", dev_addr, instance);
   Sprintf("VID = %04x, PID = %04x\r\n", vid, pid);
   if (!tuh_hid_receive_report(dev_addr, instance)) {
@@ -143,10 +157,49 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
 
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-  Sprintf("HIDreport : ");
-  for (uint16_t i = 0; i < len; i++) {
-    Sprintf("0x%02X ", report[i]);
+  Sprintf("report");
+  for (uint16_t i = 0; i < len; i++)
+    Sprintf(" %02Xh", report[i]);
+
+  switch (tuh_hid_interface_protocol(dev_addr, instance)) {
+    case HID_ITF_PROTOCOL_KEYBOARD: {
+      hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
+
+      for (int i = 0; i < 6; i++) {
+        if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
+          Sprintf(" !%u", kreport->keycode[i]);
+          goto out;
+        }
+      }
+
+      for (int i = 0; i < 8; i++)
+        if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i))
+          Sprintf(" %c%s", kreport->modifier & 1 << i ? '+' : '-', MODIFIER_NAMES[i]);
+
+      for (int i = 0; i < 6; i++) {
+        bool oldInNews = false;
+        bool newInOlds = false;
+        for (int j = 0; j < 6; j++) {
+          if (state.lastKeys[i] == kreport->keycode[j])
+            oldInNews = true;
+          if (kreport->keycode[i] == state.lastKeys[j])
+            newInOlds = true;
+        }
+        if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE)
+          Sprintf(" -%u", state.lastKeys[i]);
+        if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE)
+          Sprintf(" +%u", kreport->keycode[i]);
+      }
+
+      state.lastModifiers = kreport->modifier;
+      for (int i = 0; i < 6; i++)
+        state.lastKeys[i] = kreport->keycode[i];
+    } break;
+    case HID_ITF_PROTOCOL_MOUSE:
+      break;
   }
+out:
+
   Sprintln();
   // continue to request to receive report
   if (!tuh_hid_receive_report(dev_addr, instance)) {
