@@ -80,7 +80,6 @@ struct {
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
   unsigned topMenuItem = 0u;
-  unsigned buzzerVolume = 5u; // [0,11]
   unsigned clickDuration = 5u; // [0,100]
 } state;
 struct {
@@ -163,7 +162,7 @@ void buzzerClick() {
     return;
 
   // violation of sparc keyboard spec :) but distinguishable from bell!
-  tone(BUZZER_PIN, 1'000u, 5uL);
+  tone(BUZZER_PIN, 1'000u, state.clickDuration);
   state.clickingSince = micros();
 }
 
@@ -191,7 +190,6 @@ void loop() {
     unsigned int i = 0;
     if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back"); i++;
     if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, state.clickEnabled ? "Disable click" : "Enable click"); i++;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Buzzer volume: %u", state.buzzerVolume); i++;
     if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms", state.clickDuration); i++;
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
@@ -418,12 +416,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
               case USBK_RIGHT:
                 switch (state.selectedMenuItem) {
                   case 2:
-                    if (state.buzzerVolume < 11u) {
-                      state.buzzerVolume += 1u;
-                      buzzerClick();
-                    }
-                    break;
-                  case 3:
                     if (state.clickDuration < 96u) {
                       state.clickDuration += 5u;
                       buzzerClick();
@@ -434,12 +426,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
               case USBK_LEFT:
                 switch (state.selectedMenuItem) {
                   case 2:
-                    if (state.buzzerVolume > 0u) {
-                      state.buzzerVolume -= 1u;
-                      buzzerClick();
-                    }
-                    break;
-                  case 3:
                     if (state.clickDuration > 4u) {
                       state.clickDuration -= 5u;
                       buzzerClick();
@@ -448,7 +434,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                 }
                 break;
               case USBK_DOWN:
-                if (state.selectedMenuItem < 4u - 1u)
+                if (state.selectedMenuItem < 3u - 1u)
                   state.selectedMenuItem += 1u;
                 if (state.selectedMenuItem - state.topMenuItem > 2u)
                   state.topMenuItem += 1u;
