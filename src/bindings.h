@@ -77,8 +77,8 @@ const DvBinding DV_BINDINGS[] = {
   {1u << 6, 0x0D, 0x8D}, // 105. Graph	Alt
 
   // author’s preference
-  {1u << 0, 0x4C, 0xCC}, // CtrlL = 63. Control
-  // {1u << 4, 0, 0}, // CtrlR = none
+  {1u << 0, 0x4C, 0xCC}, // CtrlL → 63. Control
+  // {1u << 4, none, none}, // CtrlR → usb3sun settings and DV_SEL_BINDINGS
 };
 
 const SelBinding SEL_BINDINGS[] = {
@@ -189,25 +189,25 @@ const SelBinding SEL_BINDINGS[] = {
   // Keyboard Application[11] Windows key for Windows 95, and Compose.
   // Keyboard Left GUI[11] Windows key for Windows 95, and Compose.
   // Keyboard Right GUI[11] Windows key for Windows 95, and Compose.
-  {101, 0x43, 0xC3}, // context menu aka “Keyboard Application” = 101. Compose
+  {101, 0x43, 0xC3}, // context menu aka “Keyboard Application” → 101. Compose
 };
 
 const DvSelBinding DV_SEL_BINDINGS[] = {
   // no equivalent USB HID code; by analogy with Windows Alt+Esc
-  {1u << 4, 41, 0x31, 0xB1}, // CtrlR+Esc = 41. Front
+  {1u << 4, 41, 0x31, 0xB1}, // CtrlR+Esc → 41. Front
 
   // no equivalent USB HID code; by analogy with Windows Ctrl+O
-  {1u << 4, 18, 0x48, 0xC8}, // CtrlR+O = 61. Open
+  {1u << 4, 18, 0x48, 0xC8}, // CtrlR+O → 61. Open
 
   // no equivalent USB HID code; by analogy with the return key often typing a line feed
-  {1u << 4, 40, 0x6F, 0xEF}, // CtrlR + Keyboard Return (ENTER) = 93. Line Feed
+  {1u << 4, 40, 0x6F, 0xEF}, // CtrlR + Keyboard Return (ENTER) → 93. Line Feed
 
   // alternate for common 104-key layouts; by analogy with Windows Ctrl+Y for Redo/Repeat
-  {1u << 4, 28, 0x03, 0x83}, // CtrlR+Y = 16. Again
+  {1u << 4, 28, 0x03, 0x83}, // CtrlR+Y → 16. Again
 
   // alternate for common 104-key layouts; by analogy with Visual Studio F4 for Properties
   // (Alt+Enter is a more common convention on Windows, but it would be more awkward here)
-  {1u << 4, 61, 0x19, 0x99}, // CtrlR+Y = 21. Props
+  {1u << 4, 61, 0x19, 0x99}, // CtrlR+F4 → 21. Props
 
   // alternate for common 104-key layouts; by analogy with Windows Ctrl+Z
   {1u << 4, 29, 0x1A, 0x9A}, // CtrlR+Z → 22. Undo
