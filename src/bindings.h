@@ -26,6 +26,22 @@
 #define SUNK_CAPSLOCK 0x77
 #define SUNK_SCROLLLOCK 0x17
 
+// sources:
+// HID Usage Tables 1.3 https://usb.org/sites/default/files/hut1_3_0.pdf
+
+// see also:
+// Sun type 4 keyboard https://twitter.com/MiodVallat/status/1246128759641645060
+// Meta key https://en.wikipedia.org/wiki/Meta_key
+// Model M keyboard https://en.wikipedia.org/wiki/Model_M_keyboard
+// System request https://en.wikipedia.org/wiki/System_request
+// USB keyboard scancodes https://www.win.tue.nl/~aeb/linux/kbd/scancodes-14.html
+// Sun Ray Client Hot Keys https://docs.oracle.com/cd/E25749_01/E25745/html/Clients-Hot-Keys.html
+// Pause/Break key on modern keyboards https://superuser.com/q/12525
+// What are/were the keys on a Sun keyboard for? https://unix.stackexchange.com/q/45686
+// Sun Keyboard on a PC? https://linuxgazette.net/140/misc/lg/sun_keyboard_on_a_pc.html
+// Sun keyboard https://everything2.com/title/Sun+keyboard
+// Sun Type 4 https://deskthority.net/viewtopic.php?t=10793
+
 struct DvBinding {
   uint8_t usbkModifier;
   uint8_t sunkMake;
@@ -50,7 +66,7 @@ const DvBinding DV_BINDINGS[] = {
   {1u << 1, 0x63, 0xE3}, // 81. left “Shift”
   {1u << 5, 0x6E, 0xEE}, // 92. right “Shift”
 
-  // HID Usage Tables v1.3 §10:
+  // HID Usage Tables 1.3 §10:
   // Keyboard Left GUI[33] Windowing environment key, examples are Microsoft Left Win key, Mac Left Apple key, Sun Left Meta key
   // Keyboard Right GUI[34] Windowing environment key, examples are Microsoft®RIGHT WIN key, Macintosh®RIGHT APPLE key, Sun®RIGHT META key.
   {1u << 3, 0x78, 0xF8}, // 101. left meta aka “(L Triangle)”
@@ -169,7 +185,7 @@ const SelBinding SEL_BINDINGS[] = {
   {70, 0x16, 0x96}, // PrintScreen/SysRq aka “Keyboard PrintScreen” → 70. Pr Sc
   {71, 0x17, 0x97}, // Keyboard Scroll Lock → 71. Break(!)	Scroll Lock
 
-  // HID Usage Tables v1.3 §10:
+  // HID Usage Tables 1.3 §10:
   // Keyboard Application[11] Windows key for Windows 95, and Compose.
   // Keyboard Left GUI[11] Windows key for Windows 95, and Compose.
   // Keyboard Right GUI[11] Windows key for Windows 95, and Compose.
