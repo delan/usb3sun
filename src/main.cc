@@ -273,7 +273,7 @@ void serialEvent1() {
 void serialEvent2() {
   while (Serial2.available() > 0) {
     uint8_t command = Serial2.read();
-    Sprintf("fake: command %u\n", command);
+    Sprintf("fake: command %02Xh\n", command);
     switch (command) {
       case SUNK_IDLE:
         break;
