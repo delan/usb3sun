@@ -49,10 +49,9 @@
   #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
 
   #define BUZZER_PIN 28         // must be a GP#
-  #define BUZZER_VOLUME 50       // [0,100]
   #define DISPLAY_SCL 17
   #define DISPLAY_SDA 16
-  #define DISPLAY_ROTATION 0
+  #define DISPLAY_ROTATION 2
 // end pinouts/configs
 
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
