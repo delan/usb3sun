@@ -1,24 +1,3 @@
-#define USBK_RESERVED 0
-#define USBK_ERROR_ROLLOVER 1
-#define USBK_FIRST_KEYCODE 4
-#define USBK_NUMLOCK 0x53
-#define USBK_RIGHT 0x4F
-#define USBK_LEFT 0x50
-#define USBK_DOWN 0x51
-#define USBK_UP 0x52
-#define USBK_RETURN 0x28
-#define USBK_ENTER 0x58
-#define SUNK_RESET 0x01
-#define SUNK_BELL_ON 0x02
-#define SUNK_BELL_OFF 0x03
-#define SUNK_CLICK_ON 0x0A
-#define SUNK_CLICK_OFF 0x0B
-#define SUNK_LED 0x0E
-#define SUNK_LAYOUT 0x0F
-#define SUNK_IDLE 0x7F
-#define SUNK_LAYOUT_RESPONSE 0xFE
-#define SUNK_RESET_RESPONSE 0xFF
-#define SUNK_NUMLOCK 0x62
 #define SUN_MTX SUN_PIN4
 #define SUN_KRX SUN_PIN5
 #define SUN_KTX SUN_PIN6
@@ -69,6 +48,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_TinyUSB.h>
+
+#include "bindings.h"
 
 const char *const MODIFIER_NAMES[] = {
   "CtrlL", "ShiftL", "AltL", "SuperL",
@@ -306,6 +287,12 @@ void serialEvent2() {
       case SUNK_NUMLOCK:
         state.num = !state.num;
         break;
+      case SUNK_CAPSLOCK:
+        state.caps = !state.caps;
+        break;
+      case SUNK_SCROLLLOCK:
+        state.scroll = !state.scroll;
+        break;
     }
   }
 }
@@ -380,7 +367,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
   switch (tuh_hid_interface_protocol(dev_addr, instance)) {
     case HID_ITF_PROTOCOL_KEYBOARD: {
       hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
-    buzzerClick();
+      buzzerClick();
 
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
@@ -399,6 +386,12 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         state.topMenuItem = 0u;
       }
 
+      struct {
+        uint8_t keycode;
+        bool make;
+      } changes[12];
+      size_t changesLen = 0;
+
       for (int i = 0; i < 6; i++) {
         bool oldInNews = false;
         bool newInOlds = false;
@@ -408,12 +401,20 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           if (kreport->keycode[i] == state.lastKeys[j])
             newInOlds = true;
         }
-        if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE)
+        if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" -%u", state.lastKeys[i]);
+          changes[changesLen++] = {state.lastKeys[i], false};
+        }
         if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" +%u", kreport->keycode[i]);
-          if (state.inMenu) {
-            switch (kreport->keycode[i]) {
+          changes[changesLen++] = {kreport->keycode[i], true};
+        }
+      }
+
+      for (int i = 0; i < changesLen; i++) {
+        if (state.inMenu) {
+          if (changes[i].make) {
+            switch (changes[i].keycode) {
               case USBK_RIGHT:
                 switch (state.selectedMenuItem) {
                   case 2:
@@ -469,12 +470,12 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                 break;
             }
           }
-          switch (kreport->keycode[i]) {
-            case USBK_NUMLOCK:
-              Serial1.write(SUNK_NUMLOCK);
-              break;
-          }
+          continue;
         }
+
+        for (int j = 0; j < sizeof(SIMPLE_BINDINGS) / sizeof(*SIMPLE_BINDINGS); j++)
+          if (SIMPLE_BINDINGS[j].usbk == changes[i].keycode)
+            Serial1.write(changes[i].make ? SIMPLE_BINDINGS[j].sunkMake : SIMPLE_BINDINGS[j].sunkBreak);
       }
 
       state.lastModifiers = kreport->modifier;
