@@ -58,6 +58,10 @@ const char *const MODIFIER_NAMES[] = {
   "CtrlR", "ShiftR", "AltR", "GuiR",
 };
 
+const char *const BUTTON_NAMES[] = {
+  "LeftClick", "RightClick", "MiddleClick", "MouseBack", "MouseForward",
+};
+
 // USB Host object
 Adafruit_USBH_Host USBHost;
 // holding device descriptor
@@ -78,6 +82,7 @@ struct {
   bool num;
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
+  uint8_t lastButtons;
   std::atomic<unsigned long> clickingSince;
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
@@ -515,6 +520,25 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     case HID_ITF_PROTOCOL_MOUSE: {
       hid_mouse_report_t *mreport = (hid_mouse_report_t *) report;
       Sprintf(" buttons=%u x=%d y=%d", mreport->buttons, mreport->x, mreport->y);
+
+      for (int i = 0; i < 3; i++)
+        if ((state.lastButtons & 1 << i) != (mreport->buttons & 1 << i))
+          Sprintf(" %c%s", mreport->buttons & 1 << i ? '+' : '-', BUTTON_NAMES[i]);
+
+      uint8_t result[] = {
+        (mreport->buttons & USBM_LEFT ? SUNM_LEFT : 0)
+          | (mreport->buttons & USBM_MIDDLE ? SUNM_CENTER : 0)
+          | (mreport->buttons & USBM_RIGHT ? SUNM_RIGHT : 0),
+        (uint8_t) mreport->x, (uint8_t) mreport->y, 0, 0,
+      };
+#ifdef FAKE_SUN_ENABLE
+      Sprintf("\nmouse would send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled by FAKE_SUN_ENABLE)",
+        result[0], result[1], result[2], result[3], result[4]);
+#else
+      Serial2.write(result, sizeof(result) / sizeof(*result));
+#endif
+
+      state.lastButtons = mreport->buttons;
     } break;
   }
 out:

@@ -11,7 +11,13 @@
 #define USBK_RETURN 0x28
 #define USBK_ENTER 0x58
 #define USBK_SPACE 0x2C
-#define USBK_CTRL_R ((uint8_t) 1u << 4)
+#define USBK_CTRL_R ((uint8_t) (1u << 4))
+#define USBM_LEFT ((uint8_t) (1u << 0))
+#define USBM_RIGHT ((uint8_t) (1u << 1))
+#define USBM_MIDDLE ((uint8_t) (1u << 2))
+#define SUNM_LEFT ((uint8_t) (1u << 2))
+#define SUNM_CENTER ((uint8_t) (1u << 1))
+#define SUNM_RIGHT ((uint8_t) (1u << 0))
 #define SUNK_RESET 0x01
 #define SUNK_BELL_ON 0x02
 #define SUNK_BELL_OFF 0x03
