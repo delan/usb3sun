@@ -5,7 +5,7 @@
 // begin pinouts/configs
   // wait for some GPIO to be grounded on boot
   #define WAIT_PIN 22
-  // wait for serial input on boot
+  // wait for serial input on boot (sometimes misbehaves)
   // #define WAIT_SERIAL
 
   #define SUN_PIN1 SUN_PURPLE   // 0 V
@@ -50,6 +50,8 @@
 #include <Adafruit_TinyUSB.h>
 
 #include "bindings.h"
+#include "splash.xbm"
+#include "logo.xbm"
 
 const char *const MODIFIER_NAMES[] = {
   "CtrlL", "ShiftL", "AltL", "GuiL",
@@ -94,6 +96,16 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);
   analogWriteRange(100);
 
+  Wire.setSCL(DISPLAY_SCL);
+  Wire.setSDA(DISPLAY_SDA);
+  display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
+  display.setRotation(DISPLAY_ROTATION);
+  display.cp437(true);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  display.clearDisplay();
+  display.drawXBitmap(0, 0, splash_bits, 128, 32, SSD1306_WHITE);
+  display.display();
+
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
   while (digitalRead(WAIT_PIN));
@@ -115,14 +127,6 @@ void setup() {
   Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
   Serial2.begin(1200, SERIAL_8N1);
 #endif
-
-  Wire.setSCL(DISPLAY_SCL);
-  Wire.setSDA(DISPLAY_SDA);
-  display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
-  display.setRotation(DISPLAY_ROTATION);
-  display.cp437(true);
-  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-  display.clearDisplay();
 
   Sprintln("usb3sun");
 
@@ -180,11 +184,12 @@ void buzzerUpdate() {
 void loop() {
   const auto t = micros();
   display.clearDisplay();
+  display.drawXBitmap(0, 0, logo_bits, 64, 16, SSD1306_WHITE);
   display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.setCursor(0, 0);
   // static int i = 0;
   // display.printf("#%d @%lu", i++, t / 1'000);
-  display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
+  // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
   if (state.inMenu) {
     display.setCursor(0, 8);
     unsigned int i = 0;
