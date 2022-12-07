@@ -99,6 +99,9 @@ struct {
   std::atomic<unsigned long> clickingSince;
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
+  unsigned topMenuItem = 0u;
+  unsigned buzzerVolume = 5u; // [0,11]
+  unsigned clickDuration = 5u; // [0,100]
 } state;
 struct {
   bool ok;
@@ -161,16 +164,17 @@ void drawStatus(int16_t x, int16_t y, const char *label, bool on) {
   }
 }
 
-void drawMenuItem(int16_t x, int16_t y, const char *label, bool on) {
+template<typename... Args>
+void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args... args) {
   if (on) {
     display.fillRect(x + 4, y, 120, 8, SSD1306_WHITE);
     display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
     display.setCursor(x + 8, y);
-    display.print(label);
+    display.printf(fmt, args...);
   } else {
     display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
     display.setCursor(x + 8, y);
-    display.print(label);
+    display.printf(fmt, args...);
   }
 }
 
@@ -181,19 +185,19 @@ void buzzerClick() {
   // violation of sparc keyboard spec :) but distinguishable from bell!
   // tone(BUZZER_PIN, 1'000u, 5uL);
   analogWriteFreq(1'000u);
-  analogWrite(BUZZER_PIN, BUZZER_VOLUME);
+  analogWrite(BUZZER_PIN, state.buzzerVolume);
   state.clickingSince = micros();
 }
 
 void buzzerUpdate() {
   const auto t = micros();
   const unsigned long clickingSince = state.clickingSince;
-  if (state.clickingSince >= 5'000uL && t - state.clickingSince < 5'000uL)
+  if (state.clickingSince >= state.clickDuration * 1'000uL && t - state.clickingSince < state.clickDuration * 1'000uL)
     return;
   if (state.bell) {
     // tone(BUZZER_PIN, 1'000'000u / 480u);
     analogWriteFreq(1'000'000u / 480u);
-    analogWrite(BUZZER_PIN, BUZZER_VOLUME);
+    analogWrite(BUZZER_PIN, state.buzzerVolume);
   } else {
     // noTone(BUZZER_PIN);
     // analogWrite(BUZZER_PIN, 0);
@@ -211,8 +215,11 @@ void loop() {
   display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
   if (state.inMenu) {
     display.setCursor(0, 8);
-    drawMenuItem(0, 8, "Go back", state.selectedMenuItem == 0u);
-    drawMenuItem(0, 16, "Disable click", state.selectedMenuItem == 1u);
+    unsigned int i = 0;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back"); i++;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, state.clickEnabled ? "Disable click" : "Enable click"); i++;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Buzzer volume: %u", state.buzzerVolume); i++;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms", state.clickDuration); i++;
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -390,6 +397,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       if (kreport->modifier == 0b00001111) {
         state.inMenu = !state.inMenu;
         state.selectedMenuItem = 0u;
+        state.topMenuItem = 0u;
       }
 
       for (int i = 0; i < 6; i++) {
@@ -408,22 +416,52 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           if (state.inMenu) {
             switch (kreport->keycode[i]) {
               case USBK_RIGHT:
+                switch (state.selectedMenuItem) {
+                  case 2:
+                    if (state.buzzerVolume < 11u) {
+                      state.buzzerVolume += 1u;
+                      buzzerClick();
+                    }
+                    break;
+                  case 3:
+                    if (state.clickDuration < 96u) {
+                      state.clickDuration += 5u;
+                      buzzerClick();
+                    }
+                    break;
+                }
                 break;
               case USBK_LEFT:
+                switch (state.selectedMenuItem) {
+                  case 2:
+                    if (state.buzzerVolume > 0u) {
+                      state.buzzerVolume -= 1u;
+                      buzzerClick();
+                    }
+                    break;
+                  case 3:
+                    if (state.clickDuration > 4u) {
+                      state.clickDuration -= 5u;
+                      buzzerClick();
+                    }
+                    break;
+                }
                 break;
               case USBK_DOWN:
-                if (state.selectedMenuItem < 2u - 1u)
+                if (state.selectedMenuItem < 4u - 1u)
                   state.selectedMenuItem += 1u;
+                if (state.selectedMenuItem - state.topMenuItem > 2u)
+                  state.topMenuItem += 1u;
                 break;
               case USBK_UP:
                 if (state.selectedMenuItem > 0u)
                   state.selectedMenuItem -= 1u;
+                if (state.selectedMenuItem < state.topMenuItem)
+                  state.topMenuItem -= 1u;
                 break;
               case USBK_RETURN:
               case USBK_ENTER:
                 switch (state.selectedMenuItem) {
-                  case 0:
-                    break;
                   case 1:
                     state.clickEnabled = !state.clickEnabled;
                     break;
