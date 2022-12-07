@@ -24,13 +24,47 @@
 #define SUNK_CAPSLOCK 0x77
 #define SUNK_SCROLLLOCK 0x17
 
-struct SimpleBinding {
-  uint8_t usbk;
+struct DvBinding {
+  uint8_t usbkModifier;
   uint8_t sunkMake;
   uint8_t sunkBreak;
 };
 
-const SimpleBinding SIMPLE_BINDINGS[] = {
+struct SelBinding {
+  uint8_t usbkSelector;
+  uint8_t sunkMake;
+  uint8_t sunkBreak;
+};
+
+struct DvSelBinding {
+  uint8_t usbkModifier;
+  uint8_t usbkSelector;
+  uint8_t sunkMake;
+  uint8_t sunkBreak;
+};
+
+const DvBinding DV_BINDINGS[] = {
+  // direct equivalents
+  {1u << 1, 0x63, 0xE3}, // 81. left “Shift”
+  {1u << 5, 0x6E, 0xEE}, // 92. right “Shift”
+
+  // HID Usage Tables v1.3 §10:
+  // Keyboard Left GUI[33] Windowing environment key, examples are Microsoft Left Win key, Mac Left Apple key, Sun Left Meta key
+  // Keyboard Right GUI[34] Windowing environment key, examples are Microsoft®RIGHT WIN key, Macintosh®RIGHT APPLE key, Sun®RIGHT META key.
+  {1u << 3, 0x78, 0xF8}, // 101. left meta aka “(L Triangle)”
+  {1u << 7, 0x7A, 0xFA}, // 102. right meta aka “(R triangle)”
+
+  // by popular convention (source: dude trust me)
+  {1u << 2, 0x13, 0x93}, // 100. Alt
+  {1u << 6, 0x0D, 0x8D}, // 105. Graph	Alt
+
+  // author’s preference
+  {1u << 0, 0x4C, 0xCC}, // CtrlL = 63. Control
+  // {1u << 4, 0, 0}, // CtrlR = none
+};
+
+const SelBinding SEL_BINDINGS[] = {
+  // direct equivalents commonly found on 104-key layouts
   {58, 0x05, 0x85}, // 1. F1
   {59, 0x06, 0x86}, // 2. F2
   {60, 0x08, 0x88}, // 3. F3
@@ -43,7 +77,7 @@ const SimpleBinding SIMPLE_BINDINGS[] = {
   {67, 0x07, 0x87}, // 10. F10
   {68, 0x09, 0x89}, // 11. F11
   {69, 0x0B, 0x8B}, // 12. F12
-  {50, 0x58, 0xD8}, // 13. \	|
+  {100, 0x58, 0xD8}, // 13. \	|
   {76, 0x42, 0xC2}, // 14. Delete
   {83, 0x62, 0xE2}, // 20. Num Lock
   {41, 0x1D, 0x9D}, // 23. Esc
@@ -76,7 +110,7 @@ const SimpleBinding SIMPLE_BINDINGS[] = {
   {19, 0x3F, 0xEF}, // 53. P
   {47, 0x40, 0xC0}, // 54. [	{
   {48, 0x41, 0xC1}, // 55. ]	}
-  {40, 0x59, 0xD9}, // 56. Return
+  {40, 0x59, 0xD9}, // Keyboard Return (ENTER) (*not* “Keyboard Return”) → 56. Return
   {95, 0x44, 0xC4}, // 57. Home	7
   {96, 0x45, 0xC5}, // 58. (up cur)	8
   {97, 0x46, 0xC6}, // 59. PgUp	9
@@ -109,8 +143,72 @@ const SimpleBinding SIMPLE_BINDINGS[] = {
   {89, 0x70, 0xF0}, // 94. End	1
   {90, 0x71, 0xF1}, // 95. (Dn Cur)	2
   {91, 0x72, 0xF2}, // 96. PgDn	3
-  {88, 0x5A, 0xDA}, // 97. Enter
+  {88, 0x5A, 0xDA}, // Keypad ENTER → 97. Enter
   {57, 0x77, 0xF7}, // 99. Caps Lock
+  {44, 0x79, 0xF9}, // 102. (Space Bar)
   {98, 0x5E, 0xDE}, // 106. Ins	0
   {99, 0x32, 0xB2}, // 107. Del	.
+
+  // direct equivalents rarely found on 104-key layouts
+  {120, 0x01, 0x81}, // Keyboard Stop → 15. Stop
+  {121, 0x03, 0x83}, // Keyboard Again → 16. Again
+  {163, 0x19, 0x99}, // Keyboard CrSel/Props → 21. Props
+  {122, 0x1A, 0x9A}, // Keyboard Undo → 22. Undo
+  {103, 0x2D, 0xAD}, // Keypad Equal Sign → 37. =
+  {124, 0x33, 0xB3}, // Keyboard Copy → 42. Copy
+  {158, 0x59, 0xD9}, // Keyboard Return (*not* “Keyboard Return (ENTER)”) → 56. Return
+  {125, 0x49, 0xC9}, // Keyboard Paste → 62. Paste
+  {126, 0x5F, 0xDF}, // Keyboard Find → 79. Find
+  {123, 0x61, 0xE1}, // Keyboard Cut → 80. Cut
+  {117, 0x76, 0xF6}, // Keyboard Help → 98. Help
+
+  // near equivalents with slightly different legends
+  {72, 0x15, 0x95}, // Pause/Break(!) aka “Keyboard Pause” → 17. Pause
+  {70, 0x16, 0x96}, // PrintScreen/SysRq aka “Keyboard PrintScreen” → 70. Pr Sc
+  {71, 0x17, 0x97}, // Keyboard Scroll Lock → 71. Break(!)	Scroll Lock
+
+  // HID Usage Tables v1.3 §10:
+  // Keyboard Application[11] Windows key for Windows 95, and Compose.
+  // Keyboard Left GUI[11] Windows key for Windows 95, and Compose.
+  // Keyboard Right GUI[11] Windows key for Windows 95, and Compose.
+  {101, 0x43, 0xC3}, // context menu aka “Keyboard Application” = 101. Compose
+};
+
+const DvSelBinding DV_SEL_BINDINGS[] = {
+  // no equivalent USB HID code; by analogy with Windows Alt+Esc
+  {1u << 4, 41, 0x31, 0xB1}, // CtrlR+Esc = 41. Front
+
+  // no equivalent USB HID code; by analogy with Windows Ctrl+O
+  {1u << 4, 18, 0x48, 0xC8}, // CtrlR+O = 61. Open
+
+  // no equivalent USB HID code; by analogy with the return key often typing a line feed
+  {1u << 4, 40, 0x6F, 0xEF}, // CtrlR + Keyboard Return (ENTER) = 93. Line Feed
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+Y for Redo/Repeat
+  {1u << 4, 28, 0x03, 0x83}, // CtrlR+Y = 16. Again
+
+  // alternate for common 104-key layouts; by analogy with Visual Studio F4 for Properties
+  // (Alt+Enter is a more common convention on Windows, but it would be more awkward here)
+  {1u << 4, 61, 0x19, 0x99}, // CtrlR+Y = 21. Props
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+Z
+  {1u << 4, 29, 0x1A, 0x9A}, // CtrlR+Z → 22. Undo
+
+  // alternate for common 104-key layouts; because they both type an equals sign
+  {1u << 4, 46, 0x2D, 0xAD}, // “Keypad = and +” → 37. =
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+C
+  {1u << 4, 6, 0x33, 0xB3}, // CtrlR+C → 42. Copy
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+V
+  {1u << 4, 25, 0x49, 0xC9}, // CtrlR+V → 62. Paste
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+F
+  {1u << 4, 9, 0x5F, 0xDF}, // CtrlR+F → 79. Find
+
+  // alternate for common 104-key layouts; by analogy with Windows Ctrl+X
+  {1u << 4, 27, 0x61, 0xE1}, // CtrlR+X → 80. Cut
+
+  // alternate for common 104-key layouts; by analogy with Windows F1
+  {1u << 4, 58, 0x76, 0xF6}, // CtrlR+F1 → 98. Help
 };

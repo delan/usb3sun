@@ -52,8 +52,8 @@
 #include "bindings.h"
 
 const char *const MODIFIER_NAMES[] = {
-  "CtrlL", "ShiftL", "AltL", "SuperL",
-  "CtrlR", "ShiftR", "AltR", "SuperR",
+  "CtrlL", "ShiftL", "AltL", "GuiL",
+  "CtrlR", "ShiftR", "AltR", "GuiR",
 };
 
 // USB Host object
@@ -374,21 +374,29 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
       }
 
-      for (int i = 0; i < 8; i++)
-        if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i))
+      struct {
+        uint8_t usbkModifier;
+        bool make;
+      } modifierChanges[8 * 2];
+      struct {
+        uint8_t usbkSelector;
+        bool make;
+      } selectorChanges[6 * 2];
+      size_t modifierChangesLen = 0;
+      size_t selectorChangesLen = 0;
+
+      for (int i = 0; i < 8; i++) {
+        if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i)) {
           Sprintf(" %c%s", kreport->modifier & 1 << i ? '+' : '-', MODIFIER_NAMES[i]);
+          modifierChanges[modifierChangesLen++] = {(uint8_t) (1u << i), kreport->modifier & 1 << i ? true : false};
+        }
+      }
 
       if (kreport->modifier == 0b00001111) {
         state.inMenu = !state.inMenu;
         state.selectedMenuItem = 0u;
         state.topMenuItem = 0u;
       }
-
-      struct {
-        uint8_t keycode;
-        bool make;
-      } changes[12];
-      size_t changesLen = 0;
 
       for (int i = 0; i < 6; i++) {
         bool oldInNews = false;
@@ -401,18 +409,28 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
         if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" -%u", state.lastKeys[i]);
-          changes[changesLen++] = {state.lastKeys[i], false};
+          selectorChanges[selectorChangesLen++] = {state.lastKeys[i], false};
         }
         if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
           Sprintf(" +%u", kreport->keycode[i]);
-          changes[changesLen++] = {kreport->keycode[i], true};
+          selectorChanges[selectorChangesLen++] = {kreport->keycode[i], true};
         }
       }
 
-      for (int i = 0; i < changesLen; i++) {
+      for (int i = 0; i < modifierChangesLen; i++) {
+        // for DV bindings, make when key makes and break when key breaks
+        for (int j = 0; j < sizeof(DV_BINDINGS) / sizeof(*DV_BINDINGS); j++)
+          if (DV_BINDINGS[j].usbkModifier == modifierChanges[i].usbkModifier)
+            Serial1.write(modifierChanges[i].make ? DV_BINDINGS[j].sunkMake : DV_BINDINGS[j].sunkBreak);
+      }
+
+      // treat simultaneous DV and Sel changes as DV before Sel, for DV+Sel bindings
+      state.lastModifiers = kreport->modifier;
+
+      for (int i = 0; i < selectorChangesLen; i++) {
         if (state.inMenu) {
-          if (changes[i].make) {
-            switch (changes[i].keycode) {
+          if (selectorChanges[i].make) {
+            switch (selectorChanges[i].usbkSelector) {
               case USBK_RIGHT:
                 switch (state.selectedMenuItem) {
                   case 2:
@@ -459,12 +477,31 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           continue;
         }
 
-        for (int j = 0; j < sizeof(SIMPLE_BINDINGS) / sizeof(*SIMPLE_BINDINGS); j++)
-          if (SIMPLE_BINDINGS[j].usbk == changes[i].keycode)
-            Serial1.write(changes[i].make ? SIMPLE_BINDINGS[j].sunkMake : SIMPLE_BINDINGS[j].sunkBreak);
+        bool consumedByDvSel = false;
+
+        // for DV+Sel bindings:
+        // • make when the Sel key makes and the old DV keys are equal
+        // • does not make when the Sel key makes and the old DV keys are proper superset
+        // • does not make when the DV key makes after the Sel key makes
+        // • break when the Sel key breaks and the old modifiers are equal
+        // • FIXME does not break when the DV key breaks before the Sel key breaks!
+        for (int j = 0; j < sizeof(DV_SEL_BINDINGS) / sizeof(*DV_SEL_BINDINGS); j++) {
+          if (DV_SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector && DV_SEL_BINDINGS[j].usbkModifier == state.lastModifiers) {
+            Serial1.write(selectorChanges[i].make ? DV_SEL_BINDINGS[j].sunkMake : DV_SEL_BINDINGS[j].sunkBreak);
+            consumedByDvSel = true;
+          }
+        }
+
+        // for Sel bindings
+        // • make when key makes and break when key breaks
+        // • does not make or break when key was consumed by a DV+Sel binding
+        if (!consumedByDvSel)
+          for (int j = 0; j < sizeof(SEL_BINDINGS) / sizeof(*SEL_BINDINGS); j++)
+            if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
+              Serial1.write(selectorChanges[i].make ? SEL_BINDINGS[j].sunkMake : SEL_BINDINGS[j].sunkBreak);
       }
 
-      state.lastModifiers = kreport->modifier;
+      // finally commit the Sel changes
       for (int i = 0; i < 6; i++)
         state.lastKeys[i] = kreport->keycode[i];
     } break;
