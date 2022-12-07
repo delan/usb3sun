@@ -182,9 +182,7 @@ void buzzerClick() {
     return;
 
   // violation of sparc keyboard spec :) but distinguishable from bell!
-  // tone(BUZZER_PIN, 1'000u, 5uL);
-  analogWriteFreq(1'000u);
-  analogWrite(BUZZER_PIN, state.buzzerVolume);
+  tone(BUZZER_PIN, 1'000u, 5uL);
   state.clickingSince = micros();
 }
 
@@ -193,15 +191,10 @@ void buzzerUpdate() {
   const unsigned long clickingSince = state.clickingSince;
   if (state.clickingSince >= state.clickDuration * 1'000uL && t - state.clickingSince < state.clickDuration * 1'000uL)
     return;
-  if (state.bell) {
-    // tone(BUZZER_PIN, 1'000'000u / 480u);
-    analogWriteFreq(1'000'000u / 480u);
-    analogWrite(BUZZER_PIN, state.buzzerVolume);
-  } else {
-    // noTone(BUZZER_PIN);
-    // analogWrite(BUZZER_PIN, 0);
-    digitalWrite(BUZZER_PIN, false);
-  }
+  if (state.bell)
+    tone(BUZZER_PIN, 1'000'000u / 480u);
+  else
+    noTone(BUZZER_PIN);
 }
 
 void loop() {
@@ -331,6 +324,13 @@ void setup1() {
   }
 
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+
+  // claim state machines so that tone() doesn’t clobber them
+  // pio0 and pio1 based on PIO_USB_DEFAULT_CONFIG and logic in pio_usb_bus_init
+  // https://github.com/sekigon-gonnoc/Pico-PIO-USB/blob/52805e6d92556e67d3738bd8fb10227a45b13a08/src/pio_usb.c#L277
+  pio_cfg.sm_tx = pio_claim_unused_sm(pio0, true);
+  pio_cfg.sm_rx = pio_claim_unused_sm(pio1, true);
+
   pio_cfg.pin_dp = HOST_PIN_DP;
   USBHost.configure_pio_usb(1, &pio_cfg);
 
