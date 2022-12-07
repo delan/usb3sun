@@ -392,12 +392,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
       }
 
-      if (kreport->modifier == 0b00001111) {
-        state.inMenu = !state.inMenu;
-        state.selectedMenuItem = 0u;
-        state.topMenuItem = 0u;
-      }
-
       for (int i = 0; i < 6; i++) {
         bool oldInNews = false;
         bool newInOlds = false;
@@ -474,6 +468,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                 break;
             }
           }
+          continue;
+        }
+
+        // CtrlR+Space acts like a DV+Sel binding, but opens the settings menu
+        if (selectorChanges[i].usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
+          state.inMenu = !state.inMenu;
+          state.selectedMenuItem = 0u;
+          state.topMenuItem = 0u;
           continue;
         }
 

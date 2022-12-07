@@ -10,6 +10,8 @@
 #define USBK_UP 0x52
 #define USBK_RETURN 0x28
 #define USBK_ENTER 0x58
+#define USBK_SPACE 0x2C
+#define USBK_CTRL_R ((uint8_t) 1u << 4)
 #define SUNK_RESET 0x01
 #define SUNK_BELL_ON 0x02
 #define SUNK_BELL_OFF 0x03
