@@ -1,37 +1,4 @@
-#define SUN_MTX SUN_PIN4
-#define SUN_KRX SUN_PIN5
-#define SUN_KTX SUN_PIN6
-
-// begin pinouts/configs
-  // wait for some GPIO to be grounded on boot
-  // #define WAIT_PIN 22
-  // wait for serial input on boot (sometimes misbehaves)
-  // #define WAIT_SERIAL
-
-  #define SUN_PIN1 SUN_PURPLE   // 0 V
-  #define SUN_PIN2 SUN_BROWN    // 0 V
-  #define SUN_PIN3 SUN_BLUE     // +5 Vdc
-  #define SUN_PIN4 SUN_GRAY     // mouse tx
-  #define SUN_PIN5 SUN_RED      // keyboard rx
-  #define SUN_PIN6 SUN_GREEN    // keyboard tx
-  #define SUN_PIN7 SUN_YELLOW   // 0 V
-  #define SUN_PIN8 SUN_ORANGE   // +5 Vdc
-
-  #define SUN_GRAY 8            // must be a GP# valid for UART1 TX
-  #define SUN_MRX_UNUSED 9      // must be a GP# valid for UART1 RX
-  #define SUN_GREEN 12          // must be a GP# valid for UART0 TX
-  #define SUN_RED 13            // must be a GP# valid for UART0 RX
-
-  // fake Sun host for loopback testing (disables mouse support)
-  // #define FAKE_SUN_ENABLE
-  #define FAKE_SUN_KRX 4        // must be a GP# valid for UART1 TX
-  #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
-
-  #define BUZZER_PIN 28         // must be a GP#
-  #define DISPLAY_SCL 17
-  #define DISPLAY_SDA 16
-  #define DISPLAY_ROTATION 2
-// end pinouts/configs
+#include "config.h"
 
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
 #define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
@@ -43,7 +10,6 @@
 #include <Wire.h>
 
 #include <pio_usb.h>
-#define HOST_PIN_DP   2   // Pin used as D+ for host, D- = D+ + 1
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -135,10 +101,10 @@ void setup() {
   gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
 #else
   // gpio invert must be set *after* setPinout/begin
-  Serial2.setPinout(SUN_MTX, SUN_MRX_UNUSED);
+  Serial2.setPinout(SUN_MTX, SUN_MRX);
   Serial2.begin(1200, SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_MRX_UNUSED, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
 
   Sprintln("usb3sun");
@@ -335,7 +301,7 @@ void setup1() {
   pio_cfg.sm_tx = pio_claim_unused_sm(pio0, true);
   pio_cfg.sm_rx = pio_claim_unused_sm(pio1, true);
 
-  pio_cfg.pin_dp = HOST_PIN_DP;
+  pio_cfg.pin_dp = USB_DP;
   USBHost.configure_pio_usb(1, &pio_cfg);
 
   // run host stack on controller (rhport) 1
