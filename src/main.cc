@@ -122,20 +122,23 @@ void setup() {
   wait = false;
 #endif
 
-  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
+  // gpio invert must be set *after* setPinout/begin
   Serial1.setPinout(SUN_KTX, SUN_KRX);
   Serial1.begin(1200, SERIAL_8N1);
+  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
 #ifdef FAKE_SUN_ENABLE
-  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
+  // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
   Serial2.begin(1200, SERIAL_8N1);
+  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
 #else
-  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_MRX_UNUSED, GPIO_OVERRIDE_INVERT);
+  // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX_UNUSED);
   Serial2.begin(1200, SERIAL_8N1);
+  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_MRX_UNUSED, GPIO_OVERRIDE_INVERT);
 #endif
 
   Sprintln("usb3sun");
