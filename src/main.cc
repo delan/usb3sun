@@ -102,7 +102,7 @@ void setup() {
 #else
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(1200, SERIAL_8N1);
+  Serial2.begin(9600, SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
@@ -501,7 +501,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           Sprintf(" %c%s", mreport->buttons & 1 << i ? '+' : '-', BUTTON_NAMES[i]);
 
       uint8_t result[] = {
-        (mreport->buttons & USBM_LEFT ? SUNM_LEFT : 0)
+        0x80
+          | (mreport->buttons & USBM_LEFT ? SUNM_LEFT : 0)
           | (mreport->buttons & USBM_MIDDLE ? SUNM_CENTER : 0)
           | (mreport->buttons & USBM_RIGHT ? SUNM_RIGHT : 0),
         (uint8_t) mreport->x, (uint8_t) mreport->y, 0, 0,
@@ -510,7 +511,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       Sprintf("\nmouse would send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled by FAKE_SUN_ENABLE)",
         result[0], result[1], result[2], result[3], result[4]);
 #else
-      Serial2.write(result, sizeof(result) / sizeof(*result));
+      Sprintf("\nmouse send %02Xh %02Xh %02Xh %02Xh %02Xh = %zu",
+        result[0], result[1], result[2], result[3], result[4],
+        Serial2.write(result, sizeof(result) / sizeof(*result)));
 #endif
 
       state.lastButtons = mreport->buttons;
