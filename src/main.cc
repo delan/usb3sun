@@ -4,7 +4,7 @@
 
 // begin pinouts/configs
   // wait for some GPIO to be grounded on boot
-  #define WAIT_PIN 22
+  // #define WAIT_PIN 22
   // wait for serial input on boot (sometimes misbehaves)
   // #define WAIT_SERIAL
 
