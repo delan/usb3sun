@@ -44,3 +44,11 @@ for more details, see [src/bindings.h](src/bindings.h), but here are the importa
 | Right Ctrl+Z      | Undo                    |
 
 \* aka Super, Mod4, Windows, etc
+
+compatibility
+-------------
+
+- 04A5:8001 BenQ Zowie EC2 **mouse** — perfect
+- ????:???? Endgame Gear XM1 **mouse** — buttons only (tinyusb doesn’t support 16-bit x/y yet)
+- 0461:4E24 HP KB71211 **keyboard** — almost perfect (no scroll lock or right meta)
+- 0461:4E23 HP MOGIUO **mouse** — perfect
