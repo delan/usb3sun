@@ -23,7 +23,7 @@
   #define SUN_RED 13            // must be a GP# valid for UART0 RX
 
   // fake Sun host for loopback testing (disables mouse support)
-  #define FAKE_SUN_ENABLE
+  // #define FAKE_SUN_ENABLE
   #define FAKE_SUN_KRX 4        // must be a GP# valid for UART1 TX
   #define FAKE_SUN_KTX 5        // must be a GP# valid for UART1 RX
 
@@ -130,6 +130,11 @@ void setup() {
   gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
   Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
+  Serial2.begin(1200, SERIAL_8N1);
+#else
+  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_MRX_UNUSED, GPIO_OVERRIDE_INVERT);
+  Serial2.setPinout(SUN_MTX, SUN_MRX_UNUSED);
   Serial2.begin(1200, SERIAL_8N1);
 #endif
 
