@@ -76,10 +76,10 @@ std::atomic<bool> wait = true;
 struct {
   bool bell;
   bool clickEnabled = true;
-  bool caps;
-  bool compose;
-  bool scroll;
-  bool num;
+  bool caps = true;
+  bool compose = true;
+  bool scroll = true;
+  bool num = true;
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
   uint8_t lastButtons;
