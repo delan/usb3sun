@@ -241,7 +241,7 @@ void loop() {
 void serialEvent1() {
   while (Serial1.available() > 0) {
     uint8_t command = Serial1.read();
-    Sprintf("command %u\n", command);
+    Sprintf("command %02Xh\n", command);
     switch (command) {
       case SUNK_RESET:
         // self test fail:
