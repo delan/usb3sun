@@ -269,7 +269,8 @@ void serialEvent1() {
         state.clickEnabled = false;
         break;
       case SUNK_LED: {
-        uint8_t status = Serial.read();
+        while (Serial1.peek() == -1) delay(1);
+        uint8_t status = Serial1.read();
         state.num = status << 0 & 1;
         state.compose = status << 1 & 1;
         state.scroll = status << 2 & 1;
