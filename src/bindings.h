@@ -33,6 +33,7 @@
 #define SUNK_SCROLLLOCK 0x17
 
 // sources:
+// SPARC Keyboard Specification Version1 https://sparc.org/wp-content/uploads/2014/01/KBD.pdf.gz
 // HID Usage Tables 1.3 https://usb.org/sites/default/files/hut1_3_0.pdf
 
 // see also:
@@ -210,6 +211,9 @@ const DvSelBinding DV_SEL_BINDINGS[] = {
 
   // alternate for common 104-key layouts; by analogy with Windows Ctrl+Y for Redo/Repeat
   {1u << 4, 28, 0x03, 0x83}, // CtrlR+Y → 16. Again
+
+  // alternate for common 104-key layouts; by analogy with “[full] stop”
+  {1u << 4, 55, 0x01, 0x81}, // CtrlR+. → 15. Stop
 
   // alternate for common 104-key layouts; by analogy with Visual Studio F4 for Properties
   // (Alt+Enter is a more common convention on Windows, but it would be more awkward here)
