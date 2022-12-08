@@ -505,7 +505,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           | (mreport->buttons & USBM_LEFT ? SUNM_LEFT : 0)
           | (mreport->buttons & USBM_MIDDLE ? SUNM_CENTER : 0)
           | (mreport->buttons & USBM_RIGHT ? SUNM_RIGHT : 0),
-        (uint8_t) mreport->x, (uint8_t) mreport->y, 0, 0,
+        (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
 #ifdef FAKE_SUN_ENABLE
       Sprintf("\nmouse would send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled by FAKE_SUN_ENABLE)",
