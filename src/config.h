@@ -21,9 +21,21 @@
                             //              pin 7: 0 V (yellow)
                             //              pin 8: +5 Vdc (orange)
 
-// fake Sun host for loopback testing (disables mouse support)
+// send output over Serial1 instead of Serial (disables Sun keyboard interface)
+#define PICOPROBE_ENABLE
+#if !defined(PICOPROBE_ENABLE)
+#define SUNK_ENABLE
+#endif
+#define PICOPROBE_BAUD 115200 // values other than 9600 may require PuTTY/minicom
+
+// fake Sun host for loopback testing (disables Sun mouse interface)
 // #define FAKE_SUN_ENABLE
+#if !defined(FAKE_SUN_ENABLE)
+#define SUNM_ENABLE
+#endif
 
 // the following must be GP# numbers valid for...
-#define FAKE_SUN_KRX 4      // ...UART1 TX: connect to SUN_KRX
-#define FAKE_SUN_KTX 5      // ...UART1 RX: connect to SUN_KTX
+#define FAKE_SUN_KRX 8      // ...UART1 TX: connect to SUN_KRX
+#define FAKE_SUN_KTX 9      // ...UART1 RX: connect to SUN_KTX
+#define PICOPROBE_TX 0      // ...UART0 TX: connect to picoprobe GP5
+#define PICOPROBE_RX 1      // ...UART0 RX: connect to picoprobe GP4

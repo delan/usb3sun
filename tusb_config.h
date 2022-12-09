@@ -1,3 +1,7 @@
+// usb3sun note!
+// platformio incremental build is unaware of this file.
+// if you change it, do a clean build or touch the build_flags.
+
 /*
  * The MIT License (MIT)
  *
@@ -86,6 +90,12 @@
 #define CFG_TUD_HID_EP_BUFSIZE  (64)
 
 // ======= LOCAL ADDITIONS BELOW ======= //
+
+// see <.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/ports/rp2040/Adafruit_TinyUSB_rp2040.cpp>
+#define CFG_TUSB_DEBUG_PRINTF serial1_printf
+// extern "C" {
+//   extern int serial2_printf(const char *__restrict __format, ...);
+// }
 
 #define CFG_TUH_ENABLED 1
 #define CFG_TUH_RPI_PIO_USB 1

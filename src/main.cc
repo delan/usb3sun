@@ -1,8 +1,14 @@
 #include "config.h"
 
+#ifdef PICOPROBE_ENABLE
+#define Sprint(...) (Serial1.print(__VA_ARGS__), Serial1.flush())
+#define Sprintln(...) (Serial1.println(__VA_ARGS__), Serial1.flush())
+#define Sprintf(...) (Serial1.printf(__VA_ARGS__), Serial1.flush())
+#else
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
 #define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
 #define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
+#endif
 
 #include <atomic>
 
@@ -35,9 +41,7 @@ tusb_desc_device_t desc_device;
 
 static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
-#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
 std::atomic<bool> wait = true;
-#endif
 
 struct {
   bool bell;
@@ -77,6 +81,41 @@ void setup() {
   display.drawXBitmap(0, 0, splash_bits, 128, 32, SSD1306_WHITE);
   display.display();
 
+#if defined(PICOPROBE_ENABLE)
+  Serial1.setPinout(PICOPROBE_TX, PICOPROBE_RX);
+  Serial1.setFIFOSize(4096);
+  Serial1.begin(115200, SERIAL_8N1);
+#elif defined(SUNK_ENABLE)
+  // gpio invert must be set *after* setPinout/begin
+  Serial1.setPinout(SUN_KTX, SUN_KRX);
+  Serial1.begin(1200, SERIAL_8N1);
+  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
+#endif
+#if defined(FAKE_SUN_ENABLE)
+  // gpio invert must be set *after* setPinout/begin
+  Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
+  Serial2.begin(1200, SERIAL_8N1);
+  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
+#elif defined(SUNM_ENABLE)
+  // gpio invert must be set *after* setPinout/begin
+  Serial2.setPinout(SUN_MTX, SUN_MRX);
+  Serial2.begin(115200, SERIAL_8N1);
+  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+  gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+#endif
+
+  for (int i = 0; i < splash_height; i += 2) {
+    for (int j = 0; j < splash_width; j += 1) {
+      if (splash_bits[(splash_width + 7) / 8 * i + j / 8] >> j % 8 & 1)
+        Sprintf("\033[7m ");
+      else
+        Sprintf("\033[0m ");
+    }
+    Sprintf("\033[0m\n");
+  }
+
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
   while (digitalRead(WAIT_PIN));
@@ -84,30 +123,7 @@ void setup() {
 #ifdef WAIT_SERIAL
   while (Serial.read() == -1);
 #endif
-#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
   wait = false;
-#endif
-
-  // gpio invert must be set *after* setPinout/begin
-  Serial1.setPinout(SUN_KTX, SUN_KRX);
-  Serial1.begin(1200, SERIAL_8N1);
-  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
-#ifdef FAKE_SUN_ENABLE
-  // gpio invert must be set *after* setPinout/begin
-  Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
-  Serial2.begin(1200, SERIAL_8N1);
-  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
-#else
-  // gpio invert must be set *after* setPinout/begin
-  Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(9600, SERIAL_8N1);
-  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
-#endif
-
-  Sprintln("usb3sun");
 
   digitalWrite(LED_BUILTIN, LOW);
 }
@@ -201,12 +217,11 @@ void loop() {
 #ifdef FAKE_SUN_ENABLE
   if (!fake.ok) {
     Serial2.write(SUNK_RESET);
-  } else {
-    ;
   }
 #endif
 }
 
+#ifdef SUNK_ENABLE
 void serialEvent1() {
   while (Serial1.available() > 0) {
     uint8_t command = Serial1.read();
@@ -251,6 +266,7 @@ void serialEvent1() {
     }
   }
 }
+#endif
 
 #ifdef FAKE_SUN_ENABLE
 void serialEvent2() {
@@ -282,9 +298,7 @@ void serialEvent2() {
 #endif
 
 void setup1() {
-#if defined(WAIT_PIN) || defined(WAIT_SERIAL)
   while (wait);
-#endif
 
   // Check for CPU frequency, must be multiple of 120Mhz for bit-banging USB
   uint32_t cpu_hz = clock_get_hz(clk_sys);
@@ -396,12 +410,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
       }
 
+#ifdef SUNK_ENABLE
       for (int i = 0; i < modifierChangesLen; i++) {
         // for DV bindings, make when key makes and break when key breaks
         for (int j = 0; j < sizeof(DV_BINDINGS) / sizeof(*DV_BINDINGS); j++)
           if (DV_BINDINGS[j].usbkModifier == modifierChanges[i].usbkModifier)
             Serial1.write(modifierChanges[i].make ? DV_BINDINGS[j].sunkMake : DV_BINDINGS[j].sunkBreak);
       }
+#endif
 
       // treat simultaneous DV and Sel changes as DV before Sel, for DV+Sel bindings
       state.lastModifiers = kreport->modifier;
@@ -464,6 +480,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           continue;
         }
 
+#ifdef SUNK_ENABLE
         bool consumedByDvSel = false;
 
         // for DV+Sel bindings:
@@ -486,6 +503,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           for (int j = 0; j < sizeof(SEL_BINDINGS) / sizeof(*SEL_BINDINGS); j++)
             if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
               Serial1.write(selectorChanges[i].make ? SEL_BINDINGS[j].sunkMake : SEL_BINDINGS[j].sunkBreak);
+#endif
       }
 
       // finally commit the Sel changes
@@ -507,13 +525,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           | (mreport->buttons & USBM_RIGHT ? SUNM_RIGHT : 0),
         (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
-#ifdef FAKE_SUN_ENABLE
-      Sprintf("\nmouse would send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled by FAKE_SUN_ENABLE)",
-        result[0], result[1], result[2], result[3], result[4]);
-#else
+#ifdef SUNM_ENABLE
       Sprintf("\nmouse send %02Xh %02Xh %02Xh %02Xh %02Xh = %zu",
         result[0], result[1], result[2], result[3], result[4],
         Serial2.write(result, sizeof(result) / sizeof(*result)));
+#else
+      Sprintf("\nmouse send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)",
+        result[0], result[1], result[2], result[3], result[4]);
 #endif
 
       state.lastButtons = mreport->buttons;
