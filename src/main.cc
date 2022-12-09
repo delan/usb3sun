@@ -15,7 +15,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+extern "C" {
 #include <pio_usb.h>
+}
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -308,6 +310,7 @@ void setup1() {
   }
 
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+  pio_cfg.pin_dp = USB_DP;
 
   // claim state machines so that tone() doesn’t clobber them
   // pio0 and pio1 based on PIO_USB_DEFAULT_CONFIG and logic in pio_usb_bus_init
@@ -315,16 +318,26 @@ void setup1() {
   pio_cfg.sm_tx = pio_claim_unused_sm(pio0, true);
   pio_cfg.sm_rx = pio_claim_unused_sm(pio1, true);
 
-  pio_cfg.pin_dp = USB_DP;
+  // tuh_configure -> pico pio hcd_configure -> memcpy to static global
   USBHost.configure_pio_usb(1, &pio_cfg);
 
   // run host stack on controller (rhport) 1
   // Note: For rp2040 pico-pio-usb, calling USBHost.begin() on core1 will have most of the
   // host bit-banging processing works done in core1 to free up core0 for other works
+  // tuh_init -> pico pio hcd_init -> pio_usb_host_init -> pio_usb_bus_init -> set root[0]->initialized
   USBHost.begin(1);
 }
 
 void loop1() {
+  static const auto t = micros();
+  static bool addedSecondPort = false;
+  if (!addedSecondPort && micros() - t > 3'000'000) {
+    Sprintln(">>> adding second port");
+    // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
+    pio_usb_host_add_port(USB_DP + 2);
+    addedSecondPort = true;
+  }
+
   USBHost.task();
   buzzerUpdate();
 }

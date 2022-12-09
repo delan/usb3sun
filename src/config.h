@@ -1,9 +1,9 @@
-// #define WAIT_PIN 22      // GP# number (optional) to wait for ground on boot
+#define WAIT_PIN 22      // GP# number (optional) to wait for ground on boot
 // #define WAIT_SERIAL      // wait for serial input over USB CDC on boot (buggy)
-#define USB_DP 2            // GP# number for USB D+
+#define USB_DP 18            // GP# number for USB D+
 #define USB_DM (USB_DP+1)   // GP# number for USB D- (always D+ GP# + 1)
 #define BUZZER_PIN 28       // GP# number for positive of passive piezo buzzer
-#define DISPLAY_ROTATION 2  // 0|1|2|3 where 0 means GND pin is bottom left
+#define DISPLAY_ROTATION 0  // 0|1|2|3 where 0 means GND pin is bottom left
 #define SUN_MBAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
 
 // the following must be GP# numbers valid for...
