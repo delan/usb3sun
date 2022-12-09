@@ -8,6 +8,12 @@ see also:
 * [USB2Sun](https://github.com/jgilje/USB2Sun) by @jgilje
 * [sun2usb](https://github.com/jareklupinski/sun2usb) by @jareklupinski
 
+instructions
+------------
+
+1. fix the -DCFG_TUSB_CONFIG_FILE in platformio.ini for your absolute path
+2. apply hathach/tinyusb#1786 to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c>
+
 features
 --------
 

@@ -326,18 +326,12 @@ void setup1() {
   // host bit-banging processing works done in core1 to free up core0 for other works
   // tuh_init -> pico pio hcd_init -> pio_usb_host_init -> pio_usb_bus_init -> set root[0]->initialized
   USBHost.begin(1);
+
+  // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
+  pio_usb_host_add_port(USB_DP + 2);
 }
 
 void loop1() {
-  static const auto t = micros();
-  static bool addedSecondPort = false;
-  if (!addedSecondPort && micros() - t > 3'000'000) {
-    Sprintln(">>> adding second port");
-    // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
-    pio_usb_host_add_port(USB_DP + 2);
-    addedSecondPort = true;
-  }
-
   USBHost.task();
   buzzerUpdate();
 }
