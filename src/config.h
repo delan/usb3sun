@@ -20,7 +20,7 @@
 #define SUN_MRX 9           // ...UART1 RX: n/c: mouse rx
 #define SUN_KRX 13          // ...UART0 RX: pin 5: keyboard rx (red)
 #define SUN_KTX 12          // ...UART0 TX: pin 6: keyboard tx (green)
-                            //              pin 7: 0 V (yellow)
+#define POWER_KEY 15        // ...any:      pin 7: power key (yellow)
                             //              pin 8: +5 Vdc (orange)
 
 // send output over Serial1 instead of Serial (disables Sun keyboard interface)

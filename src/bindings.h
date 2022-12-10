@@ -28,13 +28,21 @@
 #define SUNK_IDLE 0x7F
 #define SUNK_LAYOUT_RESPONSE 0xFE
 #define SUNK_RESET_RESPONSE 0xFF
+#define SUNK_BREAK_BIT 0x80
 #define SUNK_NUMLOCK 0x62
 #define SUNK_CAPSLOCK 0x77
 #define SUNK_SCROLLLOCK 0x17
+#define SUNK_POWER 0x30
 
 // sources:
 // SPARC Keyboard Specification Version1 https://sparc.org/wp-content/uploads/2014/01/KBD.pdf.gz
 // HID Usage Tables 1.3 https://usb.org/sites/default/files/hut1_3_0.pdf
+// illumos usr/src/cmd/loadkeys/type_4/reset https://github.com/illumos/illumos-gate/blob/8b4261085e0d677be9a3253ff6b4c290e402576d/usr/src/cmd/loadkeys/type_4/reset
+// illumos usr/src/uts/common/io/keytables.c https://github.com/illumos/illumos-gate/blob/3f3c90a958c5abf8ec0ed5d1fad2e40bd9905a50/usr/src/uts/common/io/keytables.c
+// illumos usr/src/uts/common/io/kbtrans/usb_keytables.c https://github.com/illumos/illumos-gate/blob/8b4261085e0d677be9a3253ff6b4c290e402576d/usr/src/uts/common/io/kbtrans/usb_keytables.c
+// illumos usr/src/uts/common/sys/kbd.h https://github.com/illumos/illumos-gate/blob/3f3c90a958c5abf8ec0ed5d1fad2e40bd9905a50/usr/src/uts/common/sys/kbd.h
+// Table of special SUN keys and their various key codes https://kentie.net/article/sunkbd/sun%20keys.txt
+// Linux kernel Sun serial MOUSE auto baud rate detection https://github.com/torvalds/linux/blob/3ecc37918c80ffdbfa8f08d3e75a0a9fca1c1979/drivers/tty/serial/suncore.c#L170-L232
 
 // see also:
 // Sun type 4 keyboard https://twitter.com/MiodVallat/status/1246128759641645060
@@ -48,6 +56,8 @@
 // Sun Keyboard on a PC? https://linuxgazette.net/140/misc/lg/sun_keyboard_on_a_pc.html
 // Sun keyboard https://everything2.com/title/Sun+keyboard
 // Sun Type 4 https://deskthority.net/viewtopic.php?t=10793
+// Sun keyboard to USB converter https://kentie.net/article/sunkbd/index.htm
+// PC-Sun keyboard mapping in Rose multi-platform KVM switches http://www.rose-electronics.de/additional/sun_keyboard_mapping.pdf
 
 struct DvBinding {
   uint8_t usbkModifier;
@@ -186,6 +196,7 @@ const SelBinding SEL_BINDINGS[] = {
   {126, 0x5F, 0xDF}, // Keyboard Find → 79. Find
   {123, 0x61, 0xE1}, // Keyboard Cut → 80. Cut
   {117, 0x76, 0xF6}, // Keyboard Help → 98. Help
+  {102, 0x30, 0xB0}, // keyboard Power → bf(13) Power
 
   // near equivalents with slightly different legends
   {72, 0x15, 0x95}, // Pause/Break(!) aka “Keyboard Pause” → 17. Pause
@@ -239,4 +250,7 @@ const DvSelBinding DV_SEL_BINDINGS[] = {
 
   // alternate for common 104-key layouts; by analogy with Windows F1
   {1u << 4, 58, 0x76, 0xF6}, // CtrlR+F1 → 98. Help
+
+  // alternate for common 104-key layouts; P for Power
+  {1u << 4, 19, 0x30, 0xB0}, // CtrlR+P → bf(13) Power
 };

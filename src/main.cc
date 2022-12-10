@@ -336,6 +336,25 @@ void loop1() {
   buzzerUpdate();
 }
 
+void sunkSend(uint8_t code) {
+#ifdef SUNK_ENABLE
+  Sprintf("\nkeyboard send %02Xh", code);
+  Serial1.write(code);
+#else
+  Sprintf("\nkeyboard send %02Xh (disabled)", code);
+#endif
+  switch (code) {
+    case SUNK_POWER:
+      Sprintf("\npower pin high");
+      digitalWrite(POWER_KEY, HIGH);
+      break;
+    case SUNK_POWER | SUNK_BREAK_BIT:
+      Sprintf("\npower pin low");
+      digitalWrite(POWER_KEY, LOW);
+      break;
+  }
+}
+
 // Invoked when device with hid interface is mounted
 // Report descriptor is also available for use.
 // tuh_hid_parse_report_descriptor() can be used to parse common/simple enough
@@ -487,7 +506,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           continue;
         }
 
-#ifdef SUNK_ENABLE
         bool consumedByDvSel = false;
 
         // for DV+Sel bindings:
@@ -498,7 +516,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         // • FIXME does not break when the DV key breaks before the Sel key breaks!
         for (int j = 0; j < sizeof(DV_SEL_BINDINGS) / sizeof(*DV_SEL_BINDINGS); j++) {
           if (DV_SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector && DV_SEL_BINDINGS[j].usbkModifier == state.lastModifiers) {
-            Serial1.write(selectorChanges[i].make ? DV_SEL_BINDINGS[j].sunkMake : DV_SEL_BINDINGS[j].sunkBreak);
+            sunkSend(selectorChanges[i].make ? DV_SEL_BINDINGS[j].sunkMake : DV_SEL_BINDINGS[j].sunkBreak);
             consumedByDvSel = true;
           }
         }
@@ -509,8 +527,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         if (!consumedByDvSel)
           for (int j = 0; j < sizeof(SEL_BINDINGS) / sizeof(*SEL_BINDINGS); j++)
             if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
-              Serial1.write(selectorChanges[i].make ? SEL_BINDINGS[j].sunkMake : SEL_BINDINGS[j].sunkBreak);
-#endif
+              sunkSend(selectorChanges[i].make ? SEL_BINDINGS[j].sunkMake : SEL_BINDINGS[j].sunkBreak);
       }
 
       // finally commit the Sel changes
