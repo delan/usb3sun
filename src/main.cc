@@ -310,7 +310,7 @@ void setup1() {
   }
 
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
-  pio_cfg.pin_dp = USB_DP;
+  pio_cfg.pin_dp = USB0_DP;
 
   // claim state machines so that tone() doesn’t clobber them
   // pio0 and pio1 based on PIO_USB_DEFAULT_CONFIG and logic in pio_usb_bus_init
@@ -328,7 +328,7 @@ void setup1() {
   USBHost.begin(1);
 
   // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
-  pio_usb_host_add_port(USB_DP + 2);
+  pio_usb_host_add_port(USB1_DP);
 }
 
 void loop1() {
