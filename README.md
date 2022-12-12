@@ -18,7 +18,8 @@ features
 --------
 
 * keyboard support
-* mouse support (in progress)
+* mouse support
+* power key support (experimental)
 * LED indicators via SSD1306 (128x32)
 * click and bell via passive piezo buzzer
 
@@ -44,6 +45,7 @@ for more details, see [src/bindings.h](src/bindings.h), but here are the importa
 | Right Ctrl+C      | Copy                    |
 | Right Ctrl+F      | Find                    |
 | Right Ctrl+O      | Front                   |
+| Right Ctrl+P      | Power                   |
 | Right Ctrl+V      | Paste                   |
 | Right Ctrl+X      | Cut                     |
 | Right Ctrl+Y      | Again                   |
