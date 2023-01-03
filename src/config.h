@@ -5,7 +5,7 @@
 #define USB1_DP 4           // GP# number for USB root port 1 D+
 #define USB1_DM (USB_DP+1)  // GP# number for USB root port 1 D- (always D+ GP# + 1)
 #define BUZZER_PIN 28       // GP# number for positive of passive piezo buzzer
-#define DISPLAY_ROTATION 0  // 0|1|2|3 where 0 means GND pin is bottom left
+#define DISPLAY_ROTATION 2  // 0|1|2|3 where 0 means GND pin is bottom left
 #define SUN_MBAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
 
 // the following must be GP# numbers valid for...
@@ -24,7 +24,7 @@
                             //              pin 8: +5 Vdc (orange)
 
 // send output over Serial1 instead of Serial (disables Sun keyboard interface)
-#define PICOPROBE_ENABLE
+// #define PICOPROBE_ENABLE
 #if !defined(PICOPROBE_ENABLE)
 #define SUNK_ENABLE
 #endif
