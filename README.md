@@ -12,7 +12,9 @@ instructions
 ------------
 
 1. fix the -DCFG_TUSB_CONFIG_FILE in platformio.ini for your absolute path
-2. apply hathach/tinyusb#1786 to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c>
+2. apply tinyusb1.patch to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
+    * upstream patch: hathach/tinyusb#1786
+3. apply tinyusb2.patch to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
 
 features
 --------
@@ -57,6 +59,9 @@ compatibility
 -------------
 
 - 04A5:8001 BenQ Zowie EC2 **mouse** — perfect
-- ????:???? Endgame Gear XM1 **mouse** — buttons only (tinyusb doesn’t support 16-bit x/y yet)
-- 0461:4E24 HP KB71211 **keyboard** — almost perfect (no scroll lock or right meta)
+- 3367:1903 Endgame Gear XM1r **mouse** — buttons only (16-bit dx/dy, no boot protocol)
+- 0461:4E24 HP KB71211 **keyboard** — almost perfect (lacks scroll lock or right meta)
 - 0461:4E23 HP MOGIUO **mouse** — perfect
+- 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A — perfect
+- 045E:0752 Microsoft Wired **Keyboard** 400 — perfect
+- 045E:0750 Microsoft Wired **Keyboard** 600 — perfect

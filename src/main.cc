@@ -370,7 +370,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   tuh_hid_report_info_t infos[16];
   size_t infos_len = tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len);
   for (size_t i = 0; i < infos_len; i++)
-    Sprintf("      report[%zu] report_id=%u usage=%u usage_page=%u\n", infos[i].report_id, infos[i].usage, infos[i].usage_page);
+    Sprintf("      report[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", infos[i].report_id, infos[i].usage, infos[i].usage_page);
 
   if (!tuh_hid_receive_report(dev_addr, instance))
     Sprintf("error: failed to request to receive report\n");
@@ -381,13 +381,27 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
   Sprintf("unmount dev_addr=%u instance=%u\n", dev_addr, instance);
 }
 
+void tuh_mount_cb(uint8_t dev_addr) {
+  Sprintf("mount dev_addr=%u\n", dev_addr);
+}
+
+void tuh_umount_cb(uint8_t dev_addr) {
+  Sprintf("unmount dev_addr=%u\n", dev_addr);
+}
+
+void tuh_hid_set_protocol_complete_cb(uint8_t dev_addr, uint8_t instance, uint8_t protocol) {
+  // haven’t seen this actually get printed so far, but only tried a few devices
+  Sprintf("hid [%u:%u] set protocol returned %u\n", protocol);
+}
+
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-  Sprintf("report");
+  uint8_t if_protocol = tuh_hid_interface_protocol(dev_addr, instance);
+  Sprintf("hid [%u:%u] report if_protocol=%u", dev_addr, instance, if_protocol);
   for (uint16_t i = 0; i < len; i++)
     Sprintf(" %02Xh", report[i]);
 
-  switch (tuh_hid_interface_protocol(dev_addr, instance)) {
+  switch (if_protocol) {
     case HID_ITF_PROTOCOL_KEYBOARD: {
       hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
       buzzerClick();
