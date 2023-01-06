@@ -12,9 +12,9 @@ instructions
 ------------
 
 1. fix the -DCFG_TUSB_CONFIG_FILE in platformio.ini for your absolute path
-2. apply tinyusb1.patch to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
+2. apply [tinyusb1.patch](tinyusb1.patch) to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
     * upstream patch: hathach/tinyusb#1786
-3. apply tinyusb2.patch to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
+3. apply [tinyusb2.patch](tinyusb2.patch) to <.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c> (version 1.16.0)
 
 features
 --------
@@ -65,3 +65,16 @@ compatibility
 - 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A — perfect
 - 045E:0752 Microsoft Wired **Keyboard** 400 — perfect
 - 045E:0750 Microsoft Wired **Keyboard** 600 — perfect
+
+prototype assembly
+------------------
+
+(more detailed instructions and bill of materials coming soon)
+
+![prototype1](doc/prototype1.jpg)
+
+![prototype2](doc/prototype2.jpg)
+
+![prototype3](doc/prototype3.jpg)
+
+![prototype4](doc/prototype4.jpg)
