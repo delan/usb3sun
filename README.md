@@ -163,6 +163,9 @@ prototype assembly
 
 ![prototype3](doc/prototype3.jpg)
 
-* [TODO]
+39. place U1 pins (GP0…GP15,GP16…VBUS) in (c1…c20,h20…h1)
+40. place U2 pins (SDA,SCK,VCC,GND) in (i20,i21,i22,i23)
+41. connect buzzer negative to i8 (U1 GND)
+42. connect buzzer positive to i7 (U1 GP28)
 
 ![prototype4](doc/prototype4.jpg)
