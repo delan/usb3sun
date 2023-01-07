@@ -101,28 +101,39 @@ prototype assembly
 
 ### assembly instructions
 
-1. connect A3 (U1 GND) to the left (Vusb) negative rail
-2. connect G1 (U1 VBUS) to the left (Vusb) positive rail
-3. connect J3 (U1 GND) to the right (3V3) negative rail
-4. connect J5 (U1 3V3(OUT)) to the right (3V3) positive rail
-5. connect J23 (U2 GND) to the right (3V3) negative rail
-6. connect J22 (U2 VCC) to the right (3V3) positive rail
-7. connect E22 (Q1 pin 2) to F22 (3V3 supply)
-8. connect A24 (Q4 pin 1) to the left (Vusb) negative rail
-9. connect G21 (U2 SCK) to G19 (U1 GP17)
-10. connect D21 (Q1 pin 1) to D12 (U1 GP9)
-11. connect E25 (Q4 pin 2) to E20 (U1 GP15)
-12. place Q1 pins (1,2,3) in (C21,C22,C23)
-13. place Q4 pins (1,2,3) in (C24,C25,C26)
-14. place resistor between B21 (Q1 pin 1) and B22 (3V3 supply)
-15. place resistor between B23 (Q1 pin 3) and B27 (Vsun)
-16. place resistor between B25 (Q4 pin 2) and B24 (ground)
+1. connect a3 (U1 GND) to the left (Vusb) negative rail
+2. connect g1 (U1 VBUS) to the left (Vusb) positive rail
+3. connect j3 (U1 GND) to the right (3V3) negative rail
+4. connect j5 (U1 3V3(OUT)) to the right (3V3) positive rail
+5. connect j23 (U2 GND) to the right (3V3) negative rail
+6. connect j22 (U2 VCC) to the right (3V3) positive rail
+7. connect e22 (Q1 pin 2) to f22 (3V3 supply)
+8. connect a24 (Q4 pin 1) to the left (Vusb) negative rail
+9. connect g21 (U2 SCK) to g19 (U1 GP17)
+10. connect d21 (Q1 pin 1) to d12 (U1 GP9)
+11. connect e25 (Q4 pin 2) to e20 (U1 GP15)
+12. place Q1 pins (1,2,3) in (c21,c22,c23)
+13. place Q4 pins (1,2,3) in (c24,c25,c26)
+14. place resistor between b21 (Q1 pin 1) and b22 (3V3 supply)
+15. place resistor between b23 (Q1 pin 3) and b27 (Vsun)
+16. place resistor between b25 (Q4 pin 2) and b24 (ground)
 
 ![prototype1](doc/prototype1.jpg)
 
-17. [TODO]
+17. extract 1x1 crimp housings from both ends of 8 jumper wires
+18. attach 4x1 crimp housing to jumper wires for (VCC1,D-1,D+1,GND1)
+19. attach 4x1 crimp housing to jumper wires for (VCC2,D-2,D+2,GND2)
+20. attach 2x1 crimp housing to jumper wires for (VCC1,VCC2)
+21. attach 2x1 crimp housing to jumper wires for (GND1,GND2)
+22. attach 4x1 crimp housing to jumper wires for (D+1,D-1,D+2,D-2)
+23. connect plugs for (VCC1,D-1,D+1,GND1) and (VCC2,D-2,D+2,GND2)
+24. connect plug for (GND1,GND2) to left (Vusb) negative rail
+25. connect plug for (VCC1,VCC2) to left (Vusb) positive rail
+26. connect plug for (D+1,D-1,D+2,D-2) to (a4,a5,a6,a7) (U1 (GP2,GP3,GP4,GP5))
 
 ![prototype2](doc/prototype2.jpg)
+
+27. [TODO]
 
 ![prototype3](doc/prototype3.jpg)
 
