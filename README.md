@@ -3,6 +3,8 @@ usb3sun
 
 usb3sun is a firmware for the RP2040 (Raspberry Pi Pico) that allows you to connect USB keyboards and mice to the Sun 8-pin mini-DIN interface.
 
+project writeup: <https://cohost.org/delan/post/787278-usb3sun-a-usb-input>
+
 see also:
 
 * [USB2Sun](https://github.com/jgilje/USB2Sun) by @jgilje
