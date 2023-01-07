@@ -81,13 +81,14 @@ prototype assembly
 * 1x [solderless breadboard, 400 tie points (300+50+50)](https://www.altronics.com.au/p/p1002-400-way-breadboard/)
 * 1x [solid wire kit, for solderless breadboards](https://www.altronics.com.au/p/p1018a-prototyping-breadboard-wire-packs-350pcs/)
     * or any sufficient amount of suitable solid wire
+* 1x [mini-din plug, 8 pins, reversible](https://www.altronics.com.au/p/p1098-8-pin-line-mini-din-plug/)
 * 16x jumper wire, dupont 0.1″, pin to socket
     * or 1x [jumper wire, dupont 0.1″, pin to socket, row of 30](https://www.altronics.com.au/p/p1021-pin-to-socket-30-way-prototyping-ribbon-strips/)
 * ⎰ 3x crimp housing, dupont 0.1″, 4x1
 * ⎱ 4x crimp housing, dupont 0.1″, 2x1
     * or 1x [crimp kit, dupont 0.1″](https://www.altronics.com.au/p/k9642-2.54mm-header-kit-310pc/)
-* ⎰ 1x piezo buzzer, passive
-* ⎱ 1x usb breakout board, usb a, 2 ports
+* ⎰ 1x usb breakout board, usb a, 2 ports
+* ⎱ 1x piezo buzzer, passive
     * you can often find these in old computer cases
 
 ### reference designators
@@ -121,20 +122,47 @@ prototype assembly
 ![prototype1](doc/prototype1.jpg)
 
 17. extract 1x1 crimp housings from both ends of 8 jumper wires
-18. attach 4x1 crimp housing to jumper wires for (VCC1,D-1,D+1,GND1)
-19. attach 4x1 crimp housing to jumper wires for (VCC2,D-2,D+2,GND2)
-20. attach 2x1 crimp housing to jumper wires for (VCC1,VCC2)
-21. attach 2x1 crimp housing to jumper wires for (GND1,GND2)
-22. attach 4x1 crimp housing to jumper wires for (D+1,D-1,D+2,D-2)
-23. connect plugs for (VCC1,D-1,D+1,GND1) and (VCC2,D-2,D+2,GND2)
-24. connect plug for (GND1,GND2) to left (Vusb) negative rail
-25. connect plug for (VCC1,VCC2) to left (Vusb) positive rail
-26. connect plug for (D+1,D-1,D+2,D-2) to (a4,a5,a6,a7) (U1 (GP2,GP3,GP4,GP5))
+18. attach 4x1 crimp housing to socket ends of (VCC1,D-1,D+1,GND1)
+19. attach 4x1 crimp housing to socket ends of (VCC2,D-2,D+2,GND2)
+20. attach 2x1 crimp housing to pin ends of (VCC1,VCC2)
+21. attach 2x1 crimp housing to pin ends of (GND1,GND2)
+22. attach 4x1 crimp housing to pin ends of (D+1,D-1,D+2,D-2)
+23. connect socket ends of (VCC1,D-1,D+1,GND1) and (VCC2,D-2,D+2,GND2)
+24. connect pin ends of (GND1,GND2) to left (Vusb) negative rail
+25. connect pin ends of (VCC1,VCC2) to left (Vusb) positive rail
+26. connect pin ends of (D+1,D-1,D+2,D-2) to (a4,a5,a6,a7) (U1 (GP2,GP3,GP4,GP5))
 
 ![prototype2](doc/prototype2.jpg)
 
-27. [TODO]
+27. strip and tin the socket ends of 8 jumper wires
+28. solder those wires to the mini-din plug
+
+**DO NOT** solder to the side where the middle pin is closer to the left, when orienting the connector body such that the pins are in rows of (3,3,2) from top to bottom. this is the side that faces the sun.
+
+**DO** solder to the side where the middle pin is closer to the right.
+
+```
+    sun side               solder side
+
+        ^                       ^
+    6   7   8               8   7   6
+  3   4       5           5       4   3
+      1   2                   2   1
+```
+
+29. extract 1x1 crimp housings from wires for mini-din pins (1,2) (ground)
+30. attach 2x1 crimp housing to wires for mini-din pins (1,2) (ground)
+31. extract 1x1 crimp housings from wires for mini-din pins (3,8) (Vsun)
+32. attach 2x1 crimp housing to wires for mini-din pins (3,8) (Vsun)
+33. connect wires for mini-din pins (1,2) (ground) to left (Vusb) negative rail
+34. connect wire for mini-din pins (3,8) (Vsun) to (a27,b27) (resistor on Q1 pin 3)
+35. connect wire for mini-din pin 4 (mouse tx) to b11 (U1 GP8)
+36. connect wire for mini-din pin 6 (keyboard tx) to b16 (U1 GP12)
+37. connect wire for mini-din pin 5 (keyboard rx) to b23 (Q1 pin 3)
+38. connect wire for mini-din pin 7 (power key) to b26 (Q4 pin 3)
 
 ![prototype3](doc/prototype3.jpg)
+
+* [TODO]
 
 ![prototype4](doc/prototype4.jpg)
