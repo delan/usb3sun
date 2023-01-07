@@ -111,7 +111,8 @@ prototype assembly
 7. connect e22 (Q1 pin 2) to f22 (3V3 supply)
 8. connect a24 (Q4 pin 1) to the left (Vusb) negative rail
 9. connect g21 (U2 SCK) to g19 (U1 GP17)
-10. connect d21 (Q1 pin 1) to d12 (U1 GP9)
+10. connect d21 (Q1 pin 1) to d17 (U1 GP13)
+    * picture below erroneously shows d21 to d12 (U1 GP9)
 11. connect e25 (Q4 pin 2) to e20 (U1 GP15)
 12. place Q1 pins (1,2,3) in (c21,c22,c23)
 13. place Q4 pins (1,2,3) in (c24,c25,c26)
@@ -171,3 +172,18 @@ prototype assembly
 42. connect buzzer positive to i7 (U1 GP28)
 
 ![prototype4](doc/prototype4.jpg)
+
+troubleshooting
+---------------
+
+### monitor gets sync but no video
+
+*observed on SPARCstation 5*
+
+some machines will refuse to send any video unless a working keyboard is connected.
+
+1. check that your adapter is assembled correctly
+2. check that your mini-din housing isn’t interfering with the connection
+    * you may need to retract the housing from time to time (see below)
+
+![housing](doc/housing.jpg)
