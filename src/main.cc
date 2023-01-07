@@ -228,7 +228,7 @@ void loop() {
 void serialEvent1() {
   while (Serial1.available() > 0) {
     uint8_t command = Serial1.read();
-    Sprintf("command %02Xh\n", command);
+    Sprintf("sun keyboard: rx command %02Xh\n", command);
     switch (command) {
       case SUNK_RESET:
         // self test fail:
@@ -275,7 +275,7 @@ void serialEvent1() {
 void serialEvent2() {
   while (Serial2.available() > 0) {
     uint8_t command = Serial2.read();
-    Sprintf("fake: command %02Xh\n", command);
+    Sprintf("fake: rx command %02Xh\n", command);
     switch (command) {
       case SUNK_IDLE:
         break;
@@ -339,18 +339,18 @@ void loop1() {
 
 void sunkSend(uint8_t code) {
 #ifdef SUNK_ENABLE
-  Sprintf("\nkeyboard send %02Xh", code);
+  Sprintf("\nsun keyboard: tx command %02Xh", code);
   Serial1.write(code);
 #else
-  Sprintf("\nkeyboard send %02Xh (disabled)", code);
+  Sprintf("\nsun keyboard: tx command %02Xh (disabled)", code);
 #endif
   switch (code) {
     case SUNK_POWER:
-      Sprintf("\npower pin high");
+      Sprintf("\nsun power: high");
       digitalWrite(POWER_KEY, HIGH);
       break;
     case SUNK_POWER | SUNK_BREAK_BIT:
-      Sprintf("\npower pin low");
+      Sprintf("\nsun power: low");
       digitalWrite(POWER_KEY, LOW);
       break;
   }
@@ -366,7 +366,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   (void)desc_len;
   uint16_t vid, pid;
   tuh_vid_pid_get(dev_addr, &vid, &pid);
-  Sprintf("mount dev_addr=%u instance=%u vid:pid=%04x:%04x\n", dev_addr, instance, vid, pid);
+  Sprintf("usb [%u:%u]: hid mount vid:pid=%04x:%04x\n", dev_addr, instance, vid, pid);
 
   tuh_hid_report_info_t infos[16];
   size_t infos_len = tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len);
@@ -374,31 +374,31 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     Sprintf("      report[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", infos[i].report_id, infos[i].usage, infos[i].usage_page);
 
   if (!tuh_hid_receive_report(dev_addr, instance))
-    Sprintf("error: failed to request to receive report\n");
+    Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
 }
 
 // Invoked when device with hid interface is un-mounted
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-  Sprintf("unmount dev_addr=%u instance=%u\n", dev_addr, instance);
+  Sprintf("usb [%u:%u]: hid unmount\n", dev_addr, instance);
 }
 
 void tuh_mount_cb(uint8_t dev_addr) {
-  Sprintf("mount dev_addr=%u\n", dev_addr);
+  Sprintf("usb [%u]: mount\n", dev_addr);
 }
 
 void tuh_umount_cb(uint8_t dev_addr) {
-  Sprintf("unmount dev_addr=%u\n", dev_addr);
+  Sprintf("usb [%u]: unmount\n", dev_addr);
 }
 
 void tuh_hid_set_protocol_complete_cb(uint8_t dev_addr, uint8_t instance, uint8_t protocol) {
   // haven’t seen this actually get printed so far, but only tried a few devices
-  Sprintf("hid [%u:%u] set protocol returned %u\n", protocol);
+  Sprintf("usb [%u:%u]: hid set protocol returned %u\n", dev_addr, instance, protocol);
 }
 
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
   uint8_t if_protocol = tuh_hid_interface_protocol(dev_addr, instance);
-  Sprintf("hid [%u:%u] report if_protocol=%u", dev_addr, instance, if_protocol);
+  Sprintf("usb [%u:%u]: hid report if_protocol=%u", dev_addr, instance, if_protocol);
   for (uint16_t i = 0; i < len; i++)
     Sprintf(" %02Xh", report[i]);
 
@@ -565,11 +565,11 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
 #ifdef SUNM_ENABLE
-      Sprintf("\nmouse send %02Xh %02Xh %02Xh %02Xh %02Xh = %zu",
+      Sprintf("\nsun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu",
         result[0], result[1], result[2], result[3], result[4],
         Serial2.write(result, sizeof(result) / sizeof(*result)));
 #else
-      Sprintf("\nmouse send %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)",
+      Sprintf("\nsun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)",
         result[0], result[1], result[2], result[3], result[4]);
 #endif
 
@@ -581,5 +581,5 @@ out:
   Sprintln();
   // continue to request to receive report
   if (!tuh_hid_receive_report(dev_addr, instance))
-    Sprintf("error: failed to request to receive report\n");
+    Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
 }
