@@ -142,7 +142,9 @@ prototype assembly
 **DO** solder to the side where the middle pin is closer to the right.
 
 ```
-    sun side               solder side
+ side facing sun           solder side
+                         (same as socket
+                             on sun)
 
         ^                       ^
     6   7   8               8   7   6
