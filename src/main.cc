@@ -72,6 +72,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
   analogWriteRange(100);
+  pinMode(POWER_KEY, OUTPUT);
 
   Wire.setSCL(DISPLAY_SCL);
   Wire.setSDA(DISPLAY_SDA);

@@ -21,7 +21,7 @@ features
 
 * keyboard support
 * mouse support
-* power key support (experimental)
+* soft power key support
 * LED indicators via SSD1306 (128x32)
 * click and bell via passive piezo buzzer
 
