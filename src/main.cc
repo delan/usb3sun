@@ -104,7 +104,7 @@ void setup() {
 #elif defined(SUNM_ENABLE)
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(115200, SERIAL_8N1);
+  Serial2.begin(SUN_MBAUD, SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
