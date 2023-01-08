@@ -342,6 +342,7 @@ void sunkSend(bool make, uint8_t code) {
   static int activeCount = 0;
   if (make) {
     activeCount += 1;
+    buzzerClick();
   } else {
     activeCount -= 1;
     code |= SUNK_BREAK_BIT;
@@ -431,7 +432,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
   switch (if_protocol) {
     case HID_ITF_PROTOCOL_KEYBOARD: {
       hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
-      buzzerClick();
 
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
