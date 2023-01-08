@@ -337,13 +337,31 @@ void loop1() {
   buzzerUpdate();
 }
 
-void sunkSend(uint8_t code) {
+void sunkSend(bool make, uint8_t code) {
+  static int activeCount = 0;
+  if (make) {
+    activeCount += 1;
+  } else {
+    activeCount -= 1;
+    code |= SUNK_BREAK_BIT;
+  }
+
 #ifdef SUNK_ENABLE
   Sprintf("sun keyboard: tx command %02Xh\n", code);
   Serial1.write(code);
 #else
   Sprintf("sun keyboard: tx command %02Xh (disabled)\n", code);
 #endif
+
+  if (activeCount == 0) {
+#ifdef SUNK_ENABLE
+  Sprintf("sun keyboard: idle\n");
+  Serial1.write(SUNK_IDLE);
+#else
+  Sprintf("sun keyboard: idle (disabled)\n");
+#endif
+  }
+
   switch (code) {
     case SUNK_POWER:
       Sprintf("sun power: high\n");
@@ -475,7 +493,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         // for DV bindings, make when key makes and break when key breaks
         for (int j = 0; j < sizeof(DV_BINDINGS) / sizeof(*DV_BINDINGS); j++)
           if (DV_BINDINGS[j].usbkModifier == modifierChanges[i].usbkModifier)
-            sunkSend(modifierChanges[i].make ? DV_BINDINGS[j].sunkMake : DV_BINDINGS[j].sunkBreak);
+            sunkSend(modifierChanges[i].make, DV_BINDINGS[j].sunkMake);
       }
 #endif
 
@@ -550,7 +568,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         // • FIXME does not break when the DV key breaks before the Sel key breaks!
         for (int j = 0; j < sizeof(DV_SEL_BINDINGS) / sizeof(*DV_SEL_BINDINGS); j++) {
           if (DV_SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector && DV_SEL_BINDINGS[j].usbkModifier == state.lastModifiers) {
-            sunkSend(selectorChanges[i].make ? DV_SEL_BINDINGS[j].sunkMake : DV_SEL_BINDINGS[j].sunkBreak);
+            sunkSend(selectorChanges[i].make, DV_SEL_BINDINGS[j].sunkMake);
             consumedByDvSel = true;
           }
         }
@@ -561,7 +579,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         if (!consumedByDvSel)
           for (int j = 0; j < sizeof(SEL_BINDINGS) / sizeof(*SEL_BINDINGS); j++)
             if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
-              sunkSend(selectorChanges[i].make ? SEL_BINDINGS[j].sunkMake : SEL_BINDINGS[j].sunkBreak);
+              sunkSend(selectorChanges[i].make, SEL_BINDINGS[j].sunkMake);
       }
 
       // finally commit the Sel changes
