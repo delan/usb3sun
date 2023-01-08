@@ -104,7 +104,7 @@ void setup() {
 #elif defined(SUNM_ENABLE)
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(SUN_MBAUD, SERIAL_8N1);
+  Serial2.begin(SUNM_BAUD, SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
@@ -339,18 +339,18 @@ void loop1() {
 
 void sunkSend(uint8_t code) {
 #ifdef SUNK_ENABLE
-  Sprintf("\nsun keyboard: tx command %02Xh", code);
+  Sprintf("sun keyboard: tx command %02Xh\n", code);
   Serial1.write(code);
 #else
-  Sprintf("\nsun keyboard: tx command %02Xh (disabled)", code);
+  Sprintf("sun keyboard: tx command %02Xh (disabled)\n", code);
 #endif
   switch (code) {
     case SUNK_POWER:
-      Sprintf("\nsun power: high");
+      Sprintf("sun power: high\n");
       digitalWrite(POWER_KEY, HIGH);
       break;
     case SUNK_POWER | SUNK_BREAK_BIT:
-      Sprintf("\nsun power: low");
+      Sprintf("sun power: low\n");
       digitalWrite(POWER_KEY, LOW);
       break;
   }
@@ -398,9 +398,16 @@ void tuh_hid_set_protocol_complete_cb(uint8_t dev_addr, uint8_t instance, uint8_
 // Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
   uint8_t if_protocol = tuh_hid_interface_protocol(dev_addr, instance);
+#ifndef UHID_VERBOSE
+  Sprint(".");
+#endif
+#ifdef UHID_VERBOSE
   Sprintf("usb [%u:%u]: hid report if_protocol=%u", dev_addr, instance, if_protocol);
+#endif
+#ifdef UHID_VERBOSE
   for (uint16_t i = 0; i < len; i++)
     Sprintf(" %02Xh", report[i]);
+#endif
 
   switch (if_protocol) {
     case HID_ITF_PROTOCOL_KEYBOARD: {
@@ -409,7 +416,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
+#ifdef UHID_VERBOSE
           Sprintf(" !%u", kreport->keycode[i]);
+#endif
           goto out;
         }
       }
@@ -427,7 +436,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 
       for (int i = 0; i < 8; i++) {
         if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i)) {
+#ifdef UHID_VERBOSE
           Sprintf(" %c%s", kreport->modifier & 1 << i ? '+' : '-', MODIFIER_NAMES[i]);
+#endif
           modifierChanges[modifierChangesLen++] = {(uint8_t) (1u << i), kreport->modifier & 1 << i ? true : false};
         }
       }
@@ -442,21 +453,29 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             newInOlds = true;
         }
         if (!oldInNews && state.lastKeys[i] >= USBK_FIRST_KEYCODE) {
+#ifdef UHID_VERBOSE
           Sprintf(" -%u", state.lastKeys[i]);
+#endif
           selectorChanges[selectorChangesLen++] = {state.lastKeys[i], false};
         }
         if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
+#ifdef UHID_VERBOSE
           Sprintf(" +%u", kreport->keycode[i]);
+#endif
           selectorChanges[selectorChangesLen++] = {kreport->keycode[i], true};
         }
       }
+
+#ifdef UHID_VERBOSE
+      Sprintln();
+#endif
 
 #ifdef SUNK_ENABLE
       for (int i = 0; i < modifierChangesLen; i++) {
         // for DV bindings, make when key makes and break when key breaks
         for (int j = 0; j < sizeof(DV_BINDINGS) / sizeof(*DV_BINDINGS); j++)
           if (DV_BINDINGS[j].usbkModifier == modifierChanges[i].usbkModifier)
-            Serial1.write(modifierChanges[i].make ? DV_BINDINGS[j].sunkMake : DV_BINDINGS[j].sunkBreak);
+            sunkSend(modifierChanges[i].make ? DV_BINDINGS[j].sunkMake : DV_BINDINGS[j].sunkBreak);
       }
 #endif
 
@@ -551,11 +570,16 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     } break;
     case HID_ITF_PROTOCOL_MOUSE: {
       hid_mouse_report_t *mreport = (hid_mouse_report_t *) report;
+#ifdef UHID_VERBOSE
       Sprintf(" buttons=%u x=%d y=%d", mreport->buttons, mreport->x, mreport->y);
+#endif
 
+#ifdef UHID_VERBOSE
       for (int i = 0; i < 3; i++)
         if ((state.lastButtons & 1 << i) != (mreport->buttons & 1 << i))
           Sprintf(" %c%s", mreport->buttons & 1 << i ? '+' : '-', BUTTON_NAMES[i]);
+      Sprintln();
+#endif
 
       uint8_t result[] = {
         0x80
@@ -565,11 +589,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
 #ifdef SUNM_ENABLE
-      Sprintf("\nsun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu",
-        result[0], result[1], result[2], result[3], result[4],
-        Serial2.write(result, sizeof(result) / sizeof(*result)));
+      size_t len = Serial2.write(result, sizeof(result) / sizeof(*result));
+#ifdef SUNM_VERBOSE
+      Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu\n",
+        result[0], result[1], result[2], result[3], result[4], len);
+#endif
 #else
-      Sprintf("\nsun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)",
+      Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)\n",
         result[0], result[1], result[2], result[3], result[4]);
 #endif
 
@@ -577,8 +603,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     } break;
   }
 out:
-
-  Sprintln();
   // continue to request to receive report
   if (!tuh_hid_receive_report(dev_addr, instance))
     Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);

@@ -1,3 +1,8 @@
+#define DISPLAY_ROTATION 2  // 0|1|2|3 where 0 means GND pin is bottom left
+#define SUNM_BAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
+// #define SUNM_VERBOSE        // dump mouse tx for debugging
+// #define UHID_VERBOSE        // dump hid reports for debugging
+
 // #define WAIT_PIN 22      // GP# number (optional) to wait for ground on boot
 // #define WAIT_SERIAL      // wait for serial input over USB CDC on boot (buggy)
 #define USB0_DP 2           // GP# number for USB root port 0 D+
@@ -5,8 +10,6 @@
 #define USB1_DP 4           // GP# number for USB root port 1 D+
 #define USB1_DM (USB_DP+1)  // GP# number for USB root port 1 D- (always D+ GP# + 1)
 #define BUZZER_PIN 28       // GP# number for positive of passive piezo buzzer
-#define DISPLAY_ROTATION 2  // 0|1|2|3 where 0 means GND pin is bottom left
-#define SUN_MBAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
 
 // the following must be GP# numbers valid for...
 #define DISPLAY_SCL 17      // ...I2C0 SCL: SCL pin of SSD1306
