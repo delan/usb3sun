@@ -56,6 +56,7 @@ struct {
   uint8_t lastKeys[6];
   uint8_t lastButtons;
   std::atomic<unsigned long> clickingSince;
+  std::atomic<bool> bellStarted;
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
   unsigned topMenuItem = 0u;
@@ -166,6 +167,7 @@ void buzzerClick() {
   // violation of sparc keyboard spec :) but distinguishable from bell!
   tone(BUZZER_PIN, 1'000u, state.clickDuration);
   state.clickingSince = micros();
+  state.bellStarted = false;
 }
 
 void buzzerUpdate() {
@@ -173,10 +175,20 @@ void buzzerUpdate() {
   const unsigned long clickingSince = state.clickingSince;
   if (state.clickingSince >= state.clickDuration * 1'000uL && t - state.clickingSince < state.clickDuration * 1'000uL)
     return;
-  if (state.bell)
-    tone(BUZZER_PIN, 1'000'000u / 480u);
-  else
+  if (state.bell) {
+    // starting tone is not entirely idempotent, so avoid restarting it.
+    // spamming it every 10 ms will just pop and then silence in practice.
+    // FIXME standard library has no atomic compare exchange
+    // bool no = false;
+    // if (state.bellStarted.compare_exchange_strong(no, true))
+    if (!state.bellStarted) {
+      state.bellStarted = true;
+      tone(BUZZER_PIN, 1'000'000u / 480u);
+    }
+  } else {
+    state.bellStarted = false;
     noTone(BUZZER_PIN);
+  }
 }
 
 void loop() {
