@@ -77,8 +77,8 @@ prototype assembly
     * or 1x [raspberry pi pico](https://www.altronics.com.au/p/z6421-raspberry-pi-pico-microcontroller-board/) + 1x [0.1″ header pin block, 40x1](https://www.altronics.com.au/p/p5430-oupiin-40-way-header-pin/)
 * 1x [ssd1306 i2c oled display, 128x32, with headers](https://www.aliexpress.com/item/1005004375650245.html)
 * 2x [2n7000, n-channel mosfet, to-92 (s, g, d)](https://www.altronics.com.au/p/z1555-2n7000-to-92-n-channel-tmosfet/) ([datasheet](https://www.onsemi.com/pdf/datasheet/nds7002a-d.pdf))
-* 3x 10K resistor, through hole
-    * or 1x [10K resistor, through hole, 0W25 1%, bulk 10 units](https://www.altronics.com.au/p/r7582-10k-0.25w-metal-film-resistor-pk-10/)
+* 3x 20K resistor, through hole
+    * or 1x [20K resistor, through hole, 1% 0W25, bulk 10 units](https://www.altronics.com.au/p/r7589-20k-0.25w-metal-film-resistor-pk-10/)
     * or 1x [tinker component kit](https://www.altronics.com.au/p/k9640-tinker-parts-starter-kit/)
 * 1x [solderless breadboard, 400 tie points (300+50+50)](https://www.altronics.com.au/p/p1002-400-way-breadboard/)
 * 1x [solid wire kit, for solderless breadboards](https://www.altronics.com.au/p/p1018a-prototyping-breadboard-wire-packs-350pcs/)
