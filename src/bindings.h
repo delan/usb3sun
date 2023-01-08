@@ -112,7 +112,8 @@ const SelBinding SEL_BINDINGS[] = {
   {67, 0x07, 0x87}, // 10. F10
   {68, 0x09, 0x89}, // 11. F11
   {69, 0x0B, 0x8B}, // 12. F12
-  {100, 0x58, 0xD8}, // 13. \	|
+  {49, 0x58, 0xD8}, // Keyboard \ and | = 13. \	|
+  {100, 0x58, 0xD8}, // Keyboard Non-US \ and | = 13. \	|
   {76, 0x42, 0xC2}, // 14. Delete
   {83, 0x62, 0xE2}, // 20. Num Lock
   {41, 0x1D, 0x9D}, // 23. Esc
