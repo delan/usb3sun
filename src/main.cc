@@ -600,11 +600,16 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       Sprintln();
 #endif
 
+      // correct: https://web.archive.org/web/20220226000612/http://www.bitsavers.org/pdf/mouseSystems/300771-001_Mouse_Systems_Optical_Mouse_Technical_Reference_Models_M2_and_M3_1985.pdf
+      // wrong: https://web.archive.org/web/20100213183456/http://privatewww.essex.ac.uk/~nbb/mice-pc.html
+      // note in particular that:
+      // • positive dx is right, but positive dy is up
+      // • buttons are 0 when pressed and 1 when released
       uint8_t result[] = {
         0x80
-          | (mreport->buttons & USBM_LEFT ? SUNM_LEFT : 0)
-          | (mreport->buttons & USBM_MIDDLE ? SUNM_CENTER : 0)
-          | (mreport->buttons & USBM_RIGHT ? SUNM_RIGHT : 0),
+          | (mreport->buttons & USBM_LEFT ? 0 : SUNM_LEFT)
+          | (mreport->buttons & USBM_MIDDLE ? 0 : SUNM_CENTER)
+          | (mreport->buttons & USBM_RIGHT ? 0 : SUNM_RIGHT),
         (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
 #ifdef SUNM_ENABLE
