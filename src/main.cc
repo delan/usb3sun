@@ -255,10 +255,11 @@ void serialEvent1() {
       case SUNK_LED: {
         while (Serial1.peek() == -1) delay(1);
         uint8_t status = Serial1.read();
-        state.num = status << 0 & 1;
-        state.compose = status << 1 & 1;
-        state.scroll = status << 2 & 1;
-        state.caps = status << 3 & 1;
+        Sprintf("sun keyboard: led status %02Xh\n", status);
+        state.num = status & 1 << 0;
+        state.compose = status & 1 << 1;
+        state.scroll = status & 1 << 2;
+        state.caps = status & 1 << 3;
       } break;
       case SUNK_LAYOUT: {
         Serial1.write(SUNK_LAYOUT_RESPONSE);
