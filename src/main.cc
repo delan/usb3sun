@@ -146,6 +146,12 @@ void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args... args) 
   }
 }
 
+template<typename... Args>
+void drawMenuItem(unsigned i, const char *fmt, Args... args) {
+  if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
+    drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, fmt, args...);
+}
+
 void loop() {
   const auto t = micros();
   display.clearDisplay();
@@ -158,17 +164,13 @@ void loop() {
   if (state.inMenu) {
     display.setCursor(0, 8);
     unsigned int i = 0;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
-      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back");
-    i++; if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
-      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Force click: %s",
-        settings.forceClick() == ForceClick::_::NO ? "no"
-        : settings.forceClick() == ForceClick::_::OFF ? "off"
-        : settings.forceClick() == ForceClick::_::ON ? "on"
-        : "?");
-    i++; if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
-      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms",
-        settings.clickDuration());
+    drawMenuItem(i++, "Go back");
+    drawMenuItem(i++, "Force click: %s",
+      settings.forceClick() == ForceClick::_::NO ? "no"
+      : settings.forceClick() == ForceClick::_::OFF ? "off"
+      : settings.forceClick() == ForceClick::_::ON ? "on"
+      : "?");
+    drawMenuItem(i++, "Click duration: %u ms", settings.clickDuration());
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
