@@ -7,3 +7,6 @@
 [submodule "hardware/pcb/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty"]
 	path = hardware/pcb/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty
 	url = git@github.com:gorbachev/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty.git
+[submodule "hardware/pcb/KiCad-marbastlib"]
+	path = hardware/pcb/KiCad-marbastlib
+	url = git@github.com:ebastler/marbastlib.git

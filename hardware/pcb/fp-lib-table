@@ -4,4 +4,5 @@
   (lib (name "KiCad-SSD1306_OLED-0.91-128x32")(type "KiCad")(uri "${KIPRJMOD}/KiCad-SSD1306_OLED-0.91-128x32")(options "")(descr ""))
   (lib (name "KiCad-SSD1306-0.91-OLED-4pin-128x32")(type "KiCad")(uri "${KIPRJMOD}/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty")(options "")(descr ""))
   (lib (name "KiCad-CUI_MD-80SM")(type "KiCad")(uri "${KIPRJMOD}/KiCad-CUI_MD-80SM")(options "")(descr ""))
+  (lib (name "marbastlib-various")(type "KiCad")(uri "${KIPRJMOD}/KiCad-marbastlib/footprints/marbastlib-various.pretty")(options "")(descr ""))
 )
