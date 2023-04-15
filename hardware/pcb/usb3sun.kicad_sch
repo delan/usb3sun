@@ -2047,6 +2047,7 @@
     )
   )
 
+
   (junction (at 241.3 109.22) (diameter 0) (color 0 0 0 0)
     (uuid 0adef429-8912-4c93-9d93-d330299e0665)
   )
@@ -2131,12 +2132,10 @@
   (no_connect (at 147.32 139.7) (uuid 79a9e30c-79b8-4dd5-b23a-f81e88960892))
   (no_connect (at 48.26 88.9) (uuid 87df44a1-a305-4bb2-8627-fee55e754588))
   (no_connect (at 111.76 154.94) (uuid 8ca78740-dceb-4873-8fce-c696cb9a757d))
-  (no_connect (at 111.76 142.24) (uuid a5adcb66-a62f-4519-88d9-d0148b6d7343))
   (no_connect (at 213.36 76.2) (uuid afe6196d-8534-4809-bb68-b6ed53109c0e))
   (no_connect (at 111.76 167.64) (uuid ba0b5dc9-fb15-4fd7-b697-5ec1da9687d0))
   (no_connect (at 111.76 160.02) (uuid c8febc54-18dc-4fea-b950-e046339ca37d))
   (no_connect (at 147.32 165.1) (uuid ce8eb719-7a1b-4dbb-a3f3-c09c59f32f1a))
-  (no_connect (at 111.76 144.78) (uuid e1a711a0-ff0e-44f1-a23f-11f15dddc7df))
   (no_connect (at 147.32 149.86) (uuid e6ab50d3-7fd5-40d5-af39-5e3db4ec3a04))
   (no_connect (at 147.32 154.94) (uuid ee0554ee-f051-47a0-82d1-4415da758d76))
   (no_connect (at 111.76 149.86) (uuid ee18a3dd-935c-4353-9db2-fdee7d60971f))
