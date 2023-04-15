@@ -283,7 +283,7 @@
         (effects (font (size 1 1) (thickness 0.153)))
       (tstamp 81c52df4-60b0-436c-ac9c-81641b492085)
     )
-    (fp_text value "100uF" (at 0 2.35 90 unlocked) (layer "F.Fab") hide
+    (fp_text value "100uF" (at 0 2.35 90 unlocked) (layer "F.Fab")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 3d2b7f20-4946-477b-947b-1d3f30fe6914)
     )
@@ -553,7 +553,7 @@
         (effects (font (size 1 1) (thickness 0.153)))
       (tstamp 591ee754-e171-4fbb-b81c-6e0af83a4b67)
     )
-    (fp_text value "500mA" (at 0 1.82 180 unlocked) (layer "F.Fab") hide
+    (fp_text value "500mA" (at 0 1.82 180 unlocked) (layer "F.Fab")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp c9f4fb52-7eb3-49a3-8b0a-bd15eac625b1)
     )
@@ -2136,7 +2136,7 @@
         (effects (font (size 1 1) (thickness 0.153)))
       (tstamp a7b3526d-d0d7-4696-9cb1-1622988b42c6)
     )
-    (fp_text value "500mA" (at 0 1.82 180 unlocked) (layer "F.Fab") hide
+    (fp_text value "500mA" (at 0 1.82 180 unlocked) (layer "F.Fab")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp f12e3260-f587-4bea-9ce2-1e4192477cb2)
     )
