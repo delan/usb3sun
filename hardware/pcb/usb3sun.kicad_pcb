@@ -1167,7 +1167,7 @@
     )
   )
 
-  (footprint "usb3sun:OSHW" locked (layer "F.Cu")
+  (footprint "usb3sun:OSHW" (layer "F.Cu")
     (tstamp 759310cd-4ee1-441f-8ae0-11d349aebd62)
     (at 91.44 67.945 90)
     (fp_text reference "G***" (at 0 4.04114 90) (layer "F.SilkS") hide
