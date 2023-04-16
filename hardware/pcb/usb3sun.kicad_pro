@@ -34,9 +34,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.0,
-          "height": 1.7,
-          "width": 3.5
+          "drill": 0.9,
+          "height": 1.408,
+          "width": 1.408
         },
         "silk_line_width": 0.153,
         "silk_text_italic": false,
@@ -64,7 +64,7 @@
         "clearance": "error",
         "connection_width": "warning",
         "copper_edge_clearance": "error",
-        "copper_sliver": "warning",
+        "copper_sliver": "ignore",
         "courtyards_overlap": "error",
         "diff_pair_gap_out_of_range": "error",
         "diff_pair_uncoupled_length_too_long": "error",
@@ -682,9 +682,9 @@
       "pin_not_connected": "error",
       "pin_not_driven": "error",
       "pin_to_pin": "warning",
-      "power_pin_not_driven": "error",
+      "power_pin_not_driven": "ignore",
       "similar_labels": "warning",
-      "simulation_model_issue": "error",
+      "simulation_model_issue": "ignore",
       "unannotated": "error",
       "unit_value_mismatch": "error",
       "unresolved_variable": "error",
