@@ -2670,7 +2670,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 1902c150-6f3d-4c2f-97dc-f95204dcfa3e)
   )
-  (text "A0+" (at 268.478 194.056 0)
+  (text "A0" (at 268.478 194.056 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 5465b1e5-274f-4a4a-a045-80a8200d856a)
   )
