@@ -86,6 +86,7 @@ void setup() {
   display.display();
 
 #if defined(PICOPROBE_ENABLE)
+  Serial1.end(); // needed under CFG_TUSB_DEBUG
   Serial1.setPinout(PICOPROBE_TX, PICOPROBE_RX);
   Serial1.setFIFOSize(4096);
   Serial1.begin(115200, SERIAL_8N1);
