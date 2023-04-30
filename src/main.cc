@@ -327,12 +327,6 @@ void setup1() {
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
   pio_cfg.pin_dp = USB0_DP;
 
-  // claim state machines so that tone() doesn’t clobber them
-  // pio0 and pio1 based on PIO_USB_DEFAULT_CONFIG and logic in pio_usb_bus_init
-  // https://github.com/sekigon-gonnoc/Pico-PIO-USB/blob/52805e6d92556e67d3738bd8fb10227a45b13a08/src/pio_usb.c#L277
-  pio_cfg.sm_tx = pio_claim_unused_sm(pio0, true);
-  pio_cfg.sm_rx = pio_claim_unused_sm(pio1, true);
-
   // tuh_configure -> pico pio hcd_configure -> memcpy to static global
   USBHost.configure_pio_usb(1, &pio_cfg);
 
