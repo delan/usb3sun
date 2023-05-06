@@ -1,4 +1,4 @@
-#define DISPLAY_ROTATION 2  // 0|1|2|3 where 0 means GND pin is bottom left
+#define DISPLAY_ROTATION 0  // 0|1|2|3 where 0 means GND pin is bottom left
 #define SUNM_BAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
 // #define SUNM_VERBOSE        // dump mouse tx for debugging
 // #define UHID_VERBOSE        // dump hid reports for debugging
