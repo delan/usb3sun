@@ -70,6 +70,17 @@ compatibility
 release notes
 -------------
 
+### firmware [1.1](https://github.com/delan/usb3sun/releases/tag/1.1) (2023-05-06)
+
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.1/pio_pkg_list.txt) = dependency tree at time of release
+* fixed regressions due to dependency updates
+    * fixed panic regression with *Pico Pio USB* 0.5.2 by removing non-idempotent workaround for a bug that was fixed upstream (sekigon-gonnoc/Pico-PIO-USB#77)
+    * worked around unsolved usb hid regression (adafruit/Adafruit_TinyUSB_Arduino#296) by pinning *Adafruit TinyUSB Library* to 2.0.1
+* fixed panic when combining PICOPROBE_ENABLE and CFG_TINYUSB_DEBUG
+* changed default DISPLAY_ROTATION to 0 — this better suits pcb rev A0 than the old value, and is equally suitable for the breadboard prototype
+* changed debug/upload protocols to cmsis-dap — this fixes compatibility with new picoprobe firmware
+* pinned sensitive dependencies to reduce future breakage — note that not all dependencies are pinned yet (platformio/platformio-core#4613), but see above for known-good dependency tree
+
 ### pcb rev [A0](https://github.com/delan/usb3sun/releases/tag/A0) (2023-04-28)
 
 * initial release
