@@ -40,19 +40,20 @@ for more details, see [src/bindings.h](src/bindings.h), but here are the importa
 | Right GUI*        | right Meta (diamond)    |
 | Left Ctrl         | Control                 |
 | Right Ctrl+Space  | (usb3sun settings menu) |
+| Right Ctrl+.      | Stop                    |
 | Right Ctrl+Esc    | Front                   |
 | Right Ctrl+Return | Line Feed               |
-| Right Ctrl+F1     | Help                    |
-| Right Ctrl+F4     | Props                   |
-| Right Ctrl+=      | keypad =                |
 | Right Ctrl+C      | Copy                    |
 | Right Ctrl+F      | Find                    |
-| Right Ctrl+O      | Front                   |
+| Right Ctrl+O      | Open                    |
 | Right Ctrl+P      | Power                   |
 | Right Ctrl+V      | Paste                   |
 | Right Ctrl+X      | Cut                     |
 | Right Ctrl+Y      | Again                   |
 | Right Ctrl+Z      | Undo                    |
+| Right Ctrl+F1     | Help                    |
+| Right Ctrl+F4     | Props                   |
+| Right Ctrl+=      | keypad =                |
 
 \* aka Super, Mod4, Windows, etc
 
@@ -69,6 +70,11 @@ compatibility
 
 release notes
 -------------
+
+### firmware ?.? (????-??-??)
+
+* added audible usb plug/unplug notifications
+* fixed a theoretical(?) race condition in buzzer management
 
 ### firmware [1.1](https://github.com/delan/usb3sun/releases/tag/1.1) (2023-05-06)
 
