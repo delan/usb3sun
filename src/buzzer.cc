@@ -79,8 +79,15 @@ void Buzzer::update() {
 
 void Buzzer::click() {
   CoreMutex m{&buzzerMutex};
-  if (!state.clickEnabled)
-    return;
+  switch (settings.forceClick()) {
+    case ForceClick::_::NO:
+      if (!state.clickEnabled) return;
+      break;
+    case ForceClick::_::OFF:
+      return;
+    case ForceClick::_::ON:
+      break;
+  }
 
   if (current <= Buzzer::_::CLICK) {
     // violation of sparc keyboard spec :) but distinguishable from bell!

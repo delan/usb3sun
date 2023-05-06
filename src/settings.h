@@ -17,10 +17,27 @@
     return _name##_field.value; \
   }
 
+#define SETTING_ENUM(_name, ...) \
+struct _name { \
+  typedef enum class State: int { __VA_ARGS__, VALUE_COUNT } _; \
+  State current; \
+  operator State&() { return current; } \
+  State& operator++() { \
+    current = static_cast<State>(std::max(0, std::min(static_cast<int>(_::VALUE_COUNT) - 1, static_cast<int>(current) + 1))); \
+    return current; \
+  } \
+  State& operator--() { \
+    current = static_cast<State>(std::max(0, std::min(static_cast<int>(_::VALUE_COUNT) - 1, static_cast<int>(current) - 1))); \
+    return current; \
+  } \
+};
+
 extern mutex_t settingsMutex;
 
+SETTING_ENUM(ForceClick, NO, OFF, ON);
 struct Settings {
   SETTING(clickDuration, 1, unsigned long, 5uL); // [0,100]
+  SETTING(forceClick, 1, ForceClick, {ForceClick::_::NO});
 
   static void begin();
   void readAll();

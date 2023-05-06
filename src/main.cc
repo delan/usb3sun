@@ -158,9 +158,17 @@ void loop() {
   if (state.inMenu) {
     display.setCursor(0, 8);
     unsigned int i = 0;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back"); i++;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, state.clickEnabled ? "Disable click" : "Enable click"); i++;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms", settings.clickDuration()); i++;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
+      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back");
+    i++; if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
+      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Force click: %s",
+        settings.forceClick() == ForceClick::_::NO ? "no"
+        : settings.forceClick() == ForceClick::_::OFF ? "off"
+        : settings.forceClick() == ForceClick::_::ON ? "on"
+        : "?");
+    i++; if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
+      drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms",
+        settings.clickDuration());
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -471,6 +479,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             switch (selectorChanges[i].usbkSelector) {
               case USBK_RIGHT:
                 switch (state.selectedMenuItem) {
+                  case 1:
+                    ++settings.forceClick();
+                    settings.write(settings.forceClick_field);
+                    break;
                   case 2:
                     if (settings.clickDuration() < 96u) {
                       settings.clickDuration() += 5u;
@@ -482,6 +494,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                 break;
               case USBK_LEFT:
                 switch (state.selectedMenuItem) {
+                  case 1:
+                    --settings.forceClick();
+                    settings.write(settings.forceClick_field);
+                    break;
                   case 2:
                     if (settings.clickDuration() > 4u) {
                       settings.clickDuration() -= 5u;
@@ -506,9 +522,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
               case USBK_RETURN:
               case USBK_ENTER:
                 switch (state.selectedMenuItem) {
-                  case 1:
-                    state.clickEnabled = !state.clickEnabled;
-                    break;
+                  // case N:
+                  //   state.foo = !state.foo;
+                  //   break;
                 }
                 state.inMenu = false;
                 break;

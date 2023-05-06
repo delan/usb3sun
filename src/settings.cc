@@ -14,4 +14,5 @@ void Settings::begin() {
 
 void Settings::readAll() {
   read(settings.clickDuration_field);
+  read(settings.forceClick_field);
 }
