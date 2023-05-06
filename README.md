@@ -73,8 +73,13 @@ release notes
 
 ### firmware ?.? (????-??-??)
 
-* added audible usb plug/unplug notifications
-* fixed a theoretical(?) race condition in buzzer management
+* added **audible usb plug/unplug notifications**
+* added **persistence for settings** — including click duration!
+* added **“force click” setting** — this replaces the old disable/enable click option in the settings menu, which toggled the same state as the host machine, with an independent override
+* changed the initial click mode state to off
+* changed the initial led indicator states to off
+* fixed theoretical(?) race condition in buzzer management
+* fixed errors in the README bindings table
 
 ### firmware [1.1](https://github.com/delan/usb3sun/releases/tag/1.1) (2023-05-06)
 
