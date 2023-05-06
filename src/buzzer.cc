@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#include "settings.h"
 #include "state.h"
 
 void Buzzer::update0() {
@@ -19,7 +20,7 @@ void Buzzer::update0() {
       }
       break;
     case _::CLICK:
-      if (!isExpired(t, state.clickDuration * 1'000uL)) {
+      if (!isExpired(t, settings.clickDuration() * 1'000uL)) {
         return;
       }
       break;
@@ -83,7 +84,7 @@ void Buzzer::click() {
 
   if (current <= Buzzer::_::CLICK) {
     // violation of sparc keyboard spec :) but distinguishable from bell!
-    tone(BUZZER_PIN, 1'000u, state.clickDuration);
+    tone(BUZZER_PIN, 1'000u, settings.clickDuration());
     setCurrent(micros(), Buzzer::_::CLICK);
   }
 }

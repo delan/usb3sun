@@ -16,6 +16,7 @@ extern "C" {
 
 #include "bindings.h"
 #include "buzzer.h"
+#include "settings.h"
 #include "state.h"
 #include "splash.xbm"
 #include "logo.xbm"
@@ -40,7 +41,9 @@ std::atomic<bool> wait = true;
 
 State state;
 Buzzer buzzer;
+Settings settings;
 __attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
+__attribute__((section(".mutex_array"))) mutex_t settingsMutex;
 struct {
   bool ok;
 } fake;
@@ -100,6 +103,9 @@ void setup() {
     Sprintf("\033[0m\n");
   }
 
+  Settings::begin();
+  settings.readAll();
+
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
   while (digitalRead(WAIT_PIN));
@@ -154,7 +160,7 @@ void loop() {
     unsigned int i = 0;
     if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Go back"); i++;
     if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, state.clickEnabled ? "Disable click" : "Enable click"); i++;
-    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms", state.clickDuration); i++;
+    if (i >= state.topMenuItem && i <= state.topMenuItem + 2) drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, "Click duration: %u ms", settings.clickDuration()); i++;
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -466,8 +472,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
               case USBK_RIGHT:
                 switch (state.selectedMenuItem) {
                   case 2:
-                    if (state.clickDuration < 96u) {
-                      state.clickDuration += 5u;
+                    if (settings.clickDuration() < 96u) {
+                      settings.clickDuration() += 5u;
+                      settings.write(settings.clickDuration_field);
                       buzzer.click();
                     }
                     break;
@@ -476,8 +483,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
               case USBK_LEFT:
                 switch (state.selectedMenuItem) {
                   case 2:
-                    if (state.clickDuration > 4u) {
-                      state.clickDuration -= 5u;
+                    if (settings.clickDuration() > 4u) {
+                      settings.clickDuration() -= 5u;
+                      settings.write(settings.clickDuration_field);
                       buzzer.click();
                     }
                     break;

@@ -16,7 +16,6 @@ struct State {
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
   unsigned topMenuItem = 0u;
-  unsigned clickDuration = 5u; // [0,100]
 };
 
 extern State state;
