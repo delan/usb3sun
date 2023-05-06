@@ -4,12 +4,12 @@
 #include <cstdint>
 
 struct State {
-  bool bell;
-  bool clickEnabled = true;
-  bool caps = true;
-  bool compose = true;
-  bool scroll = true;
-  bool num = true;
+  bool bell = false;
+  bool clickEnabled = false;
+  bool caps = false;
+  bool compose = false;
+  bool scroll = false;
+  bool num = false;
   uint8_t lastModifiers;
   uint8_t lastKeys[6];
   uint8_t lastButtons;
