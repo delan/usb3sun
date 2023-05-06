@@ -44,3 +44,13 @@
 #define FAKE_SUN_KTX 9      // ...UART1 RX: connect to SUN_KTX
 #define PICOPROBE_TX 0      // ...UART0 TX: connect to picoprobe GP5
 #define PICOPROBE_RX 1      // ...UART0 RX: connect to picoprobe GP4
+
+#ifdef PICOPROBE_ENABLE
+#define Sprint(...) (Serial1.print(__VA_ARGS__), Serial1.flush())
+#define Sprintln(...) (Serial1.println(__VA_ARGS__), Serial1.flush())
+#define Sprintf(...) (Serial1.printf(__VA_ARGS__), Serial1.flush())
+#else
+#define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
+#define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
+#define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
+#endif

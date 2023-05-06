@@ -1,19 +1,10 @@
 #include "config.h"
 
-#ifdef PICOPROBE_ENABLE
-#define Sprint(...) (Serial1.print(__VA_ARGS__), Serial1.flush())
-#define Sprintln(...) (Serial1.println(__VA_ARGS__), Serial1.flush())
-#define Sprintf(...) (Serial1.printf(__VA_ARGS__), Serial1.flush())
-#else
-#define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
-#define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
-#define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
-#endif
-
 #include <atomic>
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <CoreMutex.h>
 
 extern "C" {
 #include <pio_usb.h>
@@ -24,6 +15,8 @@ extern "C" {
 #include <Adafruit_TinyUSB.h>
 
 #include "bindings.h"
+#include "buzzer.h"
+#include "state.h"
 #include "splash.xbm"
 #include "logo.xbm"
 
@@ -45,23 +38,9 @@ static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
 std::atomic<bool> wait = true;
 
-struct {
-  bool bell;
-  bool clickEnabled = true;
-  bool caps = true;
-  bool compose = true;
-  bool scroll = true;
-  bool num = true;
-  uint8_t lastModifiers;
-  uint8_t lastKeys[6];
-  uint8_t lastButtons;
-  std::atomic<unsigned long> clickingSince;
-  std::atomic<bool> bellStarted;
-  bool inMenu = false;
-  unsigned selectedMenuItem = 0u;
-  unsigned topMenuItem = 0u;
-  unsigned clickDuration = 5u; // [0,100]
-} state;
+State state;
+Buzzer buzzer;
+__attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
 struct {
   bool ok;
 } fake;
@@ -161,37 +140,6 @@ void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args... args) 
   }
 }
 
-void buzzerClick() {
-  if (!state.clickEnabled)
-    return;
-
-  // violation of sparc keyboard spec :) but distinguishable from bell!
-  tone(BUZZER_PIN, 1'000u, state.clickDuration);
-  state.clickingSince = micros();
-  state.bellStarted = false;
-}
-
-void buzzerUpdate() {
-  const auto t = micros();
-  const unsigned long clickingSince = state.clickingSince;
-  if (state.clickingSince >= state.clickDuration * 1'000uL && t - state.clickingSince < state.clickDuration * 1'000uL)
-    return;
-  if (state.bell) {
-    // starting tone is not entirely idempotent, so avoid restarting it.
-    // spamming it every 10 ms will just pop and then silence in practice.
-    // FIXME standard library has no atomic compare exchange
-    // bool no = false;
-    // if (state.bellStarted.compare_exchange_strong(no, true))
-    if (!state.bellStarted) {
-      state.bellStarted = true;
-      tone(BUZZER_PIN, 1'000'000u / 480u);
-    }
-  } else {
-    state.bellStarted = false;
-    noTone(BUZZER_PIN);
-  }
-}
-
 void loop() {
   const auto t = micros();
   display.clearDisplay();
@@ -214,7 +162,7 @@ void loop() {
     drawStatus(26, 18, "CMP", state.compose);
     drawStatus(52, 18, "SCR", state.scroll);
     drawStatus(78, 18, "NUM", state.num);
-    if (state.bell || t - state.clickingSince < 100'000uL) {
+    if (buzzer.current != Buzzer::_::NONE) {
       const auto x = 106;
       const auto y = 16;
       display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
@@ -253,11 +201,11 @@ void serialEvent1() {
         break;
       case SUNK_BELL_ON:
         state.bell = true;
-        buzzerUpdate();
+        buzzer.update();
         break;
       case SUNK_BELL_OFF:
         state.bell = false;
-        buzzerUpdate();
+        buzzer.update();
         break;
       case SUNK_CLICK_ON:
         state.clickEnabled = true;
@@ -342,14 +290,14 @@ void setup1() {
 
 void loop1() {
   USBHost.task();
-  buzzerUpdate();
+  buzzer.update();
 }
 
 void sunkSend(bool make, uint8_t code) {
   static int activeCount = 0;
   if (make) {
     activeCount += 1;
-    buzzerClick();
+    buzzer.click();
   } else {
     activeCount -= 1;
     code |= SUNK_BREAK_BIT;
@@ -402,6 +350,8 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
 
   if (!tuh_hid_receive_report(dev_addr, instance))
     Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
+
+  buzzer.plug();
 }
 
 // Invoked when device with hid interface is un-mounted
@@ -415,6 +365,7 @@ void tuh_mount_cb(uint8_t dev_addr) {
 
 void tuh_umount_cb(uint8_t dev_addr) {
   Sprintf("usb [%u]: unmount\n", dev_addr);
+  buzzer.unplug();
 }
 
 void tuh_hid_set_protocol_complete_cb(uint8_t dev_addr, uint8_t instance, uint8_t protocol) {
@@ -517,7 +468,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                   case 2:
                     if (state.clickDuration < 96u) {
                       state.clickDuration += 5u;
-                      buzzerClick();
+                      buzzer.click();
                     }
                     break;
                 }
@@ -527,7 +478,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                   case 2:
                     if (state.clickDuration > 4u) {
                       state.clickDuration -= 5u;
-                      buzzerClick();
+                      buzzer.click();
                     }
                     break;
                 }
