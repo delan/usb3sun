@@ -16,6 +16,7 @@ struct State {
   bool inMenu = false;
   unsigned selectedMenuItem = 0u;
   unsigned topMenuItem = 0u;
+  unsigned menuItemCount = 0u;
 };
 
 extern State state;

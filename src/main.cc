@@ -18,6 +18,7 @@ extern "C" {
 #include "buzzer.h"
 #include "settings.h"
 #include "state.h"
+#include "sunk.h"
 #include "splash.xbm"
 #include "logo.xbm"
 
@@ -171,6 +172,8 @@ void loop() {
       : settings.forceClick() == ForceClick::_::ON ? "on"
       : "?");
     drawMenuItem(i++, "Click duration: %u ms", settings.clickDuration());
+    drawMenuItem(i++, "Reprogram idprom");
+    drawMenuItem(i++, "Wipe idprom (AAh)");
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -347,6 +350,30 @@ void sunkSend(bool make, uint8_t code) {
   }
 }
 
+template <typename... Args>
+void sunkSend(const char *fmt, Args... args) {
+  char result[1024];
+  size_t len = snprintf(result, sizeof(result) / sizeof(*result), fmt, args...);
+  if (len >= sizeof(result) / sizeof(*result)) {
+    Sprintf("error: sun keyboard: snprintf buffer overflow\n");
+    return;
+  }
+  for (auto i = 0; i < len; i++) {
+    if (result[i] >= sizeof(SUNK_ASCII) / sizeof(*SUNK_ASCII) || SUNK_ASCII[result[i]] == 0) {
+      Sprintf("error: sun keyboard: octet %02Xh not in SUNK_ASCII\n", result[i]);
+      return;
+    }
+  }
+  for (auto i = 0; i < len; i++) {
+    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT)
+      sunkSend(true, SUNK_SHIFT_L);
+    sunkSend(true, SUNK_ASCII[result[i]] & 0xFF);
+    sunkSend(false, SUNK_ASCII[result[i]] & 0xFF);
+    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT)
+      sunkSend(false, SUNK_SHIFT_L);
+  }
+}
+
 // Invoked when device with hid interface is mounted
 // Report descriptor is also available for use.
 // tuh_hid_parse_report_descriptor() can be used to parse common/simple enough
@@ -510,7 +537,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                 }
                 break;
               case USBK_DOWN:
-                if (state.selectedMenuItem < 3u - 1u)
+                if (state.selectedMenuItem < state.menuItemCount - 1u)
                   state.selectedMenuItem += 1u;
                 if (state.selectedMenuItem - state.topMenuItem > 2u)
                   state.topMenuItem += 1u;
@@ -527,6 +554,40 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                   // case N:
                   //   state.foo = !state.foo;
                   //   break;
+                  case 3: {
+                    uint32_t serial = 0x507FA05Cu;
+                    uint32_t hostid24 = (((serial >> 28 & 0xF) * 53 + (serial >> 20 & 0xFF)) & 0xFF) << 16
+                      | (serial & 0xFFFF);
+                    unsigned i = 0;
+
+                    // http://www.alyon.asso.fr/InfosTechniques/informatique/SunHardwareReference/sun-nvram-hostid.faq
+                    sunkSend("1 %x mkp\n", i++);
+                    sunkSend("real-machine-type %x mkp\n", i++);
+                    sunkSend("8 %x mkp\n", i++);
+                    sunkSend("0 %x mkp\n", i++);
+                    sunkSend("20 %x mkp\n", i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
+                    sunkSend("0 %x mkp\n", i++);
+                    sunkSend("0 %x mkp\n", i++);
+                    sunkSend("0 %x mkp\n", i++);
+                    sunkSend("0 %x mkp\n", i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
+                    sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
+                    sunkSend("0 %x 0 do i idprom@ xor loop f mkp\n", i++);
+
+                    // only needed for SS1000, but harmless otherwise
+                    sunkSend("update-system-idprom\n");
+
+                    sunkSend(".idprom\n");
+                    sunkSend("banner\n");
+                  } break;
+                  case 4: {
+                    for (unsigned i = 0; i <= 0xF; i++)
+                      sunkSend("aa %x mkp\n", i);
+                  } break;
                 }
                 state.inMenu = false;
                 break;
