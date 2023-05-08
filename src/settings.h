@@ -35,11 +35,27 @@ struct _name { \
 extern mutex_t settingsMutex;
 
 SETTING_ENUM(ForceClick, NO, OFF, ON);
+SETTING_ENUM(MouseBaud, S1200, S2400, S4800, S9600);
 using Hostid = unsigned char[6];
 struct Settings {
   SETTING(clickDuration, 1, unsigned long, 5uL); // [0,100]
   SETTING(forceClick, 1, ForceClick, {ForceClick::_::NO});
+  SETTING(mouseBaud, 1, MouseBaud, {MouseBaud::_::S9600});
   SETTING(hostid, 1, Hostid, {'0', '0', '0', '0', '0', '0'});
+
+  unsigned long mouseBaudReal() {
+    switch (mouseBaud()) {
+      case MouseBaud::_::S1200:
+        return 1200;
+      case MouseBaud::_::S2400:
+        return 2400;
+      case MouseBaud::_::S4800:
+        return 4800;
+      case MouseBaud::_::S9600:
+        return 9600;
+    }
+    return 0;
+  }
 
   static void begin();
   void readAll();

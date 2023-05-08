@@ -23,6 +23,7 @@ enum class MenuItem : size_t {
   GoBack,
   ForceClick,
   ClickDuration,
+  MouseBaud,
   Hostid,
   ReprogramIdprom,
   WipeIdprom,
@@ -42,6 +43,14 @@ static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
   },
   [](int16_t &marqueeX, size_t i, bool on) {
     drawMenuItem(marqueeX, i, on, "Click duration: %u ms", settings.clickDuration());
+  },
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Mouse baud: %s",
+      settings.mouseBaud() == MouseBaud::_::S1200 ? "1200"
+      : settings.mouseBaud() == MouseBaud::_::S2400 ? "2400"
+      : settings.mouseBaud() == MouseBaud::_::S4800 ? "4800"
+      : settings.mouseBaud() == MouseBaud::_::S9600 ? "9600"
+      : "?");
   },
   [](int16_t &marqueeX, size_t i, bool on) {
     drawMenuItem(marqueeX, i, on, "Hostid: %c%c%c%c%c%c",
@@ -146,6 +155,14 @@ void MenuView::sel(uint8_t usbkSelector) {
             buzzer.click();
           }
           break;
+        case (size_t)MenuItem::MouseBaud:
+          ++settings.mouseBaud();
+          settings.write(settings.mouseBaud_field);
+          Serial2.end();
+          Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
+          gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+          gpio_set_outover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+          break;
       }
       break;
     case USBK_LEFT:
@@ -160,6 +177,14 @@ void MenuView::sel(uint8_t usbkSelector) {
             settings.write(settings.clickDuration_field);
             buzzer.click();
           }
+          break;
+        case (size_t)MenuItem::MouseBaud:
+          --settings.mouseBaud();
+          settings.write(settings.mouseBaud_field);
+          Serial2.end();
+          Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
+          gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+          gpio_set_outover(SUN_MRX, GPIO_OVERRIDE_INVERT);
           break;
       }
       break;

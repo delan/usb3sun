@@ -166,6 +166,9 @@ void setup() {
   display.drawXBitmap(0, 0, splash_bits, 128, 32, SSD1306_WHITE);
   display.display();
 
+  Settings::begin();
+  settings.readAll();
+
 #if defined(PICOPROBE_ENABLE)
   Serial1.end(); // needed under CFG_TUSB_DEBUG
   Serial1.setPinout(PICOPROBE_TX, PICOPROBE_RX);
@@ -187,7 +190,7 @@ void setup() {
 #elif defined(SUNM_ENABLE)
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(SUNM_BAUD, SERIAL_8N1);
+  Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
@@ -201,9 +204,6 @@ void setup() {
     }
     Sprintf("\033[0m\n");
   }
-
-  Settings::begin();
-  settings.readAll();
 
   View::push(&DEFAULT_VIEW);
 
