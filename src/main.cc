@@ -584,20 +584,49 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       Sprintln();
 #endif
 
+      // false = buttons dx1 dy1
+      // true = dx2 dy2
+      static bool secondHalf = false;
+
+      // initially invalid
+      static uint8_t lastButtons = 0x00;
+
       // correct: https://web.archive.org/web/20220226000612/http://www.bitsavers.org/pdf/mouseSystems/300771-001_Mouse_Systems_Optical_Mouse_Technical_Reference_Models_M2_and_M3_1985.pdf
       // wrong: https://web.archive.org/web/20100213183456/http://privatewww.essex.ac.uk/~nbb/mice-pc.html
       // note in particular that:
       // • positive dx is right, but positive dy is up
       // • buttons are 0 when pressed and 1 when released
-      uint8_t result[] = {
-        0x80
+      uint8_t buttons = 0x80
           | (mreport->buttons & USBM_LEFT ? 0 : SUNM_LEFT)
           | (mreport->buttons & USBM_MIDDLE ? 0 : SUNM_CENTER)
-          | (mreport->buttons & USBM_RIGHT ? 0 : SUNM_RIGHT),
-        (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
-      };
+          | (mreport->buttons & USBM_RIGHT ? 0 : SUNM_RIGHT);
+      
+      if (buttons != lastButtons) {
+        // if buttons have changed, we must send a first half update,
+        // even if that means sending an empty second half update
+        if (secondHalf) {
+          uint8_t result[] {0x00, 0x00};
+          Serial2.write(result, 2);
+          // Sprintf(">>> skip 00h 00h\n");
+        }
+        uint8_t result[] = {buttons, (uint8_t) mreport->x, (uint8_t) -mreport->y};
+        Serial2.write(result, 3);
+        secondHalf = false;
+        // Sprintf(">>> tx %02Xh %02Xh %02Xh\n", result[0], result[1], result[2]);
+      } else if (secondHalf) {
+        uint8_t result[] = {(uint8_t) mreport->x, (uint8_t) -mreport->y};
+        Serial2.write(result, 2);
+        // Sprintf(">>> tx %02Xh %02Xh\n", result[0], result[1], result[2]);
+      } else {
+        uint8_t result[] = {buttons, (uint8_t) mreport->x, (uint8_t) -mreport->y};
+        Serial2.write(result, 3);
+        // Sprintf(">>> tx %02Xh %02Xh %02Xh\n", result[0], result[1], result[2]);
+      }
+      secondHalf = !secondHalf;
+      lastButtons = buttons;
+
 #ifdef SUNM_ENABLE
-      size_t len = Serial2.write(result, sizeof(result) / sizeof(*result));
+      // size_t len = Serial2.write(result, sizeof(result) / sizeof(*result));
 #ifdef SUNM_VERBOSE
       Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu\n",
         result[0], result[1], result[2], result[3], result[4], len);
