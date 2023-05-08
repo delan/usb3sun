@@ -67,6 +67,9 @@ void setup() {
   display.drawXBitmap(0, 0, splash_bits, 128, 32, SSD1306_WHITE);
   display.display();
 
+  Settings::begin();
+  settings.readAll();
+
 #if defined(PICOPROBE_ENABLE)
   Serial1.end(); // needed under CFG_TUSB_DEBUG
   Serial1.setPinout(PICOPROBE_TX, PICOPROBE_RX);
@@ -88,7 +91,7 @@ void setup() {
 #elif defined(SUNM_ENABLE)
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(SUNM_BAUD, SERIAL_8N1);
+  Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
   gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
@@ -102,9 +105,6 @@ void setup() {
     }
     Sprintf("\033[0m\n");
   }
-
-  Settings::begin();
-  settings.readAll();
 
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
@@ -171,6 +171,12 @@ void loop() {
       : settings.forceClick() == ForceClick::_::ON ? "on"
       : "?");
     drawMenuItem(i++, "Click duration: %u ms", settings.clickDuration());
+    drawMenuItem(i++, "Mouse baud: %s",
+      settings.mouseBaud() == MouseBaud::_::S1200 ? "1200"
+      : settings.mouseBaud() == MouseBaud::_::S2400 ? "2400"
+      : settings.mouseBaud() == MouseBaud::_::S4800 ? "4800"
+      : settings.mouseBaud() == MouseBaud::_::S9600 ? "9600"
+      : "?");
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -492,6 +498,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                       buzzer.click();
                     }
                     break;
+                  case 3:
+                    ++settings.mouseBaud();
+                    settings.write(settings.mouseBaud_field);
+                    Serial2.end();
+                    Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
+                    gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+                    gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+                    break;
                 }
                 break;
               case USBK_LEFT:
@@ -507,10 +521,18 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                       buzzer.click();
                     }
                     break;
+                  case 3:
+                    --settings.mouseBaud();
+                    settings.write(settings.mouseBaud_field);
+                    Serial2.end();
+                    Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
+                    gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
+                    gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+                    break;
                 }
                 break;
               case USBK_DOWN:
-                if (state.selectedMenuItem < 3u - 1u)
+                if (state.selectedMenuItem < 4u - 1u)
                   state.selectedMenuItem += 1u;
                 if (state.selectedMenuItem - state.topMenuItem > 2u)
                   state.topMenuItem += 1u;
