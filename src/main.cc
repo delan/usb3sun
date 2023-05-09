@@ -365,12 +365,22 @@ void sunkSend(const char *fmt, Args... args) {
     }
   }
   for (auto i = 0; i < len; i++) {
-    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT)
+    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT) {
+      delay(50);
       sunkSend(true, SUNK_SHIFT_L);
+      sunkSend(true, SUNK_SHIFT_L);
+      sunkSend(true, SUNK_SHIFT_L);
+      delay(50);
+    }
     sunkSend(true, SUNK_ASCII[result[i]] & 0xFF);
     sunkSend(false, SUNK_ASCII[result[i]] & 0xFF);
-    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT)
+    if (SUNK_ASCII[result[i]] & SUNK_SEND_SHIFT) {
+      delay(50);
       sunkSend(false, SUNK_SHIFT_L);
+      sunkSend(false, SUNK_SHIFT_L);
+      sunkSend(false, SUNK_SHIFT_L);
+      delay(50);
+    }
   }
 }
 
@@ -555,28 +565,50 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                   //   state.foo = !state.foo;
                   //   break;
                   case 3: {
-                    uint32_t serial = 0x507FA05Cu;
-                    uint32_t hostid24 = (((serial >> 28 & 0xF) * 53 + (serial >> 20 & 0xFF)) & 0xFF) << 16
-                      | (serial & 0xFFFF);
+                    // uint32_t serial = 0x538F1242u; // australis
+                    // uint32_t serial = 0x507FA05Cu; // borealis
+                    // uint32_t hostid24 = (((serial >> 28 & 0xF) * 53 + (serial >> 20 & 0xFF)) & 0xFF) << 16
+                    //   | (serial & 0xFFFF);
+
+                    uint32_t hostid24 = 0x76FBC1u; // australis
+                    // uint32_t hostid24 = 0x717878u; // borealis
                     unsigned i = 0;
 
                     // http://www.alyon.asso.fr/InfosTechniques/informatique/SunHardwareReference/sun-nvram-hostid.faq
+
+                    // version 1
                     sunkSend("1 %x mkp\n", i++);
+
+                    // hostid byte 1/4 (system type)
                     sunkSend("real-machine-type %x mkp\n", i++);
+
+                    // ethernet address oui (always 08:00:20)
                     sunkSend("8 %x mkp\n", i++);
                     sunkSend("0 %x mkp\n", i++);
                     sunkSend("20 %x mkp\n", i++);
+
+                    // ethernet address lower half
                     sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
                     sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
                     sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
+
+                    // set date of manufacture such that it and the system type byte
+                    // cancel each other out in the checksum
+                    sunkSend("real-machine-type %x mkp\n", i++);
                     sunkSend("0 %x mkp\n", i++);
                     sunkSend("0 %x mkp\n", i++);
                     sunkSend("0 %x mkp\n", i++);
-                    sunkSend("0 %x mkp\n", i++);
+
+                    // hostid bytes 2/3/4
                     sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
                     sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
                     sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
-                    sunkSend("0 %x 0 do i idprom@ xor loop f mkp\n", i++);
+
+                    // shift key buggy, so use simplified approach below
+                    // sunkSend("0 %x 0 do i idprom@ xor loop f mkp\n", i++);
+
+                    // if your ethernet address 08:00:20:xx:yy:zz = 
+                    sunkSend("29 %x mkp\n", i++);
 
                     // only needed for SS1000, but harmless otherwise
                     sunkSend("update-system-idprom\n");
