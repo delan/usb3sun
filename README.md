@@ -81,6 +81,16 @@ release notes
 * fixed theoretical(?) race condition in buzzer management
 * fixed errors in the README bindings table
 
+### pcb rev [A1](https://github.com/delan/usb3sun/releases/tag/A1) (2023-05-10)
+
+* added tactile switches for reset and hard power key
+* added header pins for debug logging over UART0
+* added mounting holes for display mechanical support
+* added LED indicators for VBUS and VSUN
+* improved enclosure compatibility by moving mini-din beyond bottom edge
+* improved ground plane islands by stitching vias
+* made all corner mounting holes padded on both sides — previously this was only the case for the hole connected to GNDPWR, but not the other three
+
 ### firmware [1.1](https://github.com/delan/usb3sun/releases/tag/1.1) (2023-05-06)
 
 * [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.1/pio_pkg_list.txt) = dependency tree at time of release
