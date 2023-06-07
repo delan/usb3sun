@@ -61,12 +61,16 @@ compatibility
 -------------
 
 - 04A5:8001 BenQ Zowie EC2 **mouse** — perfect
+- 046D:C063 Dell M-UAV-DEL8 **mouse** — perfect
 - 3367:1903 Endgame Gear XM1r **mouse** — buttons only (16-bit dx/dy, no boot protocol)
 - 0461:4E24 HP KB71211 **keyboard** — almost perfect (lacks scroll lock or right meta)
 - 0461:4E23 HP MOGIUO **mouse** — perfect
+- 17EF:608D Lenovo EMS-537A **mouse** — perfect
+- 045E:0039 Microsoft Intelli**Mouse** Optical 1.1A — broken (“Control FAILED”)
 - 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A — perfect
 - 045E:0752 Microsoft Wired **Keyboard** 400 — perfect
 - 045E:0750 Microsoft Wired **Keyboard** 600 — perfect
+- 045E:0773 Microsoft Explorer Touch **Mouse** (model 1490) — perfect
 
 release notes
 -------------
