@@ -25,6 +25,8 @@ documentation
 * [firmware](doc/firmware.md)
 * [breadboard prototype](doc/prototype.md)
 * [pcb](hardware/pcb) coming soon!
+* maintainer docs
+    * [how to release](doc/releasing.md)
 
 bindings
 --------
