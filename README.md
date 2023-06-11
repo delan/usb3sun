@@ -77,7 +77,7 @@ compatibility
 release notes
 -------------
 
-### firmware ?.? (????-??-??)
+### firmware [1.2](https://github.com/delan/usb3sun/releases/tag/1.2) (2023-06-11)
 
 * added **audible usb plug/unplug notifications**
 * added **persistence for settings** — including click duration!
