@@ -79,6 +79,7 @@ release notes
 
 ### firmware [1.2](https://github.com/delan/usb3sun/releases/tag/1.2) (2023-06-11)
 
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.2/pio_pkg_list.txt) = dependency tree at time of release
 * added **audible usb plug/unplug notifications**
 * added **persistence for settings** — including click duration!
 * added **“force click” setting** — this replaces the old disable/enable click option in the settings menu, which toggled the same state as the host machine, with an independent override
