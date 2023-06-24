@@ -3,7 +3,11 @@ usb3sun
 
 usb3sun is an adapter that allows you to connect USB keyboards and mice to the Sun 8-pin mini-DIN interface.
 
-project writeup: <https://cohost.org/delan/post/787278-usb3sun-a-usb-input>
+* [buy now](https://www.tindie.com/products/funnycomputer/usb3sun/) on tindie
+* read more about
+    * [the breadboard prototype](https://cohost.org/delan/post/787278-usb3sun-a-usb-input)
+    * [the development of rev A1](https://cohost.org/delan/post/1650431-usb3sun-rev-a1-a-us)
+    * [the funny computer museum](https://funny.computer.daz.cat/)
 
 see also:
 
@@ -30,7 +34,7 @@ documentation
 
 * [firmware](doc/firmware.md)
 * [breadboard prototype](doc/prototype.md)
-* [pcb](hardware/pcb) coming soon!
+* [pcb](hardware/pcb) docs coming soon!
 * maintainer docs
     * [how to release](doc/releasing.md)
 
