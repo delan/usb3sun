@@ -10,6 +10,12 @@ see also:
 * [USB2Sun](https://github.com/jgilje/USB2Sun) by @jgilje
 * [sun2usb](https://github.com/jareklupinski/sun2usb) by @jareklupinski
 
+**note:** this repo uses submodules! clone with `--recursive`, or if you forgot to do that:
+
+```sh
+$ git submodule update --init --recursive
+```
+
 features
 --------
 
