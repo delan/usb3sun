@@ -2542,7 +2542,7 @@
     (property "Sheetname" "")
     (property "ki_description" "Push button switch, generic, two pins")
     (property "ki_keywords" "switch normally-open pushbutton push-button")
-    (path "/be5f483c-517b-4c61-bad7-75515ac45f41")
+    (path "/517b6c48-769d-47b3-92be-b5dc789cc727")
     (attr smd)
     (fp_text reference "SW2" (at 0 -3.75) (layer "F.SilkS") hide
         (effects (font (size 1 1) (thickness 0.15)))
