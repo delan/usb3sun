@@ -774,6 +774,10 @@
       {
         "netclass": "power",
         "pattern": "/VBUS2"
+      },
+      {
+        "netclass": "power",
+        "pattern": "/VRAW"
       }
     ]
   },
