@@ -20,69 +20,52 @@ see also:
 $ git submodule update --init --recursive
 ```
 
-features
---------
-
-* keyboard support
-* mouse support
-* soft power key support
-* LED indicators via SSD1306 (128x32)
-* click and bell via passive piezo buzzer
-
 documentation
 -------------
 
-* [firmware](doc/firmware.md)
-* [breadboard prototype](doc/prototype.md)
-* [pcb](hardware/pcb) docs coming soon!
+* **[user guide](doc/manual.md)**
+* hacking and assembly docs
+    * [firmware](doc/firmware.md)
+    * [breadboard prototype](doc/prototype.md)
+    * [pcb](hardware/pcb) docs coming soon!
 * maintainer docs
     * [how to release](doc/releasing.md)
 
-bindings
---------
+hardware features
+-----------------
 
-for more details, see [src/bindings.h](src/bindings.h), but here are the important ones:
+usb3sun includes an **audible buzzer** to emulate the bell and click functions that would normally be included with a Sun keyboard.
 
-| USB               | Sun                     |
-|-------------------|-------------------------|
-| context menu      | Compose                 |
-| Left Alt          | Alt                     |
-| Right Alt         | Graph/Alt               |
-| Left GUI*         | left Meta (diamond)     |
-| Right GUI*        | right Meta (diamond)    |
-| Left Ctrl         | Control                 |
-| Right Ctrl+Space  | (usb3sun settings menu) |
-| Right Ctrl+.      | Stop                    |
-| Right Ctrl+Esc    | Front                   |
-| Right Ctrl+Return | Line Feed               |
-| Right Ctrl+C      | Copy                    |
-| Right Ctrl+F      | Find                    |
-| Right Ctrl+O      | Open                    |
-| Right Ctrl+P      | Power                   |
-| Right Ctrl+V      | Paste                   |
-| Right Ctrl+X      | Cut                     |
-| Right Ctrl+Y      | Again                   |
-| Right Ctrl+Z      | Undo                    |
-| Right Ctrl+F1     | Help                    |
-| Right Ctrl+F4     | Props                   |
-| Right Ctrl+=      | keypad =                |
+usb3sun also emulates the **power key** in two ways:
 
-\* aka Super, Mod4, Windows, etc
+* **soft power key** (Right Ctrl+P)
+    * sends the power key scancodes (30h/B0h)
+    * can turn on your workstation (only when usb3sun is powered externally)
+* **onboard power button** (near the display)
+    * doesn’t send any scancodes
+    * can turn on your workstation (even when not powered externally)
 
-compatibility
--------------
+usb3sun has an **oled display** that shows:
 
-- 04A5:8001 BenQ Zowie EC2 **mouse** — perfect
-- 046D:C063 Dell M-UAV-DEL8 **mouse** — perfect
-- 3367:1903 Endgame Gear XM1r **mouse** — buttons only (16-bit dx/dy, no boot protocol)
-- 0461:4E24 HP KB71211 **keyboard** — almost perfect (lacks scroll lock or right meta)
-- 0461:4E23 HP MOGIUO **mouse** — perfect
-- 17EF:608D Lenovo EMS-537A **mouse** — perfect
-- 045E:0039 Microsoft Intelli**Mouse** Optical 1.1A — broken (“Control FAILED”)
-- 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A — perfect
-- 045E:0752 Microsoft Wired **Keyboard** 400 — perfect
-- 045E:0750 Microsoft Wired **Keyboard** 600 — perfect
-- 045E:0773 Microsoft Explorer Touch **Mouse** (model 1490) — perfect
+* keyboard led indicators (caps, compose, scroll, num)
+* visual buzzer (click, bell)
+* the settings menu
+
+usb3sun has an **onboard reset button** in case the firmware gets stuck, and a **0.1″ debug header** (pins available as an option) that allows you to power the adapter externally for flashing or debugging.
+
+firmware features
+-----------------
+
+usb3sun has **persistent settings** for:
+
+* forcing click mode (no/off/on)
+* click duration (5–100 ms)
+
+features planned for a future firmware version:
+
+* settings for bell/click tone frequency
+* led indicators on your USB keyboard itself
+* an idprom macro, to [reprogram your hostid](https://funny.computer.daz.cat/sun/nvram-hostid-faq.txt)
 
 release notes
 -------------

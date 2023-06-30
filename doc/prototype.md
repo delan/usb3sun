@@ -54,7 +54,7 @@ breadboard prototype
 15. place resistor between b23 (Q1 pin 3) and b27 (Vsun)
 16. place resistor between b25 (Q4 pin 2) and b24 (ground)
 
-![prototype1](prototype1.jpg)
+![prototype1](images/prototype1.jpg)
 
 17. extract 1x1 crimp housings from both ends of 8 jumper wires
 18. attach 4x1 crimp housing to socket ends of (VCC1,D-1,D+1,GND1)
@@ -67,7 +67,7 @@ breadboard prototype
 25. connect pin ends of (VCC1,VCC2) to left (Vusb) positive rail
 26. connect pin ends of (D+1,D-1,D+2,D-2) to (a4,a5,a6,a7) (U1 (GP2,GP3,GP4,GP5))
 
-![prototype2](prototype2.jpg)
+![prototype2](images/prototype2.jpg)
 
 27. strip and tin the socket ends of 8 jumper wires
 28. solder those wires to the mini-din plug
@@ -98,14 +98,14 @@ breadboard prototype
 37. connect wire for mini-din pin 5 (keyboard rx) to b23 (Q1 pin 3)
 38. connect wire for mini-din pin 7 (power key) to b26 (Q4 pin 3)
 
-![prototype3](prototype3.jpg)
+![prototype3](images/prototype3.jpg)
 
 39. place U1 pins (GP0…GP15,GP16…VBUS) in (c1…c20,h20…h1)
 40. place U2 pins (SDA,SCK,VCC,GND) in (i20,i21,i22,i23)
 41. connect buzzer negative to i8 (U1 GND)
 42. connect buzzer positive to i7 (U1 GP28)
 
-![prototype4](prototype4.jpg)
+![prototype4](images/prototype4.jpg)
 
 ## troubleshooting
 
@@ -119,4 +119,4 @@ some machines will refuse to send any video unless a working keyboard is connect
 2. check that your mini-din housing isn’t interfering with the connection
     * you may need to retract the housing from time to time (see below)
 
-![housing](housing.jpg)
+![housing](images/housing.jpg)
