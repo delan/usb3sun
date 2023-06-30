@@ -87,6 +87,13 @@ compatibility
 release notes
 -------------
 
+### pcb rev [A2](https://github.com/delan/usb3sun/releases/tag/A2) (2023-06-30)
+
+* added usb-c port J4 — this makes firmware updates much easier, and makes it possible to debug the sun keyboard and mouse interfaces simultaneously
+* added polyfuse F3 after power supply switches — this protects the adapter under more fault conditions, in addition to faults in the downstream usb ports
+* changed led resistors R12 and R13 from 200R to 1K — this reduces the luminous intensity from ~80% down to ~10% relative to 20mA
+* changed tactile switches SW1 and SW2 from [TS-1187A-C-H-B](https://jlcpcb.com/partdetail/XkbConnectivity-TS_1187A_C_HB/C528025) to [TS-1187A-B-A-B](https://jlcpcb.com/partdetail/XkbConnectivity-TS_1187A_B_AB/C318884) — this reduces the extended parts fee with jlcpcb
+
 ### firmware [1.2](https://github.com/delan/usb3sun/releases/tag/1.2) (2023-06-11)
 
 * [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.2/pio_pkg_list.txt) = dependency tree at time of release
@@ -100,6 +107,7 @@ release notes
 
 ### pcb rev [A1](https://github.com/delan/usb3sun/releases/tag/A1) (2023-05-10)
 
+* added display mechanical support — **committed later in [74b367a12600d](https://github.com/delan/usb3sun/commit/74b367a12600d712eb7a05a9fc67c958bae3fe62)**
 * added tactile switches for reset and hard power key
 * added header pins for debug logging over UART0
 * added mounting holes for display mechanical support
