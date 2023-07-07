@@ -22,7 +22,7 @@ usb3sun is an adapter that allows you to use usb keyboards and mice with SPARCst
 - [compatibility](#compatibility)
 - [design files](#design-files)
 - [specifications](#specifications)
-    - [absolute maximum ratings](#absolute-maximum-ratings)
+    - [electrical characteristics](#electrical-characteristics)
 
 ## getting started
 
@@ -188,7 +188,7 @@ usb3sun is not yet compatible with
 | led indicators |  | **VBUS ok** | VBUS ok |
 |  |  | **VSUN ok** | VSUN ok |
 
-### absolute maximum ratings
+### electrical characteristics
 
 |  | rev A0 | rev A1 | rev A2 |
 |-|-|-|-|
