@@ -8,29 +8,30 @@
 #include "state.h"
 
 template<typename... Args>
-static void drawMenuItem(int16_t &marqueeX, size_t i, const char *fmt, Args... args);
+static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args);
 
-using MenuItemPainter = void (*)(int16_t &marqueeX, size_t i);
+using MenuItemPainter = void (*)(int16_t &marqueeX, size_t i, bool on);
 static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
-  [](int16_t &marqueeX, size_t i) {
-    drawMenuItem(marqueeX, i, "Go back");
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Go back");
   },
-  [](int16_t &marqueeX, size_t i) {
-    drawMenuItem(marqueeX, i, "Force click: %s",
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Force click: %s",
       settings.forceClick() == ForceClick::_::NO ? "no"
       : settings.forceClick() == ForceClick::_::OFF ? "off"
       : settings.forceClick() == ForceClick::_::ON ? "on"
       : "?");
   },
-  [](int16_t &marqueeX, size_t i) {
-    drawMenuItem(marqueeX, i, "Click duration: %u ms", settings.clickDuration());
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Click duration: %u ms", settings.clickDuration());
   },
 };
 
 static const size_t MENU_ITEM_COUNT = sizeof(MENU_ITEM_PAINTERS) / sizeof(MENU_ITEM_PAINTERS[0]);
 
 template<typename... Args>
-static void drawMenuItem(int16_t &marqueeX, int16_t y, bool on, const char *fmt, Args... args) {
+static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args) {
+  int16_t y = 8 * (1 + i);
   if (on) {
     int width = snprintf(NULL, 0, fmt, args...) * 6;
     display.fillRect(4, y, 120, 8, SSD1306_WHITE);
@@ -56,10 +57,10 @@ static void drawMenuItem(int16_t &marqueeX, int16_t y, bool on, const char *fmt,
   }
 }
 
-template<typename... Args>
-static void drawMenuItem(int16_t &marqueeX, size_t i, const char *fmt, Args... args) {
-  if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
-    drawMenuItem(marqueeX, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, fmt, args...);
+void Menu::toggle() {
+  open = !open;
+  selectedItem = 0u;
+  topItem = 0u;
 }
 
 void Menu::draw() {
@@ -67,15 +68,15 @@ void Menu::draw() {
   if (marqueeTick == 0)
     marqueeX += 1;
 
-  for (size_t i = 0; i < MENU_ITEM_COUNT; i++)
-    MENU_ITEM_PAINTERS[i](marqueeX, i);
+  for (size_t i = topItem; i <= topItem + 2 && i < MENU_ITEM_COUNT; i++)
+    MENU_ITEM_PAINTERS[i](marqueeX, i - topItem, selectedItem == i);
 }
 
 void Menu::key(uint8_t usbkSelector, bool make) {
   if (make) {
     switch (usbkSelector) {
       case USBK_RIGHT:
-        switch (state.selectedMenuItem) {
+        switch (selectedItem) {
           case 1:
             ++settings.forceClick();
             settings.write(settings.forceClick_field);
@@ -90,7 +91,7 @@ void Menu::key(uint8_t usbkSelector, bool make) {
         }
         break;
       case USBK_LEFT:
-        switch (state.selectedMenuItem) {
+        switch (selectedItem) {
           case 1:
             --settings.forceClick();
             settings.write(settings.forceClick_field);
@@ -105,29 +106,29 @@ void Menu::key(uint8_t usbkSelector, bool make) {
         }
         break;
       case USBK_DOWN:
-        if (state.selectedMenuItem < MENU_ITEM_COUNT - 1u) {
-          state.selectedMenuItem += 1u;
+        if (selectedItem < MENU_ITEM_COUNT - 1u) {
+          selectedItem += 1u;
           marqueeX = 0;
         }
-        if (state.selectedMenuItem - state.topMenuItem > 2u)
-          state.topMenuItem += 1u;
+        if (selectedItem - topItem > 2u)
+          topItem += 1u;
         break;
       case USBK_UP:
-        if (state.selectedMenuItem > 0u) {
-          state.selectedMenuItem -= 1u;
+        if (selectedItem > 0u) {
+          selectedItem -= 1u;
           marqueeX = 0;
         }
-        if (state.selectedMenuItem < state.topMenuItem)
-          state.topMenuItem -= 1u;
+        if (selectedItem < topItem)
+          topItem -= 1u;
         break;
       case USBK_RETURN:
       case USBK_ENTER:
-        switch (state.selectedMenuItem) {
+        switch (selectedItem) {
           // case N:
           //   state.foo = !state.foo;
           //   break;
         }
-        state.inMenu = false;
+        toggle();
         break;
     }
   }

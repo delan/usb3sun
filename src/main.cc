@@ -146,7 +146,7 @@ void loop() {
   // static int i = 0;
   // display.printf("#%d @%lu", i++, t / 1'000);
   // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
-  if (state.inMenu) {
+  if (menu.open) {
     menu.draw();
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
@@ -453,16 +453,14 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       state.lastModifiers = kreport->modifier;
 
       for (int i = 0; i < selectorChangesLen; i++) {
-        if (state.inMenu) {
+        if (menu.open) {
           menu.key(selectorChanges[i].usbkSelector, selectorChanges[i].make);
           continue;
         }
 
         // CtrlR+Space acts like a DV+Sel binding, but opens the settings menu
         if (selectorChanges[i].usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
-          state.inMenu = !state.inMenu;
-          state.selectedMenuItem = 0u;
-          state.topMenuItem = 0u;
+          menu.toggle();
           continue;
         }
 
