@@ -14,8 +14,8 @@ struct State {
   uint8_t lastKeys[6];
   uint8_t lastButtons;
   bool inMenu = false;
-  unsigned selectedMenuItem = 0u;
-  unsigned topMenuItem = 0u;
+  size_t selectedMenuItem = 0u;
+  size_t topMenuItem = 0u;
 };
 
 extern State state;

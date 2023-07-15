@@ -8,6 +8,28 @@
 #include "state.h"
 
 template<typename... Args>
+static void drawMenuItem(size_t i, const char *fmt, Args... args);
+
+using MenuItemPainter = void (*)(size_t i);
+static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
+  [](size_t i) {
+    drawMenuItem(i, "Go back");
+  },
+  [](size_t i) {
+    drawMenuItem(i, "Force click: %s",
+      settings.forceClick() == ForceClick::_::NO ? "no"
+      : settings.forceClick() == ForceClick::_::OFF ? "off"
+      : settings.forceClick() == ForceClick::_::ON ? "on"
+      : "?");
+  },
+  [](size_t i) {
+    drawMenuItem(i, "Click duration: %u ms", settings.clickDuration());
+  },
+};
+
+static const size_t MENU_ITEM_COUNT = sizeof(MENU_ITEM_PAINTERS) / sizeof(MENU_ITEM_PAINTERS[0]);
+
+template<typename... Args>
 static void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args... args) {
   if (on) {
     display.fillRect(x + 4, y, 120, 8, SSD1306_WHITE);
@@ -22,21 +44,15 @@ static void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args...
 }
 
 template<typename... Args>
-static void drawMenuItem(unsigned i, const char *fmt, Args... args) {
+static void drawMenuItem(size_t i, const char *fmt, Args... args) {
   if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
     drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, fmt, args...);
 }
 
 void Menu::draw() {
   display.setCursor(0, 8);
-  unsigned int i = 0;
-  drawMenuItem(i++, "Go back");
-  drawMenuItem(i++, "Force click: %s",
-    settings.forceClick() == ForceClick::_::NO ? "no"
-    : settings.forceClick() == ForceClick::_::OFF ? "off"
-    : settings.forceClick() == ForceClick::_::ON ? "on"
-    : "?");
-  drawMenuItem(i++, "Click duration: %u ms", settings.clickDuration());
+  for (size_t i = 0; i < MENU_ITEM_COUNT; i++)
+    MENU_ITEM_PAINTERS[i](i);
 }
 
 void Menu::key(uint8_t usbkSelector, bool make) {
@@ -73,7 +89,7 @@ void Menu::key(uint8_t usbkSelector, bool make) {
         }
         break;
       case USBK_DOWN:
-        if (state.selectedMenuItem < 3u - 1u)
+        if (state.selectedMenuItem < MENU_ITEM_COUNT - 1u)
           state.selectedMenuItem += 1u;
         if (state.selectedMenuItem - state.topMenuItem > 2u)
           state.topMenuItem += 1u;
