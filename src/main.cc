@@ -16,6 +16,8 @@ extern "C" {
 
 #include "bindings.h"
 #include "buzzer.h"
+#include "display.h"
+#include "menu.h"
 #include "settings.h"
 #include "state.h"
 #include "splash.xbm"
@@ -35,12 +37,13 @@ Adafruit_USBH_Host USBHost;
 // holding device descriptor
 tusb_desc_device_t desc_device;
 
-static Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
+Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
 
 std::atomic<bool> wait = true;
 
 State state;
 Buzzer buzzer;
+Menu menu;
 Settings settings;
 __attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
 __attribute__((section(".mutex_array"))) mutex_t settingsMutex;
@@ -133,26 +136,6 @@ void drawStatus(int16_t x, int16_t y, const char *label, bool on) {
   }
 }
 
-template<typename... Args>
-void drawMenuItem(int16_t x, int16_t y, bool on, const char *fmt, Args... args) {
-  if (on) {
-    display.fillRect(x + 4, y, 120, 8, SSD1306_WHITE);
-    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display.setCursor(x + 8, y);
-    display.printf(fmt, args...);
-  } else {
-    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-    display.setCursor(x + 8, y);
-    display.printf(fmt, args...);
-  }
-}
-
-template<typename... Args>
-void drawMenuItem(unsigned i, const char *fmt, Args... args) {
-  if (i >= state.topMenuItem && i <= state.topMenuItem + 2)
-    drawMenuItem(0, 8 * (1 + i - state.topMenuItem), state.selectedMenuItem == i, fmt, args...);
-}
-
 void loop() {
   const auto t = micros();
   display.clearDisplay();
@@ -164,15 +147,7 @@ void loop() {
   // display.printf("#%d @%lu", i++, t / 1'000);
   // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
   if (state.inMenu) {
-    display.setCursor(0, 8);
-    unsigned int i = 0;
-    drawMenuItem(i++, "Go back");
-    drawMenuItem(i++, "Force click: %s",
-      settings.forceClick() == ForceClick::_::NO ? "no"
-      : settings.forceClick() == ForceClick::_::OFF ? "off"
-      : settings.forceClick() == ForceClick::_::ON ? "on"
-      : "?");
-    drawMenuItem(i++, "Click duration: %u ms", settings.clickDuration());
+    menu.draw();
   } else {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
@@ -479,61 +454,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 
       for (int i = 0; i < selectorChangesLen; i++) {
         if (state.inMenu) {
-          if (selectorChanges[i].make) {
-            switch (selectorChanges[i].usbkSelector) {
-              case USBK_RIGHT:
-                switch (state.selectedMenuItem) {
-                  case 1:
-                    ++settings.forceClick();
-                    settings.write(settings.forceClick_field);
-                    break;
-                  case 2:
-                    if (settings.clickDuration() < 96u) {
-                      settings.clickDuration() += 5u;
-                      settings.write(settings.clickDuration_field);
-                      buzzer.click();
-                    }
-                    break;
-                }
-                break;
-              case USBK_LEFT:
-                switch (state.selectedMenuItem) {
-                  case 1:
-                    --settings.forceClick();
-                    settings.write(settings.forceClick_field);
-                    break;
-                  case 2:
-                    if (settings.clickDuration() > 4u) {
-                      settings.clickDuration() -= 5u;
-                      settings.write(settings.clickDuration_field);
-                      buzzer.click();
-                    }
-                    break;
-                }
-                break;
-              case USBK_DOWN:
-                if (state.selectedMenuItem < 3u - 1u)
-                  state.selectedMenuItem += 1u;
-                if (state.selectedMenuItem - state.topMenuItem > 2u)
-                  state.topMenuItem += 1u;
-                break;
-              case USBK_UP:
-                if (state.selectedMenuItem > 0u)
-                  state.selectedMenuItem -= 1u;
-                if (state.selectedMenuItem < state.topMenuItem)
-                  state.topMenuItem -= 1u;
-                break;
-              case USBK_RETURN:
-              case USBK_ENTER:
-                switch (state.selectedMenuItem) {
-                  // case N:
-                  //   state.foo = !state.foo;
-                  //   break;
-                }
-                state.inMenu = false;
-                break;
-            }
-          }
+          menu.key(selectorChanges[i].usbkSelector, selectorChanges[i].make);
           continue;
         }
 
