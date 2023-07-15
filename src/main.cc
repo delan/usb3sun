@@ -62,6 +62,7 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);
   display.setRotation(DISPLAY_ROTATION);
   display.cp437(true);
+  display.setTextWrap(false);
   display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.clearDisplay();
   display.drawXBitmap(0, 0, splash_bits, 128, 32, SSD1306_WHITE);
