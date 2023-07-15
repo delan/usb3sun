@@ -155,9 +155,10 @@ void drawMenuItem(unsigned i, const char *fmt, Args... args) {
 void loop() {
   const auto t = micros();
   display.clearDisplay();
-  display.drawXBitmap(0, 0, logo_bits, 64, 16, SSD1306_WHITE);
+  // display.drawXBitmap(0, 0, logo_bits, 64, 16, SSD1306_WHITE);
   display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.setCursor(0, 0);
+  display.print(USB3SUN_VERSION);
   // static int i = 0;
   // display.printf("#%d @%lu", i++, t / 1'000);
   // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
