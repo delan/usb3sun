@@ -35,7 +35,7 @@ you will also need an 8-pin mini-din cable, male to male, **with each pin connec
 | ⚠️<br>**watch out!** | do not use mini-din cables with any pins swapped, like the apple 590-0552-A. if you are unsure, check with a multimeter in continuity mode. |
 | | be sure to hold the mini-din port on the adapter while connecting or disconnecting a cable. the port can be tight, so holding it will minimise strain on the board. |
 
-connect the adapter to your sun workstation with the mini-din cable, and connect any keyboards and mice to the usb-a ports on the adapter. the usb-c port on the adapter is for debugging and firmware updates only.
+connect the adapter to your sun workstation with the mini-din cable, and connect any keyboards and mice to the usb-a ports on the adapter. the usb-c port on the adapter (rev A2+) is for debugging and firmware updates only.
 
 ## the power key
 
@@ -105,7 +105,7 @@ for more details, see [/src/bindings.h](../src/bindings.h), but here are the imp
 
 ## updating the firmware
 
-you can update or reflash the firmware over usb (rev A2), or with a picoprobe.
+you can update or reflash the firmware over usb (rev A2+), or with a picoprobe.
 
 ### usb method
 
