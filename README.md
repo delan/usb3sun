@@ -70,6 +70,12 @@ features planned for a future firmware version:
 release notes
 -------------
 
+### firmware [1.3](https://github.com/delan/usb3sun/releases/tag/1.3) (2023-07-16)
+
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.3/pio_pkg_list.txt) = dependency tree at time of release
+* added **firmware version to display** — this replaces the logo, which became a bit redundant
+* added **marquee display for long menu items** — this fixes a bug where they would wrap in an unreadable way
+
 ### pcb rev [A2](https://github.com/delan/usb3sun/releases/tag/A2) (2023-06-30)
 
 * added usb-c port J4 — this makes firmware updates much easier, and makes it possible to debug the sun keyboard and mouse interfaces simultaneously
