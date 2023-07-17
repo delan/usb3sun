@@ -37,8 +37,6 @@ Adafruit_USBH_Host USBHost;
 // holding device descriptor
 tusb_desc_device_t desc_device;
 
-Adafruit_SSD1306 display(128, 32, &Wire, /* OLED_RESET */ -1);
-
 std::atomic<bool> wait = true;
 
 State state;
