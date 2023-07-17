@@ -450,9 +450,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 #ifdef SUNK_ENABLE
       for (int i = 0; i < modifierChangesLen; i++) {
         // for DV bindings, make when key makes and break when key breaks
-        for (int j = 0; j < sizeof(DV_BINDINGS) / sizeof(*DV_BINDINGS); j++)
-          if (DV_BINDINGS[j].usbkModifier == modifierChanges[i].usbkModifier)
-            sunkSend(modifierChanges[i].make, DV_BINDINGS[j].sunkMake);
+        if (uint8_t sunkMake = USBK_TO_SUNK.dv[modifierChanges[i].usbkModifier])
+          sunkSend(modifierChanges[i].make, sunkMake);
       }
 #endif
 
@@ -479,9 +478,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         // • does not make when the DV key makes after the Sel key makes
         // • break when the Sel key breaks and the old modifiers are equal
         // • FIXME does not break when the DV key breaks before the Sel key breaks!
-        for (int j = 0; j < sizeof(DV_SEL_BINDINGS) / sizeof(*DV_SEL_BINDINGS); j++) {
-          if (DV_SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector && DV_SEL_BINDINGS[j].usbkModifier == state.lastModifiers) {
-            sunkSend(selectorChanges[i].make, DV_SEL_BINDINGS[j].sunkMake);
+        if (state.lastModifiers == USBK_CTRL_R) {
+          if (uint8_t sunkMake = USBK_TO_SUNK.special[selectorChanges[i].usbkSelector]) {
+            sunkSend(selectorChanges[i].make, sunkMake);
             consumedByDvSel = true;
           }
         }
@@ -490,9 +489,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         // • make when key makes and break when key breaks
         // • does not make or break when key was consumed by a DV+Sel binding
         if (!consumedByDvSel)
-          for (int j = 0; j < sizeof(SEL_BINDINGS) / sizeof(*SEL_BINDINGS); j++)
-            if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
-              sunkSend(selectorChanges[i].make, SEL_BINDINGS[j].sunkMake);
+          if (uint8_t sunkMake = USBK_TO_SUNK.sel[selectorChanges[i].usbkSelector])
+            sunkSend(selectorChanges[i].make, sunkMake);
       }
 
 #ifdef DEBUG_TIMINGS

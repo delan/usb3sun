@@ -1,3 +1,6 @@
+#ifndef USB3SUN_BINDINGS_H
+#define USB3SUN_BINDINGS_H
+
 #include <cstdint>
 
 #define USBK_RESERVED 0
@@ -59,6 +62,16 @@
 // Sun keyboard to USB converter https://kentie.net/article/sunkbd/index.htm
 // PC-Sun keyboard mapping in Rose multi-platform KVM switches http://www.rose-electronics.de/additional/sun_keyboard_mapping.pdf
 
+struct UsbkToSunk {
+  uint8_t dv[256]{};
+  uint8_t sel[256]{};
+  uint8_t special[256]{};
+
+  UsbkToSunk();
+};
+
+extern UsbkToSunk USBK_TO_SUNK;
+
 struct DvBinding {
   uint8_t usbkModifier;
   uint8_t sunkMake;
@@ -78,7 +91,7 @@ struct DvSelBinding {
   uint8_t sunkBreak;
 };
 
-const DvBinding DV_BINDINGS[] = {
+static const DvBinding DV_BINDINGS[] = {
   // direct equivalents
   {1u << 1, 0x63, 0xE3}, // 81. left “Shift”
   {1u << 5, 0x6E, 0xEE}, // 92. right “Shift”
@@ -255,3 +268,5 @@ const DvSelBinding DV_SEL_BINDINGS[] = {
   // alternate for common 104-key layouts; P for Power
   {1u << 4, 19, 0x30, 0xB0}, // CtrlR+P → bf(13) Power
 };
+
+#endif
