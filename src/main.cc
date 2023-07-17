@@ -455,7 +455,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       }
 #endif
 
-      // treat simultaneous DV and Sel changes as DV before Sel, for DV+Sel bindings
+      // treat simultaneous DV and Sel changes as DV before Sel, for special bindings
       state.lastModifiers = kreport->modifier;
 
       for (int i = 0; i < selectorChangesLen; i++) {
@@ -464,31 +464,31 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
           continue;
         }
 
-        // CtrlR+Space acts like a DV+Sel binding, but opens the settings menu
+        // CtrlR+Space acts like a special binding, but opens the settings menu
+        // note: no other modifiers are allowed, to avoid getting them stuck down
         if (selectorChanges[i].usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
           menu.toggle();
           continue;
         }
 
-        bool consumedByDvSel = false;
+        bool consumedBySpecialBinding = false;
 
-        // for DV+Sel bindings:
-        // • make when the Sel key makes and the old DV keys are equal
-        // • does not make when the Sel key makes and the old DV keys are proper superset
-        // • does not make when the DV key makes after the Sel key makes
-        // • break when the Sel key breaks and the old modifiers are equal
-        // • FIXME does not break when the DV key breaks before the Sel key breaks!
-        if (state.lastModifiers == USBK_CTRL_R) {
-          if (uint8_t sunkMake = USBK_TO_SUNK.special[selectorChanges[i].usbkSelector]) {
+        // for special bindings (CtrlR+Sel):
+        // • make when the Sel key makes and the DV keys include CtrlR
+        // • break when the Sel key breaks and the old DV keys include CtrlR
+        // • do not make when CtrlR makes after the Sel key makes
+        // • FIXME does not break when the DV key breaks before CtrlR breaks!
+        if (uint8_t sunkMake = USBK_TO_SUNK.special[selectorChanges[i].usbkSelector]) {
+          if (!!(state.lastModifiers & USBK_CTRL_R)) {
             sunkSend(selectorChanges[i].make, sunkMake);
-            consumedByDvSel = true;
+            consumedBySpecialBinding = true;
           }
         }
 
         // for Sel bindings
         // • make when key makes and break when key breaks
-        // • does not make or break when key was consumed by a DV+Sel binding
-        if (!consumedByDvSel)
+        // • do not make or break when key was consumed by a special binding
+        if (!consumedBySpecialBinding)
           if (uint8_t sunkMake = USBK_TO_SUNK.sel[selectorChanges[i].usbkSelector])
             sunkSend(selectorChanges[i].make, sunkMake);
       }
