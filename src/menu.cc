@@ -6,6 +6,18 @@
 #include "display.h"
 #include "settings.h"
 #include "state.h"
+#include "view.h"
+
+static View MENU_VIEW{
+  .handlePaint = []() {
+    menu.draw();
+  },
+  .handleKey = [](const UsbkChanges &changes) {
+    for (size_t i = 0; i < changes.selLen; i++)
+      if (changes.sel[i].make)
+        menu.key(changes.sel[i].usbkSelector);
+  },
+};
 
 template<typename... Args>
 static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args);
@@ -57,10 +69,20 @@ static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, 
   }
 }
 
-void Menu::toggle() {
-  open = !open;
+void Menu::open() {
+  if (isOpen)
+    return;
+  isOpen = true;
   selectedItem = 0u;
   topItem = 0u;
+  View::push(&MENU_VIEW);
+}
+
+void Menu::close() {
+  if (!isOpen)
+    return;
+  View::pop();
+  isOpen = false;
 }
 
 void Menu::draw() {
@@ -72,64 +94,62 @@ void Menu::draw() {
     MENU_ITEM_PAINTERS[i](marqueeX, i - topItem, selectedItem == i);
 }
 
-void Menu::key(uint8_t usbkSelector, bool make) {
-  if (make) {
-    switch (usbkSelector) {
-      case USBK_RIGHT:
-        switch (selectedItem) {
-          case 1:
-            ++settings.forceClick();
-            settings.write(settings.forceClick_field);
-            break;
-          case 2:
-            if (settings.clickDuration() < 96u) {
-              settings.clickDuration() += 5u;
-              settings.write(settings.clickDuration_field);
-              buzzer.click();
-            }
-            break;
-        }
-        break;
-      case USBK_LEFT:
-        switch (selectedItem) {
-          case 1:
-            --settings.forceClick();
-            settings.write(settings.forceClick_field);
-            break;
-          case 2:
-            if (settings.clickDuration() > 4u) {
-              settings.clickDuration() -= 5u;
-              settings.write(settings.clickDuration_field);
-              buzzer.click();
-            }
-            break;
-        }
-        break;
-      case USBK_DOWN:
-        if (selectedItem < MENU_ITEM_COUNT - 1u) {
-          selectedItem += 1u;
-          marqueeX = 0;
-        }
-        if (selectedItem - topItem > 2u)
-          topItem += 1u;
-        break;
-      case USBK_UP:
-        if (selectedItem > 0u) {
-          selectedItem -= 1u;
-          marqueeX = 0;
-        }
-        if (selectedItem < topItem)
-          topItem -= 1u;
-        break;
-      case USBK_RETURN:
-      case USBK_ENTER:
-        switch (selectedItem) {
-          // case N:
-          //   state.foo = !state.foo;
-          //   break;
-        }
-        toggle();
-        break;
-    }
+void Menu::key(uint8_t usbkSelector) {
+  switch (usbkSelector) {
+    case USBK_RIGHT:
+      switch (selectedItem) {
+        case 1:
+          ++settings.forceClick();
+          settings.write(settings.forceClick_field);
+          break;
+        case 2:
+          if (settings.clickDuration() < 96u) {
+            settings.clickDuration() += 5u;
+            settings.write(settings.clickDuration_field);
+            buzzer.click();
+          }
+          break;
+      }
+      break;
+    case USBK_LEFT:
+      switch (selectedItem) {
+        case 1:
+          --settings.forceClick();
+          settings.write(settings.forceClick_field);
+          break;
+        case 2:
+          if (settings.clickDuration() > 4u) {
+            settings.clickDuration() -= 5u;
+            settings.write(settings.clickDuration_field);
+            buzzer.click();
+          }
+          break;
+      }
+      break;
+    case USBK_DOWN:
+      if (selectedItem < MENU_ITEM_COUNT - 1u) {
+        selectedItem += 1u;
+        marqueeX = 0;
+      }
+      if (selectedItem - topItem > 2u)
+        topItem += 1u;
+      break;
+    case USBK_UP:
+      if (selectedItem > 0u) {
+        selectedItem -= 1u;
+        marqueeX = 0;
+      }
+      if (selectedItem < topItem)
+        topItem -= 1u;
+      break;
+    case USBK_RETURN:
+    case USBK_ENTER:
+      switch (selectedItem) {
+        // case N:
+        //   state.foo = !state.foo;
+        //   break;
+      }
+      close();
+      break;
   }
 }

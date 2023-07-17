@@ -20,6 +20,7 @@ extern "C" {
 #include "menu.h"
 #include "settings.h"
 #include "state.h"
+#include "view.h"
 #include "splash.xbm"
 #include "logo.xbm"
 
@@ -48,6 +49,88 @@ __attribute__((section(".mutex_array"))) mutex_t settingsMutex;
 struct {
   bool ok;
 } fake;
+
+void drawStatus(int16_t x, int16_t y, const char *label, bool on);
+void sunkSend(bool make, uint8_t code);
+
+static View DEFAULT_VIEW{
+  .handlePaint = []() {
+    drawStatus(78, 0, "CLK", state.clickEnabled);
+    drawStatus(104, 0, "BEL", state.bell);
+    drawStatus(0, 18, "CAP", state.caps);
+    drawStatus(26, 18, "CMP", state.compose);
+    drawStatus(52, 18, "SCR", state.scroll);
+    drawStatus(78, 18, "NUM", state.num);
+    if (buzzer.current != Buzzer::_::NONE) {
+      const auto x = 106;
+      const auto y = 16;
+      display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
+      display.fillRect(x + 5, y + 2, 4, 10, SSD1306_WHITE);
+      display.fillRect(x + 4, y + 4, 6, 8, SSD1306_WHITE);
+      display.fillRect(x + 2, y + 9, 10, 3, SSD1306_WHITE);
+      display.fillRect(x + 1, y + 10, 12, 2, SSD1306_WHITE);
+      display.fillRect(x + 5, y + 13, 4, 1, SSD1306_WHITE);
+    } else {
+      display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
+    }
+  },
+  .handleKey = [](const UsbkChanges &changes) {
+    unsigned long t = micros();
+
+#ifdef SUNK_ENABLE
+    for (int i = 0; i < changes.dvLen; i++) {
+      // for DV bindings, make when key makes and break when key breaks
+      if (uint8_t sunkMake = USBK_TO_SUNK.dv[changes.dv[i].usbkModifier])
+        sunkSend(changes.dv[i].make, sunkMake);
+    }
+#endif
+
+    // treat simultaneous DV and Sel changes as DV before Sel, for special bindings
+    const uint8_t lastModifiers = changes.kreport->modifier;
+
+    for (int i = 0; i < changes.selLen; i++) {
+      const uint8_t usbkSelector = changes.sel[i].usbkSelector;
+      const uint8_t make = changes.sel[i].make;
+
+      // CtrlR+Space acts like a special binding, but opens the settings menu
+      // note: no other modifiers are allowed, to avoid getting them stuck down
+      if (changes.sel[i].usbkSelector == USBK_SPACE && lastModifiers == USBK_CTRL_R) {
+        menu.open();
+        continue;
+      }
+
+      static bool specialBindingIsPressed[256]{};
+      bool consumedBySpecialBinding[256]{};
+
+      // for special bindings (CtrlR+Sel):
+      // • make when the Sel key makes and the DV keys include CtrlR
+      // • break when the Sel key breaks, even if the DV keys no longer include CtrlR
+      // • do not make when CtrlR makes after the Sel key makes
+      if (uint8_t sunkMake = USBK_TO_SUNK.special[usbkSelector]) {
+        if (make && !!(state.lastModifiers & USBK_CTRL_R)) {
+          sunkSend(true, sunkMake);
+          specialBindingIsPressed[usbkSelector] = true;
+          consumedBySpecialBinding[usbkSelector] = true;
+        } else if (!make && specialBindingIsPressed[usbkSelector]) {
+          sunkSend(false, sunkMake);
+          specialBindingIsPressed[usbkSelector] = false;
+          consumedBySpecialBinding[usbkSelector] = true;
+        }
+      }
+
+      // for Sel bindings
+      // • make when key makes and break when key breaks
+      // • do not make or break when key was consumed by the corresponding special binding
+      if (uint8_t sunkMake = USBK_TO_SUNK.sel[usbkSelector])
+        if (!consumedBySpecialBinding[usbkSelector])
+          sunkSend(make, sunkMake);
+    }
+
+#ifdef DEBUG_TIMINGS
+    Sprintf("sent in %lu\n", micros() - t);
+#endif
+  },
+};
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -109,6 +192,8 @@ void setup() {
   Settings::begin();
   settings.readAll();
 
+  View::push(&DEFAULT_VIEW);
+
 #ifdef WAIT_PIN
   pinMode(WAIT_PIN, INPUT_PULLUP);
   while (digitalRead(WAIT_PIN));
@@ -145,28 +230,7 @@ void loop() {
   // static int i = 0;
   // display.printf("#%d @%lu", i++, t / 1'000);
   // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
-  if (menu.open) {
-    menu.draw();
-  } else {
-    drawStatus(78, 0, "CLK", state.clickEnabled);
-    drawStatus(104, 0, "BEL", state.bell);
-    drawStatus(0, 18, "CAP", state.caps);
-    drawStatus(26, 18, "CMP", state.compose);
-    drawStatus(52, 18, "SCR", state.scroll);
-    drawStatus(78, 18, "NUM", state.num);
-    if (buzzer.current != Buzzer::_::NONE) {
-      const auto x = 106;
-      const auto y = 16;
-      display.fillRect(x + 6, y + 1, 2, 11, SSD1306_WHITE);
-      display.fillRect(x + 5, y + 2, 4, 10, SSD1306_WHITE);
-      display.fillRect(x + 4, y + 4, 6, 8, SSD1306_WHITE);
-      display.fillRect(x + 2, y + 9, 10, 3, SSD1306_WHITE);
-      display.fillRect(x + 1, y + 10, 12, 2, SSD1306_WHITE);
-      display.fillRect(x + 5, y + 13, 4, 1, SSD1306_WHITE);
-    } else {
-      display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
-    }
-  }
+  View::paint();
   display.display();
   delay(10);
 
@@ -395,23 +459,15 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
       }
 
-      struct {
-        uint8_t usbkModifier;
-        bool make;
-      } modifierChanges[8 * 2];
-      struct {
-        uint8_t usbkSelector;
-        bool make;
-      } selectorChanges[6 * 2];
-      size_t modifierChangesLen = 0;
-      size_t selectorChangesLen = 0;
+      UsbkChanges changes{};
+      changes.kreport = kreport;
 
       for (int i = 0; i < 8; i++) {
         if ((state.lastModifiers & 1 << i) != (kreport->modifier & 1 << i)) {
 #ifdef UHID_VERBOSE
           Sprintf(" %c%s", kreport->modifier & 1 << i ? '+' : '-', MODIFIER_NAMES[i]);
 #endif
-          modifierChanges[modifierChangesLen++] = {(uint8_t) (1u << i), kreport->modifier & 1 << i ? true : false};
+          changes.dv[changes.dvLen++] = {(uint8_t) (1u << i), kreport->modifier & 1 << i ? true : false};
         }
       }
 
@@ -428,13 +484,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 #ifdef UHID_VERBOSE
           Sprintf(" -%u", state.lastKeys[i]);
 #endif
-          selectorChanges[selectorChangesLen++] = {state.lastKeys[i], false};
+          changes.sel[changes.selLen++] = {state.lastKeys[i], false};
         }
         if (!newInOlds && kreport->keycode[i] >= USBK_FIRST_KEYCODE) {
 #ifdef UHID_VERBOSE
           Sprintf(" +%u", kreport->keycode[i]);
 #endif
-          selectorChanges[selectorChangesLen++] = {kreport->keycode[i], true};
+          changes.sel[changes.selLen++] = {kreport->keycode[i], true};
         }
       }
 
@@ -444,69 +500,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 #ifdef DEBUG_TIMINGS
       Sprintf("diffed in %lu\n", micros() - t);
 #endif
-      t = micros();
 
-#ifdef SUNK_ENABLE
-      for (int i = 0; i < modifierChangesLen; i++) {
-        // for DV bindings, make when key makes and break when key breaks
-        if (uint8_t sunkMake = USBK_TO_SUNK.dv[modifierChanges[i].usbkModifier])
-          sunkSend(modifierChanges[i].make, sunkMake);
-      }
-#endif
+      View::key(changes);
 
-      // treat simultaneous DV and Sel changes as DV before Sel, for special bindings
-      state.lastModifiers = kreport->modifier;
-
-      for (int i = 0; i < selectorChangesLen; i++) {
-        const uint8_t usbkSelector = selectorChanges[i].usbkSelector;
-        const uint8_t make = selectorChanges[i].make;
-
-        if (menu.open) {
-          menu.key(usbkSelector, make);
-          continue;
-        }
-
-        // CtrlR+Space acts like a special binding, but opens the settings menu
-        // note: no other modifiers are allowed, to avoid getting them stuck down
-        if (usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
-          menu.toggle();
-          continue;
-        }
-
-        static bool specialBindingIsPressed[256]{};
-        bool consumedBySpecialBinding[256]{};
-
-        // for special bindings (CtrlR+Sel):
-        // • make when the Sel key makes and the DV keys include CtrlR
-        // • break when the Sel key breaks, even if the DV keys no longer include CtrlR
-        // • do not make when CtrlR makes after the Sel key makes
-        if (uint8_t sunkMake = USBK_TO_SUNK.special[usbkSelector]) {
-          if (make && !!(state.lastModifiers & USBK_CTRL_R)) {
-            sunkSend(true, sunkMake);
-            specialBindingIsPressed[usbkSelector] = true;
-            consumedBySpecialBinding[usbkSelector] = true;
-          } else if (!make && specialBindingIsPressed[usbkSelector]) {
-            sunkSend(false, sunkMake);
-            specialBindingIsPressed[usbkSelector] = false;
-            consumedBySpecialBinding[usbkSelector] = true;
-          }
-        }
-
-        // for Sel bindings
-        // • make when key makes and break when key breaks
-        // • do not make or break when key was consumed by the corresponding special binding
-        if (uint8_t sunkMake = USBK_TO_SUNK.sel[usbkSelector])
-          if (!consumedBySpecialBinding[usbkSelector])
-            sunkSend(make, sunkMake);
-      }
-
-#ifdef DEBUG_TIMINGS
-      Sprintf("sent in %lu\n", micros() - t);
-#endif
-
-      // finally commit the Sel changes
+      // commit the DV and Sel changes
+      state.lastModifiers = changes.kreport->modifier;
       for (int i = 0; i < 6; i++)
-        state.lastKeys[i] = kreport->keycode[i];
+        state.lastKeys[i] = changes.kreport->keycode[i];
     } break;
     case HID_ITF_PROTOCOL_MOUSE: {
       hid_mouse_report_t *mreport = (hid_mouse_report_t *) report;

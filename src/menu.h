@@ -5,15 +5,18 @@
 #include <cstdint>
 
 struct Menu {
-  bool open = false;
+  bool isOpen = false;
   size_t selectedItem = 0u;
   size_t topItem = 0u;
   int16_t marqueeX = 0;
   unsigned marqueeTick = 0;
 
-  void toggle();
+  void open();
+  void close();
   void draw();
-  void key(uint8_t usbkSelector, bool make);
+  void key(uint8_t usbkSelector);
 };
+
+extern Menu menu;
 
 #endif
