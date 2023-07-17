@@ -70,6 +70,22 @@ features planned for a future firmware version:
 release notes
 -------------
 
+### firmware [1.4](https://github.com/delan/usb3sun/releases/tag/1.4) (2023-07-17)
+
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.4/pio_pkg_list.txt) = dependency tree at time of release
+* **fixed a serious bug** where opening the settings menu can make the adapter start releasing keys at the wrong times
+* **fixed a serious bug** where special key bindings (Right Ctrl) can get stuck down if Right Ctrl is released early
+* you can now press special key bindings (Right Ctrl) together with other modifiers (e.g. [Shift+Undo](https://docs.oracle.com/cd/E19683-01/806-7612/startup-tbl-5/index.html) for Redo)
+* improved performance of keyboard processing — this reduces the latency of key presses by up to 90 µs
+
+you should update your firmware if you have any of the following symptoms:
+
+* modifiers like Shift stop working after closing the settings menu
+* modifiers like Shift appear to have a delayed effect after closing the settings menu
+* when a key gets stuck down, it remains stuck even after pressing and releasing another key
+
+you can also work around these bugs by resetting the adapter.
+
 ### firmware [1.3](https://github.com/delan/usb3sun/releases/tag/1.3) (2023-07-16)
 
 * [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.3/pio_pkg_list.txt) = dependency tree at time of release
