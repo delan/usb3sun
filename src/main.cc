@@ -303,7 +303,8 @@ void sunkSend(bool make, uint8_t code) {
   Sprintf("sun keyboard: tx command %02Xh (disabled)\n", code);
 #endif
 
-  if (activeCount == 0) {
+  if (activeCount <= 0) {
+    activeCount = 0;
 #ifdef SUNK_ENABLE
   Sprintf("sun keyboard: idle\n");
   Serial1.write(SUNK_IDLE);
