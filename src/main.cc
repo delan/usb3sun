@@ -50,11 +50,12 @@ struct {
 } fake;
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
   analogWriteRange(100);
   pinMode(POWER_KEY, OUTPUT);
 
