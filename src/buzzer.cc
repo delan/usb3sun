@@ -67,7 +67,9 @@ bool Buzzer::isExpired(unsigned long t, unsigned long duration) {
 }
 
 void Buzzer::setCurrent(unsigned long t, Buzzer::State value) {
+#ifdef BUZZER_VERBOSE
   Sprintf("buzzer: setCurrent %d\n", value);
+#endif
   current = value;
   since = t;
 }
