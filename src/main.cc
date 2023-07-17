@@ -385,6 +385,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     case HID_ITF_PROTOCOL_KEYBOARD: {
       hid_keyboard_report_t *kreport = (hid_keyboard_report_t *) report;
 
+      unsigned long t = micros();
+
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
 #ifdef UHID_VERBOSE
@@ -440,6 +442,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 #ifdef UHID_VERBOSE
       Sprintln();
 #endif
+#ifdef DEBUG_TIMINGS
+      Sprintf("diffed in %lu\n", micros() - t);
+#endif
+      t = micros();
 
 #ifdef SUNK_ENABLE
       for (int i = 0; i < modifierChangesLen; i++) {
@@ -488,6 +494,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             if (SEL_BINDINGS[j].usbkSelector == selectorChanges[i].usbkSelector)
               sunkSend(selectorChanges[i].make, SEL_BINDINGS[j].sunkMake);
       }
+
+#ifdef DEBUG_TIMINGS
+      Sprintf("sent in %lu\n", micros() - t);
+#endif
 
       // finally commit the Sel changes
       for (int i = 0; i < 6; i++)
