@@ -1,10 +1,12 @@
 #define DISPLAY_ROTATION 0  // 0|1|2|3 where 0 means GND pin is bottom left
 #define SUNM_BAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
+
+#define DEBUG_LOGGING       // allow any logging to Serial or Serial1
 // #define DEBUG_TIMINGS       // log time spent on critical operations
 // #define BUZZER_VERBOSE      // log buzzer state changes for debugging
-// #define SUNK_VERBOSE        // dump keyboard tx for debugging
-// #define SUNM_VERBOSE        // dump mouse tx for debugging
-// #define UHID_VERBOSE        // dump hid reports for debugging
+// #define SUNK_VERBOSE        // log keyboard tx for debugging
+// #define SUNM_VERBOSE        // log mouse tx for debugging
+// #define UHID_VERBOSE        // log hid reports for debugging
 
 // #define WAIT_PIN 22      // GP# number (optional) to wait for ground on boot
 // #define WAIT_SERIAL      // wait for serial input over USB CDC on boot (buggy)
@@ -52,8 +54,12 @@
 #define Sprint(...) (Serial1.print(__VA_ARGS__), Serial1.flush())
 #define Sprintln(...) (Serial1.println(__VA_ARGS__), Serial1.flush())
 #define Sprintf(...) (Serial1.printf(__VA_ARGS__), Serial1.flush())
-#else
+#elif defined(DEBUG_LOGGING)
 #define Sprint(...) (Serial.print(__VA_ARGS__), Serial.flush())
 #define Sprintln(...) (Serial.println(__VA_ARGS__), Serial.flush())
 #define Sprintf(...) (Serial.printf(__VA_ARGS__), Serial.flush())
+#else
+#define Sprint(...) do {} while (0)
+#define Sprintln(...) do {} while (0)
+#define Sprintf(...) do {} while (0)
 #endif
