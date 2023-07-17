@@ -459,38 +459,46 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       state.lastModifiers = kreport->modifier;
 
       for (int i = 0; i < selectorChangesLen; i++) {
+        const uint8_t usbkSelector = selectorChanges[i].usbkSelector;
+        const uint8_t make = selectorChanges[i].make;
+
         if (menu.open) {
-          menu.key(selectorChanges[i].usbkSelector, selectorChanges[i].make);
+          menu.key(usbkSelector, make);
           continue;
         }
 
         // CtrlR+Space acts like a special binding, but opens the settings menu
         // note: no other modifiers are allowed, to avoid getting them stuck down
-        if (selectorChanges[i].usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
+        if (usbkSelector == USBK_SPACE && state.lastModifiers == USBK_CTRL_R) {
           menu.toggle();
           continue;
         }
 
-        bool consumedBySpecialBinding = false;
+        static bool specialBindingIsPressed[256]{};
+        bool consumedBySpecialBinding[256]{};
 
         // for special bindings (CtrlR+Sel):
         // • make when the Sel key makes and the DV keys include CtrlR
-        // • break when the Sel key breaks and the old DV keys include CtrlR
+        // • break when the Sel key breaks, even if the DV keys no longer include CtrlR
         // • do not make when CtrlR makes after the Sel key makes
-        // • FIXME does not break when the DV key breaks before CtrlR breaks!
-        if (uint8_t sunkMake = USBK_TO_SUNK.special[selectorChanges[i].usbkSelector]) {
-          if (!!(state.lastModifiers & USBK_CTRL_R)) {
-            sunkSend(selectorChanges[i].make, sunkMake);
-            consumedBySpecialBinding = true;
+        if (uint8_t sunkMake = USBK_TO_SUNK.special[usbkSelector]) {
+          if (make && !!(state.lastModifiers & USBK_CTRL_R)) {
+            sunkSend(true, sunkMake);
+            specialBindingIsPressed[usbkSelector] = true;
+            consumedBySpecialBinding[usbkSelector] = true;
+          } else if (!make && specialBindingIsPressed[usbkSelector]) {
+            sunkSend(false, sunkMake);
+            specialBindingIsPressed[usbkSelector] = false;
+            consumedBySpecialBinding[usbkSelector] = true;
           }
         }
 
         // for Sel bindings
         // • make when key makes and break when key breaks
-        // • do not make or break when key was consumed by a special binding
-        if (!consumedBySpecialBinding)
-          if (uint8_t sunkMake = USBK_TO_SUNK.sel[selectorChanges[i].usbkSelector])
-            sunkSend(selectorChanges[i].make, sunkMake);
+        // • do not make or break when key was consumed by the corresponding special binding
+        if (uint8_t sunkMake = USBK_TO_SUNK.sel[usbkSelector])
+          if (!consumedBySpecialBinding[usbkSelector])
+            sunkSend(make, sunkMake);
       }
 
 #ifdef DEBUG_TIMINGS
