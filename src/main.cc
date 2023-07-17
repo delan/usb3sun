@@ -297,19 +297,19 @@ void sunkSend(bool make, uint8_t code) {
   }
 
 #ifdef SUNK_ENABLE
+#ifdef SUNK_VERBOSE
   Sprintf("sun keyboard: tx command %02Xh\n", code);
+#endif
   Serial1.write(code);
-#else
-  Sprintf("sun keyboard: tx command %02Xh (disabled)\n", code);
 #endif
 
   if (activeCount <= 0) {
     activeCount = 0;
 #ifdef SUNK_ENABLE
+#ifdef SUNK_VERBOSE
   Sprintf("sun keyboard: idle\n");
+#endif
   Serial1.write(SUNK_IDLE);
-#else
-  Sprintf("sun keyboard: idle (disabled)\n");
 #endif
   }
 
