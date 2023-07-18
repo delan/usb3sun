@@ -14,6 +14,23 @@
 #define USBK_RETURN 0x28
 #define USBK_ENTER 0x58
 #define USBK_SPACE 0x2C
+#define USBK_ESCAPE 0x29
+#define USBK_1 0x1E
+#define USBK_2 0x1F
+#define USBK_3 0x20
+#define USBK_4 0x21
+#define USBK_5 0x22
+#define USBK_6 0x23
+#define USBK_7 0x24
+#define USBK_8 0x25
+#define USBK_9 0x26
+#define USBK_0 0x27
+#define USBK_A 0x04
+#define USBK_B 0x05
+#define USBK_C 0x06
+#define USBK_D 0x07
+#define USBK_E 0x08
+#define USBK_F 0x09
 #define USBK_CTRL_R ((uint8_t) (1u << 4))
 #define USBM_LEFT ((uint8_t) (1u << 0))
 #define USBM_RIGHT ((uint8_t) (1u << 1))

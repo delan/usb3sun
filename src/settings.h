@@ -6,12 +6,12 @@
 #include <CoreMutex.h>
 #include <LittleFS.h>
 
-#define SETTING(_name, _version, _type, _default) \
+#define SETTING(_name, _version, _type, ...) \
   struct _name##Setting { \
     static const unsigned currentVersion = _version; \
     static constexpr const char *const path = "/" #_name; \
     unsigned version = currentVersion; \
-    _type value = _default; \
+    _type value = __VA_ARGS__; \
   } _name##_field; \
   _type &_name() { \
     return _name##_field.value; \
@@ -35,9 +35,11 @@ struct _name { \
 extern mutex_t settingsMutex;
 
 SETTING_ENUM(ForceClick, NO, OFF, ON);
+using Hostid = unsigned char[6];
 struct Settings {
   SETTING(clickDuration, 1, unsigned long, 5uL); // [0,100]
   SETTING(forceClick, 1, ForceClick, {ForceClick::_::NO});
+  SETTING(hostid, 1, Hostid, {'0', '0', '0', '0', '0', '0'});
 
   static void begin();
   void readAll();

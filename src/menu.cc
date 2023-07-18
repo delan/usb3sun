@@ -4,6 +4,7 @@
 #include "buzzer.h"
 #include "bindings.h"
 #include "display.h"
+#include "hostid.h"
 #include "settings.h"
 #include "state.h"
 #include "view.h"
@@ -12,6 +13,13 @@ MenuView MENU_VIEW{};
 
 template<typename... Args>
 static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args);
+
+enum class MenuItem : size_t {
+  GoBack,
+  ForceClick,
+  ClickDuration,
+  Hostid,
+};
 
 using MenuItemPainter = void (*)(int16_t &marqueeX, size_t i, bool on);
 static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
@@ -27,6 +35,15 @@ static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
   },
   [](int16_t &marqueeX, size_t i, bool on) {
     drawMenuItem(marqueeX, i, on, "Click duration: %u ms", settings.clickDuration());
+  },
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Hostid: %c%c%c%c%c%c",
+      settings.hostid()[0],
+      settings.hostid()[1],
+      settings.hostid()[2],
+      settings.hostid()[3],
+      settings.hostid()[4],
+      settings.hostid()[5]);
   },
 };
 
@@ -95,11 +112,11 @@ void MenuView::sel(uint8_t usbkSelector) {
   switch (usbkSelector) {
     case USBK_RIGHT:
       switch (selectedItem) {
-        case 1:
+        case (size_t)MenuItem::ForceClick:
           ++settings.forceClick();
           settings.write(settings.forceClick_field);
           break;
-        case 2:
+        case (size_t)MenuItem::ClickDuration:
           if (settings.clickDuration() < 96u) {
             settings.clickDuration() += 5u;
             settings.write(settings.clickDuration_field);
@@ -110,17 +127,27 @@ void MenuView::sel(uint8_t usbkSelector) {
       break;
     case USBK_LEFT:
       switch (selectedItem) {
-        case 1:
+        case (size_t)MenuItem::ForceClick:
           --settings.forceClick();
           settings.write(settings.forceClick_field);
           break;
-        case 2:
+        case (size_t)MenuItem::ClickDuration:
           if (settings.clickDuration() > 4u) {
             settings.clickDuration() -= 5u;
             settings.write(settings.clickDuration_field);
             buzzer.click();
           }
           break;
+      }
+      break;
+    case USBK_RETURN:
+    case USBK_ENTER:
+      switch (selectedItem) {
+        case (size_t)MenuItem::Hostid:
+          HOSTID_VIEW.open(settings.hostid());
+          break;
+        default:
+          close();
       }
       break;
     case USBK_DOWN:
@@ -138,15 +165,6 @@ void MenuView::sel(uint8_t usbkSelector) {
       }
       if (selectedItem < topItem)
         topItem -= 1u;
-      break;
-    case USBK_RETURN:
-    case USBK_ENTER:
-      switch (selectedItem) {
-        // case N:
-        //   state.foo = !state.foo;
-        //   break;
-      }
-      close();
       break;
   }
 }
