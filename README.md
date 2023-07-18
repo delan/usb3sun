@@ -70,6 +70,14 @@ features planned for a future firmware version:
 release notes
 -------------
 
+### firmware [1.5](https://github.com/delan/usb3sun/releases/tag/1.5) (2023-07-18)
+
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.5/pio_pkg_list.txt) = dependency tree at time of release
+* added a **macro to reprogram your idprom** — this makes it easier to boot your workstation with a dead nvram battery
+* added a **macro to wipe your idprom** — this makes your idprom contents invalid, as if you had a dead nvram battery
+* added a **hostid setting** — this sets the hostid used when reprogramming your idprom
+* changed behaviour of builtin led to turn on at the very start of setup — this may help troubleshoot problems with CDC serial port initialisation
+
 ### firmware [1.4](https://github.com/delan/usb3sun/releases/tag/1.4) (2023-07-17)
 
 * [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.4/pio_pkg_list.txt) = dependency tree at time of release
