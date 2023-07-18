@@ -67,6 +67,7 @@ usb3sun has **persistent settings** for:
 
 * forcing click mode (no/off/on)
 * click duration (5–100 ms)
+* your hostid
 
 features planned for a future firmware version:
 
