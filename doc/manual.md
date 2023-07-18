@@ -63,15 +63,18 @@ to send the power key to software while the workstation is on, press **Right Ctr
 
 usb3sun remembers its settings while powered off (firmware 1.2+).
 
-to open the settings menu, press **Right Ctrl+Space**. use the **Up** and **Down** arrow keys to select a setting, then use **Left** and **Right** to change it. press **Return** or **Enter** to choose actions.
+to open the settings menu, press **Right Ctrl+Space**. use the **Up** and **Down** arrow keys to select a setting, then use **Left** and **Right** to change settings listed as “in place”, or **Return** or **Enter** to choose other actions.
 
-| setting | firmware | values |
-|-|-|-|
-| Go back | 1.0+ | closes the settings menu |
-| Force click | 1.2+ | **no** = allow the workstation to control the click mode |
-|  |  | **off** = never click when pressing keys |
-|  |  | **on** = always click when pressing keys |
-| Click duration | 1.0+ | 0 ms, 5 ms, 10 ms, …, 100 ms |
+| setting | firmware | in place? | values |
+|-|-|-|-|
+| Go back | 1.0+ | no | closes the settings menu |
+| Force click | 1.2+ | yes | **no** = allow the workstation to control the click mode |
+|  |  |  | **off** = never click when pressing keys |
+|  |  |  | **on** = always click when pressing keys |
+| Click duration | 1.0+ | yes | 0 ms, 5 ms, 10 ms, …, 100 ms |
+| Hostid | 1.5+ | no | sets the hostid used when reprogramming your idprom |
+| Reprogram idprom | 1.5+ | no | plays a macro that reprograms your idprom |
+| Wipe idprom (AAh) | 1.5+ | no | plays a macro that makes your idprom contents invalid |
 
 ## bindings
 
