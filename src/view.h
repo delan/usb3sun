@@ -25,11 +25,8 @@ struct UsbkChanges {
 };
 
 struct View {
-  using PaintHandler = void (*)();
-  using KeyHandler = void (*)(const UsbkChanges &);
-
-  PaintHandler handlePaint;
-  KeyHandler handleKey;
+  virtual void handlePaint() = 0;
+  virtual void handleKey(const UsbkChanges &) = 0;
 
   static void push(View *);
   static void pop();

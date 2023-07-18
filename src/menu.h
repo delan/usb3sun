@@ -4,19 +4,22 @@
 #include <cstddef>
 #include <cstdint>
 
-struct Menu {
+#include "view.h"
+
+struct MenuView : View {
   bool isOpen = false;
   size_t selectedItem = 0u;
   size_t topItem = 0u;
   int16_t marqueeX = 0;
   unsigned marqueeTick = 0;
 
+  void handlePaint() override;
+  void handleKey(const UsbkChanges &) override;
   void open();
   void close();
-  void draw();
-  void key(uint8_t usbkSelector);
+  void sel(uint8_t usbkSelector);
 };
 
-extern Menu menu;
+extern MenuView MENU_VIEW;
 
 #endif

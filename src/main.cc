@@ -42,7 +42,6 @@ std::atomic<bool> wait = true;
 
 State state;
 Buzzer buzzer;
-Menu menu;
 Settings settings;
 __attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
 __attribute__((section(".mutex_array"))) mutex_t settingsMutex;
@@ -53,8 +52,8 @@ struct {
 void drawStatus(int16_t x, int16_t y, const char *label, bool on);
 void sunkSend(bool make, uint8_t code);
 
-static View DEFAULT_VIEW{
-  .handlePaint = []() {
+struct DefaultView : View {
+  void handlePaint() override {
     drawStatus(78, 0, "CLK", state.clickEnabled);
     drawStatus(104, 0, "BEL", state.bell);
     drawStatus(0, 18, "CAP", state.caps);
@@ -73,8 +72,9 @@ static View DEFAULT_VIEW{
     } else {
       display.fillRect(106, 16, 14, 14, SSD1306_BLACK);
     }
-  },
-  .handleKey = [](const UsbkChanges &changes) {
+  }
+
+  void handleKey(const UsbkChanges &changes) override {
     unsigned long t = micros();
 
 #ifdef SUNK_ENABLE
@@ -95,7 +95,7 @@ static View DEFAULT_VIEW{
       // CtrlR+Space acts like a special binding, but opens the settings menu
       // note: no other modifiers are allowed, to avoid getting them stuck down
       if (changes.sel[i].usbkSelector == USBK_SPACE && lastModifiers == USBK_CTRL_R) {
-        menu.open();
+        MENU_VIEW.open();
         continue;
       }
 
@@ -129,8 +129,10 @@ static View DEFAULT_VIEW{
 #ifdef DEBUG_TIMINGS
     Sprintf("sent in %lu\n", micros() - t);
 #endif
-  },
+  }
 };
+
+static DefaultView DEFAULT_VIEW{};
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);

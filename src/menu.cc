@@ -8,16 +8,7 @@
 #include "state.h"
 #include "view.h"
 
-static View MENU_VIEW{
-  .handlePaint = []() {
-    menu.draw();
-  },
-  .handleKey = [](const UsbkChanges &changes) {
-    for (size_t i = 0; i < changes.selLen; i++)
-      if (changes.sel[i].make)
-        menu.key(changes.sel[i].usbkSelector);
-  },
-};
+MenuView MENU_VIEW{};
 
 template<typename... Args>
 static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args);
@@ -69,7 +60,7 @@ static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, 
   }
 }
 
-void Menu::open() {
+void MenuView::open() {
   if (isOpen)
     return;
   isOpen = true;
@@ -78,14 +69,14 @@ void Menu::open() {
   View::push(&MENU_VIEW);
 }
 
-void Menu::close() {
+void MenuView::close() {
   if (!isOpen)
     return;
   View::pop();
   isOpen = false;
 }
 
-void Menu::draw() {
+void MenuView::handlePaint() {
   marqueeTick = (marqueeTick + 1) % 2;
   if (marqueeTick == 0)
     marqueeX += 1;
@@ -94,7 +85,13 @@ void Menu::draw() {
     MENU_ITEM_PAINTERS[i](marqueeX, i - topItem, selectedItem == i);
 }
 
-void Menu::key(uint8_t usbkSelector) {
+void MenuView::handleKey(const UsbkChanges &changes) {
+  for (size_t i = 0; i < changes.selLen; i++)
+    if (changes.sel[i].make)
+      sel(changes.sel[i].usbkSelector);
+}
+
+void MenuView::sel(uint8_t usbkSelector) {
   switch (usbkSelector) {
     case USBK_RIGHT:
       switch (selectedItem) {
