@@ -20,6 +20,16 @@ struct MenuView : View {
   void sel(uint8_t usbkSelector);
 };
 
+struct WaitView : View {
+  bool isOpen = false;
+  const char *message = "";
+
+  void handlePaint() override;
+  void handleKey(const UsbkChanges &) override;
+  void open(const char *message);
+  void close();
+};
+
 extern MenuView MENU_VIEW;
 
 #endif

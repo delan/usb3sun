@@ -53,6 +53,47 @@
 #define SUNK_CAPSLOCK 0x77
 #define SUNK_SCROLLLOCK 0x17
 #define SUNK_POWER 0x30
+#define SUNK_SHIFT_L 0x63
+#define SUNK_SPACE 0x79
+#define SUNK_RETURN 0x59
+#define SUNK_DASH 0x28
+#define SUNK_DOT 0x6C
+#define SUNK_1 0x1E
+#define SUNK_2 0x1F
+#define SUNK_3 0x20
+#define SUNK_4 0x21
+#define SUNK_5 0x22
+#define SUNK_6 0x23
+#define SUNK_7 0x24
+#define SUNK_8 0x25
+#define SUNK_9 0x26
+#define SUNK_0 0x27
+#define SUNK_Q 0x36
+#define SUNK_W 0x37
+#define SUNK_E 0x38
+#define SUNK_R 0x39
+#define SUNK_T 0x3A
+#define SUNK_Y 0x3B
+#define SUNK_U 0x3C
+#define SUNK_I 0x3D
+#define SUNK_O 0x3E
+#define SUNK_P 0x3F
+#define SUNK_A 0x4D
+#define SUNK_S 0x4E
+#define SUNK_D 0x4F
+#define SUNK_F 0x50
+#define SUNK_G 0x51
+#define SUNK_H 0x52
+#define SUNK_J 0x53
+#define SUNK_K 0x54
+#define SUNK_L 0x55
+#define SUNK_Z 0x64
+#define SUNK_X 0x65
+#define SUNK_C 0x66
+#define SUNK_V 0x67
+#define SUNK_B 0x68
+#define SUNK_N 0x69
+#define SUNK_M 0x6A
 
 // sources:
 // SPARC Keyboard Specification Version1 https://sparc.org/wp-content/uploads/2014/01/KBD.pdf.gz

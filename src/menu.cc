@@ -1,15 +1,20 @@
 #include "config.h"
 #include "menu.h"
 
+#include <string>
+#include <string_view>
+
 #include "buzzer.h"
 #include "bindings.h"
 #include "display.h"
 #include "hostid.h"
 #include "settings.h"
 #include "state.h"
+#include "sunk.h"
 #include "view.h"
 
 MenuView MENU_VIEW{};
+WaitView WAIT_VIEW{};
 
 template<typename... Args>
 static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, Args... args);
@@ -19,6 +24,8 @@ enum class MenuItem : size_t {
   ForceClick,
   ClickDuration,
   Hostid,
+  ReprogramIdprom,
+  WipeIdprom,
 };
 
 using MenuItemPainter = void (*)(int16_t &marqueeX, size_t i, bool on);
@@ -44,6 +51,12 @@ static const MenuItemPainter MENU_ITEM_PAINTERS[] = {
       settings.hostid()[3],
       settings.hostid()[4],
       settings.hostid()[5]);
+  },
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Reprogram idprom");
+  },
+  [](int16_t &marqueeX, size_t i, bool on) {
+    drawMenuItem(marqueeX, i, on, "Wipe idprom (AAh)");
   },
 };
 
@@ -75,6 +88,16 @@ static void drawMenuItem(int16_t &marqueeX, size_t i, bool on, const char *fmt, 
     display.fillRect(0, y, 8, 8, SSD1306_BLACK);
     display.fillRect(120, y, 8, 8, SSD1306_BLACK);
   }
+}
+
+unsigned decodeHex(unsigned char digit) {
+  if (digit >= '0' && digit <= '9')
+    return digit - '0';
+  if (digit >= 'A' && digit <= 'F')
+    return digit - 'A' + 10;
+  if (digit >= 'a' && digit <= 'f')
+    return digit - 'a' + 10;
+  return 0;
 }
 
 void MenuView::open() {
@@ -146,6 +169,66 @@ void MenuView::sel(uint8_t usbkSelector) {
         case (size_t)MenuItem::Hostid:
           HOSTID_VIEW.open(settings.hostid());
           break;
+        case (size_t)MenuItem::ReprogramIdprom: {
+          WAIT_VIEW.open("Reprogramming...");
+
+          unsigned hostid24 =
+            decodeHex(settings.hostid()[0]) << 20
+            | decodeHex(settings.hostid()[1]) << 16
+            | decodeHex(settings.hostid()[2]) << 12
+            | decodeHex(settings.hostid()[3]) << 8
+            | decodeHex(settings.hostid()[4]) << 4
+            | decodeHex(settings.hostid()[5]);
+
+          unsigned i = 0;
+          // https://funny.computer.daz.cat/sun/nvram-hostid-faq.txt
+          // version 1
+          sunkSend("1 %x mkp\n", i++);
+
+          // hostid byte 1/4 (system type)
+          sunkSend("real-machine-type %x mkp\n", i++);
+
+          // ethernet address oui (always 08:00:20)
+          sunkSend("8 %x mkp\n", i++);
+          sunkSend("0 %x mkp\n", i++);
+          sunkSend("20 %x mkp\n", i++);
+
+          // set ethernet address lower half such that hostid bytes 2/3/4
+          // cancels it out in the checksum
+          sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
+          sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
+          sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
+
+          // set date of manufacture such that the system type byte
+          // cancels it out in the checksum
+          sunkSend("real-machine-type %x mkp\n", i++);
+          sunkSend("0 %x mkp\n", i++);
+          sunkSend("0 %x mkp\n", i++);
+          sunkSend("0 %x mkp\n", i++);
+
+          // hostid bytes 2/3/4
+          sunkSend("%x %x mkp\n", hostid24 >> 16 & 0xFF, i++);
+          sunkSend("%x %x mkp\n", hostid24 >> 8 & 0xFF, i++);
+          sunkSend("%x %x mkp\n", hostid24 >> 0 & 0xFF, i++);
+
+          // 01h ^ 08h ^ 20h = 29h
+          // sunkSend("0 %x 0 do i idprom@ xor loop f mkp\n", i++);
+          sunkSend("29 %x mkp\n", i++);
+
+          // only needed for SS1000, but harmless otherwise
+          sunkSend("update-system-idprom\n");
+
+          sunkSend(".idprom\n");
+          sunkSend("banner\n");
+
+          WAIT_VIEW.close();
+        } break;
+        case (size_t)MenuItem::WipeIdprom: {
+          WAIT_VIEW.open("Wiping...");
+          for (unsigned i = 0; i < 0xF; i++)
+            sunkSend("aa %x mkp\n", i);
+          WAIT_VIEW.close();
+        } break;
         default:
           close();
       }
@@ -167,4 +250,26 @@ void MenuView::sel(uint8_t usbkSelector) {
         topItem -= 1u;
       break;
   }
+}
+
+void WaitView::handlePaint() {
+  display.setCursor(8, 8);
+  display.print(message);
+}
+
+void WaitView::handleKey(const UsbkChanges &) {}
+
+void WaitView::open(const char *message) {
+  if (isOpen)
+    return;
+  isOpen = true;
+  this->message = message;
+  View::push(&WAIT_VIEW);
+}
+
+void WaitView::close() {
+  if (!isOpen)
+    return;
+  View::pop();
+  isOpen = false;
 }
