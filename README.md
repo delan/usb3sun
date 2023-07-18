@@ -31,6 +31,13 @@ documentation
 * maintainer docs
     * [how to release](doc/releasing.md)
 
+new in rev A2 and firmware 1.5
+------------------------------
+
+usb3sun now has a usb-c port for **easy firmware updates!**
+
+usb3sun can now [**reprogram your idprom**](https://funny.computer.daz.cat/sun/nvram-hostid-faq.txt) with just a few keystrokes, making it easier to boot your workstation with a dead nvram battery!
+
 hardware features
 -----------------
 
@@ -65,7 +72,6 @@ features planned for a future firmware version:
 
 * settings for bell/click tone frequency
 * led indicators on your USB keyboard itself
-* an idprom macro, to [reprogram your hostid](https://funny.computer.daz.cat/sun/nvram-hostid-faq.txt)
 
 release notes
 -------------
