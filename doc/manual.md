@@ -135,7 +135,7 @@ flash the debugger with [the picoprobe firmware](https://github.com/raspberrypi/
 to flash the adapter with firmware.elf, run the command below.
 
 ```
-$ openocd -f /path/to/share/openocd/scripts/interface/cmsis-dap.cfg -f /path/to/share/openocd/scripts/target/rp2040.cfg -c 'adapter speed 1000' -c 'program /path/to/firmware.elf verify reset exit'
+$ openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c 'adapter speed 1000' -c 'program firmware.elf verify reset exit'
 ```
 
 ## compatibility
