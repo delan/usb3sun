@@ -460,7 +460,7 @@
     (pin "1" (uuid 54c75868-b7ee-43c8-8596-f811e58655f0))
     (pin "2" (uuid 8bd7a2bc-34e7-4cd0-ad3f-3378177dbe38))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "R1") (unit 1)
         )
@@ -485,7 +485,7 @@
     )
     (pin "1" (uuid 2582f679-c635-477e-b4ec-175ffe3877b1))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "#PWR02") (unit 1)
         )
@@ -508,7 +508,7 @@
     (property "Datasheet" "~" (at 78.74 119.38 90)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Sim.Library" "spice/MBR120VLSFT1.LIB" (at 78.74 119.38 0)
+    (property "Sim.Library" "MBR120VLSFT1.LIB" (at 78.74 119.38 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Sim.Name" "Dmbr120vlsft1" (at 78.74 119.38 0)
@@ -526,7 +526,7 @@
     (pin "1" (uuid 613bd50a-faf3-4a38-97eb-ce963d466cec))
     (pin "2" (uuid ed2cd20b-b1b5-43a4-aedf-f2d0550540da))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "D2") (unit 1)
         )
@@ -551,7 +551,7 @@
     )
     (pin "1" (uuid 64b698e7-feaa-483b-902d-3c1b55150748))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "#PWR018") (unit 1)
         )
@@ -574,7 +574,7 @@
     (property "Datasheet" "https://www.diodes.com/assets/Datasheets/DMG2301L.pdf" (at 73.66 111.76 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Sim.Library" "spice/DMG2305UX.spice.txt" (at 73.66 111.76 0)
+    (property "Sim.Library" "DMG2305UX.spice.txt" (at 73.66 111.76 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Sim.Name" "DMG2305UX" (at 73.66 111.76 0)
@@ -590,7 +590,7 @@
     (pin "2" (uuid 79751286-4500-420b-8de1-b61f63f0fc8f))
     (pin "3" (uuid 536b5d3f-da47-43e3-96a5-be5c3b997dd8))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "Q5") (unit 1)
         )
@@ -615,7 +615,7 @@
     )
     (pin "1" (uuid 923ab2a6-42ae-4761-af76-b1dabddff38a))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "#PWR01") (unit 1)
         )
@@ -650,7 +650,7 @@
     (pin "1" (uuid b32f0fb0-88e1-4ddf-b649-868134572c44))
     (pin "2" (uuid 4d9e51f1-147c-4131-8be5-0b7f377fda98))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "V2") (unit 1)
         )
@@ -685,7 +685,7 @@
     (pin "1" (uuid 9c6a5dd1-6543-44a6-9c92-a34d77dc1a71))
     (pin "2" (uuid 8208bbf6-8e65-4631-a07a-c78761c1eb62))
     (instances
-      (project "usb3sun"
+      (project "power"
         (path "/53cbcc9d-294b-4de2-968c-263510894355"
           (reference "V1") (unit 1)
         )

@@ -1,9 +1,6 @@
 [submodule "hardware/pcb/KiCad-RP-Pico"]
 	path = hardware/pcb/KiCad-RP-Pico
 	url = git@github.com:ncarandini/KiCad-RP-Pico.git
-[submodule "hardware/pcb/KiCad-SSD1306_OLED-0.91-128x32"]
-	path = hardware/pcb/KiCad-SSD1306_OLED-0.91-128x32
-	url = git@github.com:MichMich/KiCad-SSD1306_OLED-0.91-128x32.git
 [submodule "hardware/pcb/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty"]
 	path = hardware/pcb/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty
 	url = git@github.com:gorbachev/KiCad-SSD1306-0.91-OLED-4pin-128x32.pretty.git

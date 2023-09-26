@@ -1,8 +1,5 @@
 (sym_lib_table
   (version 7)
-  (lib (name "MCU_RaspberryPi_and_Boards")(type "KiCad")(uri "${KIPRJMOD}/KiCad-RP-Pico/RP-Pico Libraries/MCU_RaspberryPi_and_Boards.kicad_sym")(options "")(descr ""))
-  (lib (name "SSD1306_OLED-0.91-128x32")(type "Legacy")(uri "${KIPRJMOD}/KiCad-SSD1306_OLED-0.91-128x32/SSD1306_OLED-0.91-128x32.lib")(options "")(descr ""))
   (lib (name "usb3sun")(type "KiCad")(uri "${KIPRJMOD}/usb3sun.kicad_sym")(options "")(descr ""))
-  (lib (name "SC0915")(type "KiCad")(uri "${KIPRJMOD}/KiCad-SC0915/SC0915.kicad_sym")(options "")(descr ""))
   (lib (name "marbastlib-various")(type "KiCad")(uri "${KIPRJMOD}/KiCad-marbastlib/symbols/marbastlib-various.kicad_sym")(options "")(descr ""))
 )

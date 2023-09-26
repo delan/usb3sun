@@ -1,0 +1,9 @@
+Designator,Val,Package,Mid X,Mid Y,Rotation,Layer
+D1,19-213/Y2C-CQ2R2L/3T(CY),LED_0603_1608Metric,40.64,-38.1,90.0,top
+D2,CMOZ1L8,D_SOD-523,33.02,-53.34,-90.0,top
+Q1,MMDT2222A,SOT-363_SC-70-6,40.64,-48.26,0.0,top
+R1,1K,R_0402_1005Metric,33.02,-40.64,-90.0,top
+R2,100R,R_0402_1005Metric,58.93,-50.8,180.0,top
+RV1,20K,Potentiometer_Bourns_3314G_Vertical,48.26,-43.18,180.0,top
+RV2,2K,Potentiometer_Bourns_3314G_Vertical,53.34,-43.18,180.0,top
+RV3,200R,Potentiometer_Bourns_3314G_Vertical,58.42,-43.18,180.0,top
