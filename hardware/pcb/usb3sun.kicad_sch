@@ -4,6 +4,11 @@
 
   (paper "A4")
 
+  (title_block
+    (title "usb3sun")
+    (rev "A3")
+  )
+
   (lib_symbols
     (symbol "Analog_Switch:MAX40200AUK" (in_bom yes) (on_board yes)
       (property "Reference" "U" (at -6.35 6.35 0)
@@ -3653,10 +3658,6 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 13cafe5a-39f0-4628-95d3-9b2ac708b96e)
   )
-  (text "usb3sun" (at 186.69 191.262 0)
-    (effects (font (face "monofur") (size 2.54 2.54)) (justify left bottom))
-    (uuid 18ebb3d6-f3ea-4ebb-81d6-f8f0f05bc438)
-  )
   (text "sun interface" (at 15.24 154.94 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 1902c150-6f3d-4c2f-97dc-f95204dcfa3e)
@@ -3677,10 +3678,6 @@
   (text "power key" (at 139.7 160.02 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 41fc66c6-55b9-4265-b260-55e974acecc6)
-  )
-  (text "A2" (at 268.478 194.056 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 5465b1e5-274f-4a4a-a045-80a8200d856a)
   )
   (text "mtx level shifter" (at 111.76 160.02 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))

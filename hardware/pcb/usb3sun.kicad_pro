@@ -824,7 +824,7 @@
       "model_mode": 2,
       "workbook_filename": ""
     },
-    "page_layout_descr_file": "",
+    "page_layout_descr_file": "usb3sun.kicad_wks",
     "plot_directory": "",
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
