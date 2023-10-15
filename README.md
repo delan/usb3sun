@@ -77,6 +77,13 @@ features planned for a future firmware version:
 release notes
 -------------
 
+### pcb rev [A3](https://github.com/delan/usb3sun/releases/tag/A3) (2023-10-15)
+
+* fixed the inconsistent and excessive brightness of the led indicators (D2, D3)
+* fixed a bug where the VBUS indicator led (D2) can be dimly lit without VBUS being connected
+* changed J1 from [UJ2-ADH-W1-TH](https://jlcpcb.com/partdetail/CuiDevices-UJ2_ADH_W1TH/C5201729) to the compatible [USB-U267-BWS](https://jlcpcb.com/partdetail/HanboElectronic-USB_U267BWS/C2962392) due to stock shortage
+* cleaned up unused kicad libraries, and checked in libraries that were missing from the repo
+
 ### firmware [1.5](https://github.com/delan/usb3sun/releases/tag/1.5) (2023-07-18)
 
 * [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/1.5/pio_pkg_list.txt) = dependency tree at time of release

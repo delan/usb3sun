@@ -5,7 +5,7 @@ usb3sun user guide
 
 usb3sun is an adapter that allows you to use usb keyboards and mice with SPARCstations and other sun workstations.
 
-<img height=600 src="images/overview.png" alt="board overview of rev A2">
+<img height=600 src="images/overview.png" alt="board overview of rev A2+">
 
 <!-- export User.1 to svg, open in gimp at 300dpi, background #001023, expand 60x60 center -->
 
@@ -123,14 +123,14 @@ you will need a [raspberry pi pico](https://www.altronics.com.au/p/z6421a-raspbe
 
 flash the debugger with [the picoprobe firmware](https://github.com/raspberrypi/picoprobe), then connect the adapter to the debugger as follows, being sure to connect GND first and disconnect GND last.
 
-| rev A0 | rev A1 | rev A2 | picoprobe |
-|-|-|-|-|
-| GND | GND | GND | GND (pin 8) |
-|  | UART_TX | UART_TX | GP5 (pin 7) |
-|  | UART_RX | UART_RX | GP4 (pin 6) |
-| SWDIO | SWDIO | SWDIO | GP3 (pin 5) |
-| SWCLK | SWCLK | SWCLK | GP2 (pin 4) |
-| VBUS | VBUS | VBUS | VBUS (pin 40) |
+| rev A0 | rev A1, A2, A3 | picoprobe |
+|-|-|-|
+| GND | GND | GND (pin 8) |
+|  | UART_TX | GP5 (pin 7) |
+|  | UART_RX | GP4 (pin 6) |
+| SWDIO | SWDIO | GP3 (pin 5) |
+| SWCLK | SWCLK | GP2 (pin 4) |
+| VBUS | VBUS | VBUS (pin 40) |
 
 to flash the adapter with firmware.elf, run the command below.
 
@@ -170,34 +170,34 @@ usb3sun is not yet compatible with
 
 ## design files
 
-|  | rev A0 | rev A1 | rev A2 |
-|-|-|-|-|
-| schematic | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA0%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A0/hardware/pcb/usb3sun.kicad_sch)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA1%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A1/hardware/pcb/usb3sun.kicad_sch)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA2%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A2/hardware/pcb/usb3sun.kicad_sch)) |
-| pcb layout | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA0%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A0/hardware/pcb/usb3sun.kicad_pcb)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA1%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A1/hardware/pcb/usb3sun.kicad_pcb)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA2%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A2/hardware/pcb/usb3sun.kicad_pcb)) |
-| display module support |  | [source](https://github.com/delan/usb3sun/blob/74b367a12600d712eb7a05a9fc67c958bae3fe62/hardware/support/support.FCStd) | [source](https://github.com/delan/usb3sun/blob/A2/hardware/support/support.FCStd) |
+|  | rev A0 | rev A1 | rev A2 | rev A3 |
+|-|-|-|-|-|
+| schematic | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA0%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A0/hardware/pcb/usb3sun.kicad_sch)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA1%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A1/hardware/pcb/usb3sun.kicad_sch)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA2%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A2/hardware/pcb/usb3sun.kicad_sch)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA3%2Fhardware%2Fpcb%2Fusb3sun.kicad_sch) ([source](https://github.com/delan/usb3sun/blob/A3/hardware/pcb/usb3sun.kicad_sch)) |
+| pcb layout | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA0%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A0/hardware/pcb/usb3sun.kicad_pcb)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA1%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A1/hardware/pcb/usb3sun.kicad_pcb)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA2%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A2/hardware/pcb/usb3sun.kicad_pcb)) | [rendered](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2Fdelan%2Fusb3sun%2Fblob%2FA3%2Fhardware%2Fpcb%2Fusb3sun.kicad_pcb) ([source](https://github.com/delan/usb3sun/blob/A3/hardware/pcb/usb3sun.kicad_pcb)) |
+| display module support |  | [source](https://github.com/delan/usb3sun/blob/74b367a12600d712eb7a05a9fc67c958bae3fe62/hardware/support/support.FCStd) | [source](https://github.com/delan/usb3sun/blob/A2/hardware/support/support.FCStd) | [source](https://github.com/delan/usb3sun/blob/A3/hardware/support/support.FCStd) |
 
 ## specifications
 
-|  | rev A0 | rev A1 | rev A2 |
-|-|-|-|-|
-| width | 36 mm | 36 mm | 36 mm |
-| length | 95 mm | **98 mm** | 98 mm |
-| height | 23 mm | 23 mm | 23 mm |
-| ports | 1x sun mini-din | 1x sun mini-din | 1x sun mini-din |
-|  | 2x usb-a | 2x usb-a | 2x usb-a |
-|  |  |  | **1x usb-c (debug only)** |
-| buttons |  | **power (for workstation)** | power (for workstation) |
-|  |  | **reset (for adapter)** | reset (for adapter) |
-| led indicators |  | **VBUS ok** | VBUS ok |
-|  |  | **VSUN ok** | VSUN ok |
+|  | rev A0 | rev A1 | rev A2 | rev A3 |
+|-|-|-|-|-|
+| width | 36 mm | 36 mm | 36 mm | 36 mm |
+| length | 95 mm | **98 mm** | 98 mm | 98 mm |
+| height | 23 mm | 23 mm | 23 mm | 23 mm |
+| ports | 1x sun mini-din | 1x sun mini-din | 1x sun mini-din | 1x sun mini-din |
+|  | 2x usb-a | 2x usb-a | 2x usb-a | 2x usb-a |
+|  |  |  | **1x usb-c (debug only)** | 1x usb-c (debug only) |
+| buttons |  | **power (for workstation)** | power (for workstation) | power (for workstation) |
+|  |  | **reset (for adapter)** | reset (for adapter) | reset (for adapter) |
+| led indicators |  | **VBUS ok** | VBUS ok | VBUS ok |
+|  |  | **VSUN ok** | VSUN ok | VSUN ok |
 
 ### electrical characteristics
 
-|  | rev A0 | rev A1 | rev A2 |
-|-|-|-|-|
-| operating temperature | -40°C to 85°C | -40°C to 85°C | -40°C to 85°C |
-| storage temperature | -40°C to 85°C | -40°C to 85°C | -40°C to 85°C |
-| VBUS | -0V3 to 6V0 | -0V3 to 6V0 | -0V3 to 6V0 |
-| VSUN | -0V3 to 6V0 | -0V3 to 6V0 | -0V3 to 6V0 |
-| I<sub>VBUS1</sub> | up to 500mA | up to 500mA | up to 500mA |
-| I<sub>VBUS2</sub> | up to 500mA | up to 500mA | up to 500mA |
+|  | rev A0, A1, A2, A3 |
+|-|-|
+| operating temperature | -40°C to 85°C |
+| storage temperature | -40°C to 85°C |
+| VBUS | -0V3 to 6V0 |
+| VSUN | -0V3 to 6V0 |
+| I<sub>VBUS1</sub> | up to 500mA |
+| I<sub>VBUS2</sub> | up to 500mA |
