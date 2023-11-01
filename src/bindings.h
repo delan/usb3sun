@@ -275,6 +275,9 @@ const SelBinding SEL_BINDINGS[] = {
   {70, 0x16, 0x96}, // PrintScreen/SysRq aka “Keyboard PrintScreen” → 70. Pr Sc
   {71, 0x17, 0x97}, // Keyboard Scroll Lock → 71. Break(!)	Scroll Lock
 
+  // Map End to Stop to provide for a way to press Stop-a
+  {77, 0x01, 0x81}, // End -> Stop
+
   // HID Usage Tables 1.3 §10:
   // Keyboard Application[11] Windows key for Windows 95, and Compose.
   // Keyboard Left GUI[11] Windows key for Windows 95, and Compose.

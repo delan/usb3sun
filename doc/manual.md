@@ -103,8 +103,13 @@ for more details, see [/src/bindings.h](../src/bindings.h), but here are the imp
 | Right Ctrl+F1     | Help                    |
 | Right Ctrl+F4     | Props                   |
 | Right Ctrl+=      | keypad =                |
+| End               | Stop                    |
 
 \* aka Super, Mod4, Windows, etc
+
+The alternate binding for `Stop` to the `End` key is provided so that
+the `Stop-a` chord can be pressed to enter the boot monitor on
+SPARCstations.
 
 ## updating the firmware
 
