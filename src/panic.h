@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+#include <Arduino.h>
+
 template<typename... Args>
 void panic2(const char *fmt, Args... args) {
     Sprint("panic: ");
