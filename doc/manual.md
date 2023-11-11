@@ -151,20 +151,28 @@ usb3sun is compatible with any machine that would normally use a
 usb3sun has been tested successfully with
 
 - SPARCstation IPC (sun4c)
+- SPARCstation 2 (sun4c)
 - SPARCstation 5 (sun4m)
+- SPARCstation 20 (sun4m)
 - Ultra 5 (sun4u)
+- 1209:A1E5 Atreus (Technomancy version) **keyboard** with QMK
 - 04A5:8001 BenQ Zowie EC2 **mouse**
 - 046D:C063 Dell M-UAV-DEL8 **mouse**
+- FEED:1307 gBoards Gergo **keyboard** with QMK
 - 0461:4E24 HP KB71211 **keyboard** — no scroll lock or right meta
 - 0461:4E23 HP MOGIUO **mouse**
+- 04D9:1503 Inland 208397 **keyboard**
 - 17EF:608D Lenovo EMS-537A **mouse**
 - 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A
 - 045E:0752 Microsoft Wired **Keyboard** 400
 - 045E:0750 Microsoft Wired **Keyboard** 600
 - 045E:0773 Microsoft Explorer Touch **Mouse** (model 1490)
+- FEED:6061 Preonic OLKB-60 **keyboard** with QMK
 
 usb3sun is not yet compatible with
 
+- 05AC:024F Apple Magic **Keyboard** with Numeric Keypad (model A1243)
+- 1209:2303 Atreus (Keyboardio version) **keyboard** with Kaleidoscope
 - 3367:1903 Endgame Gear XM1r **mouse** — buttons only (16-bit dx/dy, no boot protocol)
 - 045E:0039 Microsoft Intelli**Mouse** Optical 1.1A — broken (“Control FAILED”)
 
