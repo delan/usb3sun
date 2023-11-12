@@ -34,10 +34,13 @@ const char *const BUTTON_NAMES[] = {
   "LeftClick", "RightClick", "MiddleClick", "MouseBack", "MouseForward",
 };
 
-// USB Host object
 Adafruit_USBH_Host USBHost;
-// holding device descriptor
-tusb_desc_device_t desc_device;
+struct {
+  bool present = false;
+  uint8_t dev_addr;
+  uint8_t instance;
+  uint8_t if_protocol;
+} hid[16];
 
 std::atomic<bool> wait = true;
 
@@ -358,16 +361,52 @@ void loop1() {
 // descriptor. Note: if report descriptor length > CFG_TUH_ENUMERATION_BUFSIZE,
 // it will be skipped therefore report_desc = NULL, desc_len = 0
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len) {
-  (void)desc_report;
-  (void)desc_len;
   uint16_t vid, pid;
   tuh_vid_pid_get(dev_addr, &vid, &pid);
   Sprintf("usb [%u:%u]: hid mount vid:pid=%04x:%04x\n", dev_addr, instance, vid, pid);
 
-  tuh_hid_report_info_t infos[16];
-  size_t infos_len = tuh_hid_parse_report_descriptor(infos, sizeof(infos) / sizeof(*infos), desc_report, desc_len);
-  for (size_t i = 0; i < infos_len; i++)
-    Sprintf("      report[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", infos[i].report_id, infos[i].usage, infos[i].usage_page);
+  tuh_hid_report_info_t reports[16];
+  size_t reports_len = tuh_hid_parse_report_descriptor(reports, sizeof(reports) / sizeof(*reports), desc_report, desc_len);
+  for (size_t i = 0; i < reports_len; i++)
+    Sprintf("    reports[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", reports[i].report_id, reports[i].usage, reports[i].usage_page);
+
+  // hid_subclass_enum_t if_subclass = ...;
+  uint8_t if_protocol = tuh_hid_interface_protocol(dev_addr, instance);
+  Sprintf("    bInterfaceProtocol=%u", if_protocol);
+  switch (if_protocol) {
+    case HID_ITF_PROTOCOL_KEYBOARD:
+      Sprintln(" (boot keyboard)");
+      break;
+    case HID_ITF_PROTOCOL_MOUSE:
+      Sprintln(" (boot mouse)");
+      break;
+    default:
+      Sprintln();
+  }
+
+  // TODO non-boot input devices
+  switch (if_protocol) {
+    case HID_ITF_PROTOCOL_KEYBOARD:
+    case HID_ITF_PROTOCOL_MOUSE: {
+      bool ok = false;
+      for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
+        if (!hid[i].present) {
+          Sprintf(
+            "hid [%zu]: usb [%u:%u], bInterfaceProtocol=%u\n",
+            i, dev_addr, instance, if_protocol
+          );
+          hid[i].dev_addr = dev_addr;
+          hid[i].instance = instance;
+          hid[i].if_protocol = if_protocol;
+          hid[i].present = true;
+          ok = true;
+          break;
+        }
+      }
+      if (!ok)
+        Sprintln("error: usb [%u:%u]: hid table full");
+    }
+  }
 
   if (!tuh_hid_receive_report(dev_addr, instance))
     Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
@@ -375,7 +414,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   buzzer.plug();
 }
 
-// Invoked when device with hid interface is un-mounted
+// FIXME this never seems to get called?
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
   Sprintf("usb [%u:%u]: hid unmount\n", dev_addr, instance);
 }
@@ -386,6 +425,12 @@ void tuh_mount_cb(uint8_t dev_addr) {
 
 void tuh_umount_cb(uint8_t dev_addr) {
   Sprintf("usb [%u]: unmount\n", dev_addr);
+  for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
+    if (hid[i].present && hid[i].dev_addr == dev_addr) {
+      Sprintf("hid [%zu]: removing\n", i);
+      hid[i].present = false;
+    }
+  }
   buzzer.unplug();
 }
 
