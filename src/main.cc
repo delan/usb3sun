@@ -34,6 +34,13 @@ const char *const BUTTON_NAMES[] = {
   "LeftClick", "RightClick", "MiddleClick", "MouseBack", "MouseForward",
 };
 
+enum class Message : uint32_t {
+  UHID_LED_FROM_STATE,
+  UHID_LED_ALL_OFF,
+  UHID_LED_ALL_ON,
+};
+
+// core 1 only
 Adafruit_USBH_Host USBHost;
 struct {
   bool present = false;
@@ -238,6 +245,17 @@ void loop() {
   // display.printf("usb3sun%c", t / 500'000 % 2 == 1 ? '.' : ' ');
   View::paint();
   display.display();
+
+#ifdef UHID_LED_TEST
+  static int z = 0;
+  if (++z % 10 == 0) {
+    Message message = z / 10 % 2 == 0
+      ? Message::UHID_LED_ALL_OFF
+      : Message::UHID_LED_ALL_ON;
+    rp2040.fifo.push_nb((uint32_t)message);
+  }
+#endif
+
   delay(10);
 
 #ifdef FAKE_SUN_ENABLE
@@ -283,6 +301,10 @@ void serialEvent1() {
         state.compose = status & 1 << 1;
         state.scroll = status & 1 << 2;
         state.caps = status & 1 << 3;
+
+        // ensure state update finished, then notify
+        __dmb();
+        rp2040.fifo.push_nb((uint32_t)Message::UHID_LED_FROM_STATE);
       } break;
       case SUNK_LAYOUT: {
         Serial1.write(SUNK_LAYOUT_RESPONSE);
@@ -351,6 +373,39 @@ void setup1() {
 }
 
 void loop1() {
+  uint32_t message;
+  if (rp2040.fifo.pop_nb(&message)) {
+    for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
+      if (!hid[i].present || hid[i].if_protocol != HID_ITF_PROTOCOL_KEYBOARD)
+        continue;
+      uint8_t dev_addr = hid[i].dev_addr;
+      uint8_t instance = hid[i].instance;
+      uint8_t report;
+      switch (message) {
+        case (uint32_t)Message::UHID_LED_FROM_STATE:
+          report =
+            state.num << 0
+            | state.caps << 1
+            | state.scroll << 2
+            | state.compose << 3;
+          break;
+        case (uint32_t)Message::UHID_LED_ALL_OFF:
+          report = 0x00;
+          break;
+        case (uint32_t)Message::UHID_LED_ALL_ON:
+          report = 0xFF;
+          break;
+      }
+#ifndef UHID_VERBOSE
+      Sprint("*");
+#endif
+#ifdef UHID_VERBOSE
+      Sprintf("hid [%zu]: usb [%u:%u]: set led report %02Xh\n", i, dev_addr, instance, report);
+#endif
+      // TODO what report id? all values seem to work?
+      tuh_hid_set_report(dev_addr, instance, 6, HID_REPORT_TYPE_OUTPUT, &report, sizeof(report));
+    }
+  }
   USBHost.task();
   buzzer.update();
 }
