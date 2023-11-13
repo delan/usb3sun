@@ -151,6 +151,7 @@ usb3sun is compatible with any machine that would normally use a
 usb3sun has been tested successfully with
 
 - SPARCstation IPC (sun4c)
+- SPARCstation IPX (sun4c)
 - SPARCstation 2 (sun4c)
 - SPARCstation 5 (sun4m)
 - SPARCstation 20 (sun4m)
@@ -163,6 +164,7 @@ usb3sun has been tested successfully with
 - 0461:4E23 HP MOGIUO **mouse**
 - 04D9:1503 Inland 208397 **keyboard**
 - 17EF:608D Lenovo EMS-537A **mouse**
+- 17EF:6019 Lenovo MSU1175 **mouse**
 - 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A
 - 045E:0752 Microsoft Wired **Keyboard** 400
 - 045E:0750 Microsoft Wired **Keyboard** 600
@@ -174,7 +176,6 @@ usb3sun is not yet compatible with
 - 05AC:024F Apple Magic **Keyboard** with Numeric Keypad (model A1243)
 - 1209:2303 Atreus (Keyboardio version) **keyboard** with Kaleidoscope
 - 3367:1903 Endgame Gear XM1r **mouse** — buttons only (16-bit dx/dy, no boot protocol)
-- 17EF:6019 Lenovo MSU1175 **mouse** — only works after reconnecting
 - 045E:0039 Microsoft Intelli**Mouse** Optical 1.1A — broken (“Control FAILED”)
 
 ## design files
