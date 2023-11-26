@@ -6,6 +6,7 @@
 
 #include "bindings.h"
 #include "buzzer.h"
+#include "pinout.h"
 
 void sunkSend(bool make, uint8_t code) {
   static int activeCount = 0;
@@ -21,7 +22,7 @@ void sunkSend(bool make, uint8_t code) {
 #ifdef SUNK_VERBOSE
   Sprintf("sun keyboard: tx command %02Xh\n", code);
 #endif
-  Serial1.write(code);
+  pinout.sunk->write(code);
 #endif
 
   if (activeCount <= 0) {
@@ -30,7 +31,7 @@ void sunkSend(bool make, uint8_t code) {
 #ifdef SUNK_VERBOSE
   Sprintf("sun keyboard: idle\n");
 #endif
-  Serial1.write(SUNK_IDLE);
+  pinout.sunk->write(SUNK_IDLE);
 #endif
   }
 

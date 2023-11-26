@@ -2,6 +2,7 @@
 #define USB3SUN_PANIC_H
 
 #include "config.h"
+#include "pinout.h"
 
 #include <Arduino.h>
 

@@ -6,6 +6,8 @@
 #include <CoreMutex.h>
 #include <LittleFS.h>
 
+#include "pinout.h"
+
 #define SETTING(_name, _version, _type, ...) \
   struct _name##Setting { \
     static const unsigned currentVersion = _version; \

@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "bindings.h"
+#include "pinout.h"
 
 // internal flags (not part of real keycode)
 #define SUNK_SEND_SHIFT 0x100
