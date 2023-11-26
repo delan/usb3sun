@@ -8,6 +8,7 @@
 #include "bindings.h"
 #include "display.h"
 #include "hostid.h"
+#include "gpio.h"
 #include "settings.h"
 #include "state.h"
 #include "sunk.h"
@@ -158,10 +159,7 @@ void MenuView::sel(uint8_t usbkSelector) {
         case (size_t)MenuItem::MouseBaud:
           ++settings.mouseBaud();
           settings.write(settings.mouseBaud_field);
-          Serial2.end();
-          Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
-          gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-          gpio_set_outover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+          pinout.restartSunm();
           break;
       }
       break;
@@ -181,10 +179,7 @@ void MenuView::sel(uint8_t usbkSelector) {
         case (size_t)MenuItem::MouseBaud:
           --settings.mouseBaud();
           settings.write(settings.mouseBaud_field);
-          Serial2.end();
-          Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
-          gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-          gpio_set_outover(SUN_MRX, GPIO_OVERRIDE_INVERT);
+          pinout.restartSunm();
           break;
       }
       break;

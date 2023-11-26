@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <CoreMutex.h>
+#include <SerialPIO.h>
 
 extern "C" {
 #include <pio_usb.h>
@@ -17,6 +18,7 @@ extern "C" {
 #include "bindings.h"
 #include "buzzer.h"
 #include "display.h"
+#include "gpio.h"
 #include "menu.h"
 #include "settings.h"
 #include "state.h"
@@ -51,6 +53,7 @@ struct {
 
 std::atomic<bool> wait = true;
 
+Pinout pinout;
 State state;
 Buzzer buzzer;
 Settings settings;
@@ -146,6 +149,12 @@ struct DefaultView : View {
 static DefaultView DEFAULT_VIEW{};
 
 void setup() {
+  // check for pinout v2 (active high)
+  pinMode(PINOUT_V2_PIN, INPUT_PULLDOWN);
+  if (digitalRead(PINOUT_V2_PIN) == HIGH) {
+    pinout.v2();
+  }
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
@@ -168,31 +177,14 @@ void setup() {
 
   Settings::begin();
   settings.readAll();
+  pinout.beginSun();
 
-#if defined(PICOPROBE_ENABLE)
-  Serial1.end(); // needed under CFG_TUSB_DEBUG
-  Serial1.setPinout(PICOPROBE_TX, PICOPROBE_RX);
-  Serial1.setFIFOSize(4096);
-  Serial1.begin(115200, SERIAL_8N1);
-#elif defined(SUNK_ENABLE)
-  // gpio invert must be set *after* setPinout/begin
-  Serial1.setPinout(SUN_KTX, SUN_KRX);
-  Serial1.begin(1200, SERIAL_8N1);
-  gpio_set_outover(SUN_KTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_KRX, GPIO_OVERRIDE_INVERT);
-#endif
 #if defined(FAKE_SUN_ENABLE)
   // gpio invert must be set *after* setPinout/begin
   Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
   Serial2.begin(1200, SERIAL_8N1);
   gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
-#elif defined(SUNM_ENABLE)
-  // gpio invert must be set *after* setPinout/begin
-  Serial2.setPinout(SUN_MTX, SUN_MRX);
-  Serial2.begin(settings.mouseBaudReal(), SERIAL_8N1);
-  gpio_set_outover(SUN_MTX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(SUN_MRX, GPIO_OVERRIDE_INVERT);
 #endif
 
   for (int i = 0; i < splash_height; i += 2) {
@@ -266,18 +258,18 @@ void loop() {
 }
 
 #ifdef SUNK_ENABLE
-void serialEvent1() {
-  while (Serial1.available() > 0) {
-    uint8_t command = Serial1.read();
+void sunkEvent() {
+  while (pinout.sunk->available() > 0) {
+    uint8_t command = pinout.sunk->read();
     Sprintf("sun keyboard: rx command %02Xh\n", command);
     switch (command) {
       case SUNK_RESET:
         // self test fail:
-        // Serial.write(0x7E);
-        // Serial.write(0x01);
-        Serial1.write(SUNK_RESET_RESPONSE);
-        Serial1.write(0x04);
-        Serial1.write(0x7F); // TODO optional make code
+        // pinout.sunk->write(0x7E);
+        // pinout.sunk->write(0x01);
+        pinout.sunk->write(SUNK_RESET_RESPONSE);
+        pinout.sunk->write(0x04);
+        pinout.sunk->write(0x7F); // TODO optional make code
         break;
       case SUNK_BELL_ON:
         state.bell = true;
@@ -294,8 +286,8 @@ void serialEvent1() {
         state.clickEnabled = false;
         break;
       case SUNK_LED: {
-        while (Serial1.peek() == -1) delay(1);
-        uint8_t status = Serial1.read();
+        while (pinout.sunk->peek() == -1) delay(1);
+        uint8_t status = pinout.sunk->read();
         Sprintf("sun keyboard: led status %02Xh\n", status);
         state.num = status & 1 << 0;
         state.compose = status & 1 << 1;
@@ -307,13 +299,25 @@ void serialEvent1() {
         rp2040.fifo.push_nb((uint32_t)Message::UHID_LED_FROM_STATE);
       } break;
       case SUNK_LAYOUT: {
-        Serial1.write(SUNK_LAYOUT_RESPONSE);
+        pinout.sunk->write(SUNK_LAYOUT_RESPONSE);
         // UNITED STATES (TODO alternate layouts)
         uint8_t layout = 0b00000000;
-        Serial1.write(&layout, 1);
+        pinout.sunk->write(&layout, 1);
       } break;
     }
   }
+}
+
+void serialEvent1() {
+#if defined(SUNK_ENABLE)
+  sunkEvent();
+#endif
+}
+
+void serialEvent2() {
+#if defined(SUNK_ENABLE)
+  sunkEvent();
+#endif
 }
 #endif
 
@@ -358,6 +362,7 @@ void setup1() {
 
   pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
   pio_cfg.pin_dp = USB0_DP;
+  pio_cfg.sm_tx = 1;
 
   // tuh_configure -> pico pio hcd_configure -> memcpy to static global
   USBHost.configure_pio_usb(1, &pio_cfg);
@@ -598,7 +603,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
       };
 #ifdef SUNM_ENABLE
-      size_t len = Serial2.write(result, sizeof(result) / sizeof(*result));
+      size_t len = pinout.sunm->write(result, sizeof(result) / sizeof(*result));
 #ifdef SUNM_VERBOSE
       Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu\n",
         result[0], result[1], result[2], result[3], result[4], len);

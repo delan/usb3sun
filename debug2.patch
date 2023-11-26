@@ -1,0 +1,28 @@
+diff --git a/cores/rp2040/debug_internal.h b/cores/rp2040/debug_internal.h
+index 81026fb..e8b206f 100644
+--- a/cores/rp2040/debug_internal.h
++++ b/cores/rp2040/debug_internal.h
+@@ -20,6 +20,9 @@
+ 
+ #pragma once
+ 
++typedef int SerialPrintf(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
++extern SerialPrintf *DEBUG_RP2040_PRINTF;
++
+ #if !defined(DEBUG_RP2040_PORT)
+ #define DEBUGV(...) do { } while(0)
+ #define DEBUGCORE(...) do { } while(0)
+diff --git a/cores/rp2040/main.cpp b/cores/rp2040/main.cpp
+index fb1ed21..a8e98f9 100644
+--- a/cores/rp2040/main.cpp
++++ b/cores/rp2040/main.cpp
+@@ -24,6 +24,9 @@
+ #include <pico/multicore.h>
+ #include <reent.h>
+ 
++static int dummyDebugPrintf(const char *, ...) { return -1; }
++SerialPrintf *DEBUG_RP2040_PRINTF = dummyDebugPrintf;
++
+ RP2040 rp2040;
+ extern "C" {
+     volatile bool __otherCoreIdled = false;
