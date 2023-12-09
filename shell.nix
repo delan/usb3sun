@@ -1,10 +1,8 @@
 # current status:
 # - vscode extension works
 # - build (pio run) works
-# - upload (pio run -t upload) fails with:
-#   openocd: error while loading shared libraries: libusb-1.0.so.0: cannot open shared object file: No such file or directory
-# - openocd works if run manually:
-#   openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c 'adapter speed 1000' -c 'program .pio/build/pico/firmware.elf verify reset exit'
+# - upload (pio run -t upload) works
+# - running openocd manually works
 # advice that didn’t work:
 # - https://nixos.wiki/wiki/Platformio#Use_in_vscode
 # - https://github.com/platformio/platformio-vscode-ide/issues/3739
@@ -25,9 +23,16 @@ in
 (pkgs.buildFHSUserEnv {
   name = envname;
   targetPkgs = pkgs: (with pkgs; [
+    # for pio cli and vscode extension
     platformio-core
     mypython
+
+    # for running openocd manually
     openocd
+
+    # for running openocd via pio cli or vscode extension
+    libusb1 # libusb-1.0.so.0
+    hidapi # libhidapi-hidraw.so.0
   ]);
   # NixOS/nixpkgs#263201, NixOS/nixpkgs#262775, NixOS/nixpkgs#262080
   runScript = "env LD_LIBRARY_PATH= bash";
