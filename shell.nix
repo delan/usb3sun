@@ -3,6 +3,8 @@
 # - build (pio run) works
 # - upload (pio run -t upload) works
 # - running openocd manually works
+# - picotool upload protocol works
+# - cmsis-dap upload protocol works
 # advice that didn’t work:
 # - https://nixos.wiki/wiki/Platformio#Use_in_vscode
 # - https://github.com/platformio/platformio-vscode-ide/issues/3739
