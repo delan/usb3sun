@@ -165,9 +165,9 @@ usb3sun has been tested successfully with
 - 04D9:1503 Inland 208397 **keyboard**
 - 17EF:608D Lenovo EMS-537A **mouse**
 - 17EF:6019 Lenovo MSU1175 **mouse**
-- 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A
-- 045E:0752 Microsoft Wired **Keyboard** 400
-- 045E:0750 Microsoft Wired **Keyboard** 600
+- 045E:0040 Microsoft Wheel **Mouse** Optical 1.1A — enumeration is unreliable
+- 045E:0752 Microsoft Wired **Keyboard** 400 — [with tinyusb2.patch](firmware.md)
+- 045E:0750 Microsoft Wired **Keyboard** 600 — [with tinyusb2.patch](firmware.md)
 - 045E:0773 Microsoft Explorer Touch **Mouse** (model 1490)
 - FEED:6061 Preonic OLKB-60 **keyboard** with QMK
 
