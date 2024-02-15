@@ -2,6 +2,7 @@
 #define USB3SUN_BUZZER_H
 
 #include <atomic>
+#include <optional>
 
 #include <CoreMutex.h>
 
@@ -34,6 +35,7 @@ private:
   bool isExpired(unsigned long t, unsigned long duration);
   void setCurrent(unsigned long t, State value);
   void update0();
+  void pwmTone(unsigned int pitch, std::optional<unsigned long> duration = {});
 };
 
 extern Buzzer buzzer;

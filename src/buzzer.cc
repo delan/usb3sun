@@ -6,6 +6,20 @@
 #include "settings.h"
 #include "state.h"
 
+static int64_t alarm(alarm_id_t, void *) {
+  buzzer.update();
+  return 0; // don’t reschedule
+}
+
+void Buzzer::pwmTone(unsigned int pitch, std::optional<unsigned long> duration) {
+  analogWriteRange(100);
+  analogWriteFreq(pitch);
+  analogWrite(BUZZER_PIN, 50);
+  if (duration.has_value()) {
+    auto unused = add_alarm_in_ms(*duration, alarm, nullptr, true);
+  }
+}
+
 void Buzzer::update0() {
   const auto t = micros();
 
@@ -28,10 +42,8 @@ void Buzzer::update0() {
       if (!isExpired(t, plugDuration)) {
         return;
       } else {
-        analogWriteRange(100);
-        analogWriteFreq(plugPitch2);
-        analogWrite(BUZZER_PIN, 50);
         setCurrent(t, Buzzer::_::PLUG2);
+        pwmTone(plugPitch2, plugDuration);
         return;
       }
       break;
@@ -44,10 +56,8 @@ void Buzzer::update0() {
       if (!isExpired(t, plugDuration)) {
         return;
       } else {
-        analogWriteRange(100);
-        analogWriteFreq(plugPitch);
-        analogWrite(BUZZER_PIN, 50);
         setCurrent(t, Buzzer::_::UNPLUG2);
+        pwmTone(plugPitch, plugDuration);
         return;
       }
       break;
@@ -58,13 +68,11 @@ void Buzzer::update0() {
       break;
   }
   if (state.bell) {
-    analogWriteRange(100);
-    analogWriteFreq(bellPitch);
-    analogWrite(BUZZER_PIN, 50);
     setCurrent(t, Buzzer::_::BELL);
+    pwmTone(bellPitch);
   } else if (current != Buzzer::_::NONE) {
-    digitalWrite(BUZZER_PIN, false);
     setCurrent(t, Buzzer::_::NONE);
+    digitalWrite(BUZZER_PIN, false);
   }
 }
 
@@ -99,29 +107,23 @@ void Buzzer::click() {
 
   if (current <= Buzzer::_::CLICK) {
     // violation of sparc keyboard spec :) but distinguishable from bell!
-    analogWriteRange(100);
-    analogWriteFreq(1'000u);
-    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::CLICK);
+    pwmTone(1'000u, settings.clickDuration());
   }
 }
 
 void Buzzer::plug() {
   CoreMutex m{&buzzerMutex};
   if (current <= Buzzer::_::PLUG2) {
-    analogWriteRange(100);
-    analogWriteFreq(plugPitch);
-    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::PLUG);
+    pwmTone(plugPitch, plugDuration);
   }
 }
 
 void Buzzer::unplug() {
   CoreMutex m{&buzzerMutex};
   if (current <= Buzzer::_::UNPLUG2) {
-    analogWriteRange(100);
-    analogWriteFreq(plugPitch2);
-    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::UNPLUG);
+    pwmTone(plugPitch2, plugDuration);
   }
 }
