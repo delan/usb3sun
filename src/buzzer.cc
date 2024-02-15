@@ -28,7 +28,9 @@ void Buzzer::update0() {
       if (!isExpired(t, plugDuration)) {
         return;
       } else {
-        tone(BUZZER_PIN, plugPitch2, plugDuration);
+        analogWriteRange(100);
+        analogWriteFreq(plugPitch2);
+        analogWrite(BUZZER_PIN, 50);
         setCurrent(t, Buzzer::_::PLUG2);
         return;
       }
@@ -42,7 +44,9 @@ void Buzzer::update0() {
       if (!isExpired(t, plugDuration)) {
         return;
       } else {
-        tone(BUZZER_PIN, plugPitch, plugDuration);
+        analogWriteRange(100);
+        analogWriteFreq(plugPitch);
+        analogWrite(BUZZER_PIN, 50);
         setCurrent(t, Buzzer::_::UNPLUG2);
         return;
       }
@@ -54,10 +58,12 @@ void Buzzer::update0() {
       break;
   }
   if (state.bell) {
-    tone(BUZZER_PIN, bellPitch);
+    analogWriteRange(100);
+    analogWriteFreq(bellPitch);
+    analogWrite(BUZZER_PIN, 50);
     setCurrent(t, Buzzer::_::BELL);
   } else if (current != Buzzer::_::NONE) {
-    noTone(BUZZER_PIN);
+    digitalWrite(BUZZER_PIN, false);
     setCurrent(t, Buzzer::_::NONE);
   }
 }
@@ -93,7 +99,9 @@ void Buzzer::click() {
 
   if (current <= Buzzer::_::CLICK) {
     // violation of sparc keyboard spec :) but distinguishable from bell!
-    tone(BUZZER_PIN, 1'000u, settings.clickDuration());
+    analogWriteRange(100);
+    analogWriteFreq(1'000u);
+    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::CLICK);
   }
 }
@@ -101,7 +109,9 @@ void Buzzer::click() {
 void Buzzer::plug() {
   CoreMutex m{&buzzerMutex};
   if (current <= Buzzer::_::PLUG2) {
-    tone(BUZZER_PIN, plugPitch, plugDuration);
+    analogWriteRange(100);
+    analogWriteFreq(plugPitch);
+    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::PLUG);
   }
 }
@@ -109,7 +119,9 @@ void Buzzer::plug() {
 void Buzzer::unplug() {
   CoreMutex m{&buzzerMutex};
   if (current <= Buzzer::_::UNPLUG2) {
-    tone(BUZZER_PIN, plugPitch2, plugDuration);
+    analogWriteRange(100);
+    analogWriteFreq(plugPitch2);
+    analogWrite(BUZZER_PIN, 50);
     setCurrent(micros(), Buzzer::_::UNPLUG);
   }
 }
