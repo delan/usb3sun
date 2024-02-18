@@ -2,6 +2,8 @@
 #include "pinout.h"
 #include "settings.h"
 
+#include <Arduino.h>
+#include <Wire.h>
 #include <Adafruit_TinyUSB.h>
 
 // TODO add Print::vprintf in ArduinoCore-API Print.h
@@ -30,10 +32,10 @@ Pinout::Pinout() : sunmV2(SUN_MTX_V2, SerialPIO::NOPIN) {}
 void Pinout::v1() {
 #if defined(DEBUG_LOGGING)
 #if defined(DEBUG_OVER_CDC)
-  debugOverCdc();
+  allowDebugOverCdc();
 #endif
 #if defined(DEBUG_OVER_UART) && !defined(SUNK_ENABLE)
-  debugOverUart();
+  allowDebugOverUart();
 #endif
 #endif
 }
@@ -48,12 +50,37 @@ void Pinout::v2() {
   sunkUart = &SUNK_UART_V2;
 #if defined(DEBUG_LOGGING)
 #if defined(DEBUG_OVER_CDC)
-  debugOverCdc();
+  allowDebugOverCdc();
 #endif
 #if defined(DEBUG_OVER_UART)
-  debugOverUart();
+  allowDebugOverUart();
 #endif
 #endif
+}
+
+void Pinout::begin() {
+  // pico led on, to be turned off at the end of setup()
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  analogWriteRange(100);
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(POWER_KEY, OUTPUT);
+  pinMode(DISPLAY_RES, OUTPUT);
+  Wire.setSCL(DISPLAY_SCL);
+  Wire.setSDA(DISPLAY_SDA);
+
+#if defined(WAIT_PIN)
+  pinMode(WAIT_PIN, INPUT_PULLUP);
+#endif
+
+  // check for pinout v2 (active high)
+  pinMode(PINOUT_V2_PIN, INPUT_PULLDOWN);
+  if (digitalRead(PINOUT_V2_PIN) == HIGH) {
+    v2();
+  } else {
+    v1();
+  }
 }
 
 void Pinout::beginSun() {
@@ -90,12 +117,13 @@ void Pinout::restartSunm() {
 #endif
 }
 
-void Pinout::debugOverCdc() {
+void Pinout::allowDebugOverCdc() {
+  // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
   DEBUG_RP2040_PRINTF = printfDebug;
 }
 
-void Pinout::debugOverUart() {
+void Pinout::allowDebugOverUart() {
   DEBUG_UART.end();
   DEBUG_UART.setPinout(DEBUG_UART_TX, DEBUG_UART_RX);
   DEBUG_UART.setFIFOSize(4096);

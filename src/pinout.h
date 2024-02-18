@@ -8,8 +8,7 @@
 
 struct Pinout {
   Pinout();
-  void v1();
-  void v2();
+  void begin();
   void beginSun();
   void restartSunm();
 
@@ -26,8 +25,10 @@ private:
   SerialUART &sunmV1 = SUNM_UART_V1;
   SerialPIO sunmV2;
 
-  void debugOverCdc();
-  void debugOverUart();
+  void v1();
+  void v2();
+  void allowDebugOverCdc();
+  void allowDebugOverUart();
 };
 
 extern Pinout pinout;
