@@ -121,6 +121,7 @@ void Pinout::allowDebugOverCdc() {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
   DEBUG_RP2040_PRINTF = printfDebug;
+  debugCdc = &Serial;
 }
 
 void Pinout::allowDebugOverUart() {
@@ -132,5 +133,5 @@ void Pinout::allowDebugOverUart() {
 #if CFG_TUSB_DEBUG
   TinyUSB_Serial_Debug = &DEBUG_UART;
 #endif
-  canDebugOverUart = true;
+  debugUart = &DEBUG_UART;
 }
