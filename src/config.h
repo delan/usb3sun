@@ -1,6 +1,4 @@
 #define DISPLAY_ROTATION 0  // 0|1|2|3 where 0 means GND pin is bottom left
-// FIXME no longer used
-#define SUNM_BAUD 9600      // 1200|2400|4800|9600 where higher is smoother and more responsive
 
 #define DEBUG_LOGGING           // allow any logging
 #define DEBUG_OVER_CDC          // log to Serial (USB CDC); excludes TinyUSB debugging
