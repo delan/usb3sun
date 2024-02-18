@@ -61,7 +61,7 @@ __attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
 __attribute__((section(".mutex_array"))) mutex_t settingsMutex;
 
 void drawStatus(int16_t x, int16_t y, const char *label, bool on);
-void sunkSend(bool make, uint8_t code);
+void sunmSend(int8_t x, int8_t y, bool left, bool middle, bool right);
 
 struct DefaultView : View {
   void handlePaint() override {
@@ -229,7 +229,7 @@ void loop() {
 void sunkEvent() {
   while (pinout.sunk->available() > 0) {
     uint8_t command = pinout.sunk->read();
-    Sprintf("sun keyboard: rx command %02Xh\n", command);
+    Sprintf("sunk: rx %02Xh\n", command);
     switch (command) {
       case SUNK_RESET:
         // self test fail:
@@ -529,28 +529,11 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       Sprintln();
 #endif
 
-      // correct: https://web.archive.org/web/20220226000612/http://www.bitsavers.org/pdf/mouseSystems/300771-001_Mouse_Systems_Optical_Mouse_Technical_Reference_Models_M2_and_M3_1985.pdf
-      // wrong: https://web.archive.org/web/20100213183456/http://privatewww.essex.ac.uk/~nbb/mice-pc.html
-      // note in particular that:
-      // • positive dx is right, but positive dy is up
-      // • buttons are 0 when pressed and 1 when released
-      uint8_t result[] = {
-        0x80
-          | (mreport->buttons & USBM_LEFT ? 0 : SUNM_LEFT)
-          | (mreport->buttons & USBM_MIDDLE ? 0 : SUNM_CENTER)
-          | (mreport->buttons & USBM_RIGHT ? 0 : SUNM_RIGHT),
-        (uint8_t) mreport->x, (uint8_t) -mreport->y, 0, 0,
-      };
-#ifdef SUNM_ENABLE
-      size_t len = pinout.sunm->write(result, sizeof(result) / sizeof(*result));
-#ifdef SUNM_VERBOSE
-      Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu\n",
-        result[0], result[1], result[2], result[3], result[4], len);
-#endif
-#else
-      Sprintf("sun mouse: tx %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)\n",
-        result[0], result[1], result[2], result[3], result[4]);
-#endif
+      sunmSend(
+        mreport->x, mreport->y,
+        !!(mreport->buttons & USBM_LEFT),
+        !!(mreport->buttons & USBM_MIDDLE),
+        !!(mreport->buttons & USBM_RIGHT));
 
       state.lastButtons = mreport->buttons;
     } break;
@@ -559,4 +542,29 @@ out:
   // continue to request to receive report
   if (!tuh_hid_receive_report(dev_addr, instance))
     Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
+}
+
+void sunmSend(int8_t x, int8_t y, bool left, bool middle, bool right) {
+      // correct: https://web.archive.org/web/20220226000612/http://www.bitsavers.org/pdf/mouseSystems/300771-001_Mouse_Systems_Optical_Mouse_Technical_Reference_Models_M2_and_M3_1985.pdf
+      // wrong: https://web.archive.org/web/20100213183456/http://privatewww.essex.ac.uk/~nbb/mice-pc.html
+      // note in particular that:
+      // • positive dx is right, but positive dy is up
+      // • buttons are 0 when pressed and 1 when released
+      uint8_t result[] = {
+        0x80
+          | (left ? 0 : SUNM_LEFT)
+          | (middle ? 0 : SUNM_CENTER)
+          | (right ? 0 : SUNM_RIGHT),
+        (uint8_t) x, (uint8_t) -y, 0, 0,
+      };
+#ifdef SUNM_ENABLE
+      size_t len = pinout.sunm->write(result, sizeof(result) / sizeof(*result));
+#ifdef SUNM_VERBOSE
+      Sprintf("sunm: tx %02Xh %02Xh %02Xh %02Xh %02Xh = %zu\n",
+        result[0], result[1], result[2], result[3], result[4], len);
+#endif
+#else
+      Sprintf("sunm: tx %02Xh %02Xh %02Xh %02Xh %02Xh (disabled)\n",
+        result[0], result[1], result[2], result[3], result[4]);
+#endif
 }

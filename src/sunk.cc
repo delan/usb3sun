@@ -20,7 +20,7 @@ void sunkSend(bool make, uint8_t code) {
 
 #ifdef SUNK_ENABLE
 #ifdef SUNK_VERBOSE
-  Sprintf("sun keyboard: tx command %02Xh\n", code);
+  Sprintf("sunk: tx %02Xh\n", code);
 #endif
   pinout.sunk->write(code);
 #endif
@@ -29,7 +29,7 @@ void sunkSend(bool make, uint8_t code) {
     activeCount = 0;
 #ifdef SUNK_ENABLE
 #ifdef SUNK_VERBOSE
-  Sprintf("sun keyboard: idle\n");
+  Sprintf("sunk: idle\n");
 #endif
   pinout.sunk->write(SUNK_IDLE);
 #endif
@@ -37,11 +37,11 @@ void sunkSend(bool make, uint8_t code) {
 
   switch (code) {
     case SUNK_POWER:
-      Sprintf("sun power: high\n");
+      Sprintf("sunk: power high\n");
       digitalWrite(POWER_KEY, HIGH);
       break;
     case SUNK_POWER | SUNK_BREAK_BIT:
-      Sprintf("sun power: low\n");
+      Sprintf("sunk: power low\n");
       digitalWrite(POWER_KEY, LOW);
       break;
   }
