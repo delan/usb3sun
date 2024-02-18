@@ -157,6 +157,9 @@ void setup() {
     pinout.v1();
   }
 
+  Sprintln("usb3sun " USB3SUN_VERSION);
+  Sprintf("pinout: v%d\n", pinout.version);
+
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
 
@@ -187,16 +190,6 @@ void setup() {
   Settings::begin();
   settings.readAll();
   pinout.beginSun();
-
-  for (int i = 0; i < splash_height; i += 2) {
-    for (int j = 0; j < splash_width; j += 1) {
-      if (splash_bits[(splash_width + 7) / 8 * i + j / 8] >> j % 8 & 1)
-        Sprintf("\033[7m ");
-      else
-        Sprintf("\033[0m ");
-    }
-    Sprintf("\033[0m\n");
-  }
 
   View::push(&DEFAULT_VIEW);
 

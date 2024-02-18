@@ -36,7 +36,6 @@ void Pinout::v1() {
   debugOverUart();
 #endif
 #endif
-  Sprintln("pinout: v1");
 }
 
 void Pinout::v2() {
@@ -55,7 +54,6 @@ void Pinout::v2() {
   debugOverUart();
 #endif
 #endif
-  Sprintln("pinout: v2");
 }
 
 void Pinout::beginSun() {
