@@ -56,6 +56,7 @@
 #define SUNK_SHIFT_L 0x63
 #define SUNK_RETURN 0x59
 #define SUNK_BACKSPACE 0x2B
+#define SUNK_STOP 0x01
 
 // sources:
 // SPARC Keyboard Specification Version1 https://sparc.org/wp-content/uploads/2014/01/KBD.pdf.gz

@@ -17,6 +17,7 @@ extern "C" {
 
 #include "bindings.h"
 #include "buzzer.h"
+#include "cli.h"
 #include "display.h"
 #include "menu.h"
 #include "pinout.h"
@@ -221,6 +222,12 @@ void loop() {
     rp2040.fifo.push_nb((uint32_t)message);
   }
 #endif
+
+  if (pinout.debugUart) {
+    while (pinout.debugUart->available() > 0) {
+      handleCliInput(pinout.debugUart->read());
+    }
+  }
 
   delay(10);
 }
