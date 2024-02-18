@@ -59,9 +59,6 @@ Buzzer buzzer;
 Settings settings;
 __attribute__((section(".mutex_array"))) mutex_t buzzerMutex;
 __attribute__((section(".mutex_array"))) mutex_t settingsMutex;
-struct {
-  bool ok;
-} fake;
 
 void drawStatus(int16_t x, int16_t y, const char *label, bool on);
 void sunkSend(bool make, uint8_t code);
@@ -191,14 +188,6 @@ void setup() {
   settings.readAll();
   pinout.beginSun();
 
-#if defined(FAKE_SUN_ENABLE)
-  // gpio invert must be set *after* setPinout/begin
-  Serial2.setPinout(FAKE_SUN_KRX, FAKE_SUN_KTX);
-  Serial2.begin(1200, SERIAL_8N1);
-  gpio_set_outover(FAKE_SUN_KRX, GPIO_OVERRIDE_INVERT);
-  gpio_set_inover(FAKE_SUN_KTX, GPIO_OVERRIDE_INVERT);
-#endif
-
   for (int i = 0; i < splash_height; i += 2) {
     for (int j = 0; j < splash_width; j += 1) {
       if (splash_bits[(splash_width + 7) / 8 * i + j / 8] >> j % 8 & 1)
@@ -261,12 +250,6 @@ void loop() {
 #endif
 
   delay(10);
-
-#ifdef FAKE_SUN_ENABLE
-  if (!fake.ok) {
-    Serial2.write(SUNK_RESET);
-  }
-#endif
 }
 
 #ifdef SUNK_ENABLE
@@ -330,35 +313,6 @@ void serialEvent2() {
 #if defined(SUNK_ENABLE)
   sunkEvent();
 #endif
-}
-#endif
-
-#ifdef FAKE_SUN_ENABLE
-void serialEvent2() {
-  while (Serial2.available() > 0) {
-    uint8_t command = Serial2.read();
-    Sprintf("fake: rx command %02Xh\n", command);
-    switch (command) {
-      case SUNK_IDLE:
-        break;
-      case SUNK_LAYOUT_RESPONSE:
-        break;
-      case SUNK_RESET_RESPONSE:
-        while (Serial2.read() == -1) delay(1);
-        while (Serial2.read() == -1) delay(1);
-        fake.ok = true;
-        break;
-      case SUNK_NUMLOCK:
-        state.num = !state.num;
-        break;
-      case SUNK_CAPSLOCK:
-        state.caps = !state.caps;
-        break;
-      case SUNK_SCROLLLOCK:
-        state.scroll = !state.scroll;
-        break;
-    }
-  }
 }
 #endif
 

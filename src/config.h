@@ -58,18 +58,6 @@
 #define SUNK_ENABLE
 #define SUNM_ENABLE
 
-// FIXME broken in pinout v2
-// fake Sun host for loopback testing (disables Sun mouse interface)
-// #define FAKE_SUN_ENABLE
-#if !defined(FAKE_SUN_ENABLE)
-#define SUNM_ENABLE
-#endif
-
-// FIXME broken in pinout v2
-// the following must be GP# numbers valid for...
-#define FAKE_SUN_KRX 8      // ...UART1 TX: connect to SUN_KRX
-#define FAKE_SUN_KTX 9      // ...UART1 RX: connect to SUN_KTX
-
 #if defined(DEBUG_LOGGING)
 #define DEBUG_PRINT_FLUSH(port, method, ...) (port.method(__VA_ARGS__), port.flush())
 #if defined(DEBUG_OVER_CDC) && defined(DEBUG_OVER_UART)
