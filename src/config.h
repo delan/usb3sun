@@ -57,20 +57,9 @@
 #define SUNM_ENABLE
 
 #if defined(DEBUG_LOGGING)
-#define DEBUG_PRINT_FLUSH(port, method, ...) do { if (port) port->method(__VA_ARGS__), port->flush(); } while (0)
-#if defined(DEBUG_OVER_CDC) && defined(DEBUG_OVER_UART)
-#define Sprint(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, print, __VA_ARGS__); DEBUG_PRINT_FLUSH(pinout.debugUart, print, __VA_ARGS__); } while (0)
-#define Sprintln(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, println, __VA_ARGS__); DEBUG_PRINT_FLUSH(pinout.debugUart, println, __VA_ARGS__); } while (0)
-#define Sprintf(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, printf, __VA_ARGS__); DEBUG_PRINT_FLUSH(pinout.debugUart, printf, __VA_ARGS__); } while (0)
-#elif defined(DEBUG_OVER_CDC)
-#define Sprint(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, print, __VA_ARGS__); } while (0)
-#define Sprintln(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, println, __VA_ARGS__); } while (0)
-#define Sprintf(...) do { DEBUG_PRINT_FLUSH(pinout.debugCdc, printf, __VA_ARGS__); } while (0)
-#elif defined(DEBUG_OVER_UART)
-#define Sprint(...) do { DEBUG_PRINT_FLUSH(pinout.debugUart, print, __VA_ARGS__); } while (0)
-#define Sprintln(...) do { DEBUG_PRINT_FLUSH(pinout.debugUart, println, __VA_ARGS__); } while (0)
-#define Sprintf(...) do { DEBUG_PRINT_FLUSH(pinout.debugUart, printf, __VA_ARGS__); } while (0)
-#endif
+#define Sprint(...) do { pinout.debugPrint(__VA_ARGS__); } while (0)
+#define Sprintln(...) do { pinout.debugPrintln(__VA_ARGS__); } while (0)
+#define Sprintf(...) do { pinout.debugPrintf(__VA_ARGS__); } while (0)
 #else
 #define Sprint(...) do {} while (0)
 #define Sprintln(...) do {} while (0)

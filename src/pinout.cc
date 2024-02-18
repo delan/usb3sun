@@ -117,6 +117,67 @@ void Pinout::restartSunm() {
 #endif
 }
 
+bool Pinout::debugWrite(const char *data, size_t len) {
+  bool ok = true;
+  if (debugCdc) {
+    if (debugCdc->write(data, len) < len) {
+      ok = false;
+    } else {
+      debugCdc->flush();
+    }
+  }
+  if (debugUart) {
+    if (debugUart->write(data, len) < len) {
+      ok = false;
+    } else {
+      debugUart->flush();
+    }
+  }
+  return ok;
+}
+
+bool Pinout::debugPrint(const char *text) {
+  return debugWrite(text, strlen(text));
+}
+
+bool Pinout::debugPrintln() {
+  return debugPrint("\n");
+}
+
+bool Pinout::debugPrintln(const char *text) {
+  return debugPrintf("%s\n", text);
+}
+
+bool Pinout::debugPrintf(const char *format, ...) {
+  if (!debugCdc && !debugUart) {
+    return true;
+  }
+  va_list ap;
+  char result[256];
+  va_start(ap, format);
+  int requiredLen = vsnprintf(result, sizeof result, format, ap);
+  va_end(ap);
+  if (requiredLen < 0) {
+    return false;
+  } else if (requiredLen > sizeof result - 1) {
+    size_t len = requiredLen + 1;
+    char *result = new char[len];
+    if (!result) {
+      return false;
+    }
+    va_start(ap, format);
+    int actualLen = vsnprintf(result, len, format, ap);
+    va_end(ap);
+    bool ok = false;
+    if (actualLen == requiredLen) {
+      ok = debugWrite(result, actualLen);
+    }
+    delete[] result;
+    return ok;
+  }
+  return debugWrite(result, requiredLen);
+}
+
 void Pinout::allowDebugOverCdc() {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);

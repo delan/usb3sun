@@ -11,6 +11,11 @@ struct Pinout {
   void begin();
   void beginSun();
   void restartSunm();
+  bool debugWrite(const char *data, size_t len);
+  bool debugPrint(const char *text);
+  bool debugPrintln();
+  bool debugPrintln(const char *text);
+  bool debugPrintf(const char *format, ...) __attribute__ ((format (printf, 2, 3)));
 
   int version = 1;
   HardwareSerial *sunk = &SUNK_UART_V1;
