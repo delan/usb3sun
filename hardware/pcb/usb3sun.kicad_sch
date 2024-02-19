@@ -5011,7 +5011,7 @@
     (property "Value" "~" (at 109.22 68.58 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "KiCad-SSD1306-0.91-OLED-4pin-128x32:SSD1306-0.91-OLED-4pin-128x32" (at 109.22 68.58 90)
+    (property "Footprint" "usb3sun:SSD1306-0.91-OLED-4pin-128x32" (at 109.22 68.58 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 109.22 68.58 90)
