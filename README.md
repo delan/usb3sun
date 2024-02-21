@@ -77,6 +77,45 @@ features planned for a future firmware version:
 release notes
 -------------
 
+### pcb rev B0 (????-??-??)
+
+* this board **requires firmware 2.0** or newer
+* [#2](https://github.com/delan/usb3sun/issues/2) — fixed a limitation where the workstation **drops you into an ok prompt** when resetting the adapter
+* [#11](https://github.com/delan/usb3sun/issues/11) — fixed a bug where the adapter can **hang until power cycled** after being reset, especially when reset frequently
+* [#10](https://github.com/delan/usb3sun/issues/10) — added support for logging over UART_TX/UART_RX **without disabling the sun keyboard interface**
+* reworked component layout and routing for **sun interfaces** and **led indicators** — none of the user-facing component locations have changed
+* replaced transistors Q1 through Q4 (2N7000) with dual transistors Q1 and Q3 (2N7002DW)
+* removed solder jumpers JP1 and JP2, which were added in rev A2 in case of errata
+
+### firmware 2.0 (????-??-??)
+
+* added support for adapters with **pcb rev B0** — these use pinout v2, while older revs use pinout v1
+* added support for **leds on your usb keyboard** — num lock, caps lock, scroll lock, and so on
+* [#8](https://github.com/delan/usb3sun/issues/8) — added support for **NeXTSTEP** and **Plan 9**, which require the mouse to run at 1200 baud
+* [#8](https://github.com/delan/usb3sun/issues/8) — added a **mouse baud setting** that can be set to 9600 baud (default), 4800, 2400, or 1200 baud
+* added a **debug cli** over UART_RX — this lets you press keys and move the mouse without a usb keyboard or mouse
+* [#10](https://github.com/delan/usb3sun/issues/10) — added support for logging over UART_TX/UART_RX **without disabling the sun keyboard interface**
+    * this feature requires **pcb rev B0** or newer, due to the pinout changes required
+    * please report any regressions with the **buzzer** or **sun mouse interface**; the buzzer had to be moved from pio to hardware pwm, and the sun mouse had to be moved from hardware uart to pio
+* removed the splash screen from debug logging — this significantly slowed down the setup routine
+* removed the fake sun emulation feature — this wasn’t too useful, and was broken by the pinout changes
+* fixed a compile error when debug logging was enabled (PICOPROBE_ENABLE)
+* several changes to **config.h**
+    * added **DEBUG_OVER_CDC** to disable logging over usb cdc
+    * added **UHID_LED_TEST** to blink leds on all usb keyboards
+    * added **PINOUT_V2_PIN** for the pin that checks if the adapter is pinout v2
+    * added **DISPLAY_RES** for the pin that cuts power to the display module
+    * added **DEBUG_UART**, **SUNK_UART_V1**, **SUNK_UART_V2**, and **SUNM_UART_V1** [...]
+    * removed **SUNM_BAUD** in favour of the new menu setting
+    * renamed **PICOPROBE_ENABLE** to **DEBUG_OVER_UART**
+    * renamed **PICOPROBE_BAUD** to **DEBUG_UART_BAUD**
+    * renamed **PICOPROBE_TX** to **DEBUG_UART_TX**
+    * renamed **PICOPROBE_RX** to **DEBUG_UART_RX**
+    * **SUN_KTX**, **SUN_KRX**, **SUN_MTX**, and **SUN_MRX** were split into pinout v1 and v2 variants
+    * **DEBUG_OVER_UART** no longer disables logging over usb cdc (see **DEBUG_OVER_CDC**)
+    * **SUNK_ENABLE** is now configurable, and takes precedence over **DEBUG_OVER_UART** in pinout v1
+    * **SUNM_ENABLE** is now configurable
+
 ### pcb rev [A3](https://github.com/delan/usb3sun/releases/tag/A3) (2023-10-15)
 
 * fixed the inconsistent and excessive brightness of the led indicators (D2, D3)
