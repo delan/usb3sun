@@ -25,6 +25,7 @@
 // the following must be GP# numbers valid for...
 #define DEBUG_UART_TX 0     // ...UART0 TX: connect to picoprobe GP5
 #define DEBUG_UART_RX 1     // ...UART0 RX: connect to picoprobe GP4
+#define KTX_ENABLE 13       // ...any: break preventer for sun keyboard tx
 #define DISPLAY_ENABLE 12   // ...any: external reset for SSD1306
 #define DISPLAY_SCL 17      // ...I2C0 SCL: SCL pin of SSD1306
 #define DISPLAY_SDA 16      // ...I2C0 SDA: SDA pin of SSD1306

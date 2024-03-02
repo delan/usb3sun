@@ -56,6 +56,15 @@ void Pinout::v2() {
   allowDebugOverUart();
 #endif
 #endif
+
+  // set DISPLAY_ENABLE high to turn on the display via Q7.
+  // some display modules need delay to start reliably. for example, i have one module with a C9 on
+  // its pcb that needs no delay, but i have another without C9 that stays black every other reset
+  // unless given 15 ms of delay. tested with Q7 = 2N7000, R18 = 4K7, resetting the pico in three
+  // different patterns (reset/run ms): 50/200, 250/750, 3000/1000. let’s double that just in case.
+  pinMode(DISPLAY_ENABLE, OUTPUT);
+  digitalWrite(DISPLAY_ENABLE, HIGH);
+  delay(30);
 }
 
 void Pinout::begin() {
@@ -66,7 +75,6 @@ void Pinout::begin() {
   analogWriteRange(100);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(POWER_KEY, OUTPUT);
-  pinMode(DISPLAY_ENABLE, OUTPUT);
   Wire.setSCL(DISPLAY_SCL);
   Wire.setSDA(DISPLAY_SDA);
 
@@ -91,6 +99,13 @@ void Pinout::beginSun() {
   // gpio invert must be set *after* setPinout/begin
   gpio_set_outover(sunkTx, GPIO_OVERRIDE_INVERT);
   gpio_set_inover(sunkRx, GPIO_OVERRIDE_INVERT);
+
+  // break preventer: set KTX_ENABLE# low to connect sun keyboard tx.
+  // the pin is high on reset and boot, which pulls INT_KTX low, which keeps the
+  // KTX line connected and idle, preventing a break that would make the sun
+  // machine drop you back to the ok prompt (and maybe kernel panic on resume).
+  pinMode(KTX_ENABLE, OUTPUT);
+  digitalWrite(KTX_ENABLE, LOW);
 #endif
 #if defined(SUNM_ENABLE)
   sunm->end();
