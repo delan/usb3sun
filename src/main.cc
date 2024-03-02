@@ -255,7 +255,7 @@ void sunkEvent() {
       case SUNK_LED: {
         while (pinout.sunk->peek() == -1) delay(1);
         uint8_t status = pinout.sunk->read();
-        Sprintf("sun keyboard: led status %02Xh\n", status);
+        Sprintf("sunk: led status %02Xh\n", status);
         state.num = status & 1 << 0;
         state.compose = status & 1 << 1;
         state.scroll = status & 1 << 2;
