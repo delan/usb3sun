@@ -152,12 +152,12 @@ void setup() {
   Sprintln("usb3sun " USB3SUN_VERSION);
   Sprintf("pinout: v%d\n", pinout.version);
 
-  // set DISPLAY_RES# high to turn on the display via Q7.
+  // set DISPLAY_ENABLE high to turn on the display via Q7.
   // some display modules need delay to start reliably. for example, i have one module with a C9 on
   // its pcb that needs no delay, but i have another without C9 that stays black every other reset
   // unless given 15 ms of delay. tested with Q7 = 2N7000, R18 = 4K7, resetting the pico in three
   // different patterns (reset/run ms): 50/200, 250/750, 3000/1000. let’s double that just in case.
-  digitalWrite(DISPLAY_RES, HIGH);
+  digitalWrite(DISPLAY_ENABLE, HIGH);
   delay(30);
 
   display.begin(SSD1306_SWITCHCAPVCC, /* SCREEN_ADDRESS */ 0x3C);

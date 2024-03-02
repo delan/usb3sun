@@ -106,7 +106,7 @@ release notes
     * added **DEBUG_OVER_CDC** to disable logging over usb cdc
     * added **UHID_LED_TEST** to blink leds on all usb keyboards
     * added **PINOUT_V2_PIN** for the pin that checks if the adapter is pinout v2
-    * added **DISPLAY_RES** for the pin that cuts power to the display module
+    * added **DISPLAY_ENABLE** for the pin that cuts power to the display module
     * added **DEBUG_UART**, **SUNK_UART_V1**, **SUNK_UART_V2**, and **SUNM_UART_V1** [...]
     * removed **SUNM_BAUD** in favour of the new menu setting
     * renamed **PICOPROBE_ENABLE** to **DEBUG_OVER_UART**

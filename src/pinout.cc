@@ -66,7 +66,7 @@ void Pinout::begin() {
   analogWriteRange(100);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(POWER_KEY, OUTPUT);
-  pinMode(DISPLAY_RES, OUTPUT);
+  pinMode(DISPLAY_ENABLE, OUTPUT);
   Wire.setSCL(DISPLAY_SCL);
   Wire.setSDA(DISPLAY_SDA);
 
