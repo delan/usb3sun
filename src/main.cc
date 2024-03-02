@@ -339,6 +339,7 @@ void loop1() {
           report = 0xFF;
           break;
       }
+#if defined(UHID_LED_ENABLE)
 #ifndef UHID_VERBOSE
       Sprint("*");
 #endif
@@ -347,6 +348,7 @@ void loop1() {
 #endif
       // TODO what report id? all values seem to work?
       tuh_hid_set_report(dev_addr, instance, 6, HID_REPORT_TYPE_OUTPUT, &report, sizeof(report));
+#endif
     }
   }
   USBHost.task();
