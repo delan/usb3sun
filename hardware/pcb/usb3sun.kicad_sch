@@ -3684,7 +3684,7 @@
     (effects (font (size 0.9525 0.9525)) (justify right bottom))
     (uuid 1d20da1a-43ab-47e1-a650-629d10c024a0)
   )
-  (text "hard pulldown on INT_MTX\nunless KTX_ENABLE# is\npulled low, to prevent\nbreaking on KTX while\npico is reset."
+  (text "hard pulldown on INT_KTX\nunless KTX_ENABLE# is\npulled low, to prevent\nbreaking on KTX while\npico is reset."
     (at 20.955 147.32 0)
     (effects (font (size 0.9525 0.9525)) (justify left bottom))
     (uuid 39d74e9d-2eeb-4dbe-88e2-0133dcb9831f)
