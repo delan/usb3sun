@@ -41,7 +41,7 @@
 #define SUN_MRX_V1 9        // ...UART1 RX (required by SerialUART api)
                             // pin 4: mouse tx (gray)
 #define SUN_MTX_V1 8        // ...UART1 TX
-#define SUN_MTX_V2 6        // ...any
+#define SUN_MTX_V2 14       // ...any
                             // pin 5: keyboard rx (red)
 #define SUN_KRX_V1 13       // ...UART0 RX
 #define SUN_KRX_V2 9        // ...UART1 RX
