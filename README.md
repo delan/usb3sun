@@ -92,7 +92,7 @@ release notes
 ### firmware 2.0 (????-??-??)
 
 * added support for adapters with **pcb rev B0** — these use pinout v2, while older revs use pinout v1
-* added support for **leds on your usb keyboard** — num lock, caps lock, scroll lock, and so on
+* added experimental support for **leds on your usb keyboard** — led updates are not yet reliable, and currently has bugs that can cause usb devices to stop responding
 * [#8](https://github.com/delan/usb3sun/issues/8) — added support for **NeXTSTEP** and **Plan 9**, which require the mouse to run at 1200 baud
 * [#8](https://github.com/delan/usb3sun/issues/8) — added a **mouse baud setting** that can be set to 9600 baud (default), 4800, 2400, or 1200 baud
 * added a **debug cli** over UART_RX — this lets you press keys and move the mouse without a usb keyboard or mouse
@@ -102,21 +102,23 @@ release notes
 * removed the splash screen from debug logging — this significantly slowed down the setup routine
 * removed the fake sun emulation feature — this wasn’t too useful, and was broken by the pinout changes
 * fixed a compile error when debug logging was enabled (PICOPROBE_ENABLE)
-* several changes to **config.h**
-    * added **DEBUG_OVER_CDC** to disable logging over usb cdc
-    * added **UHID_LED_TEST** to blink leds on all usb keyboards
-    * added **PINOUT_V2_PIN** for the pin that checks if the adapter is pinout v2
-    * added **DISPLAY_ENABLE** for the pin that cuts power to the display module
-    * added **DEBUG_UART**, **SUNK_UART_V1**, **SUNK_UART_V2**, and **SUNM_UART_V1** [...]
-    * removed **SUNM_BAUD** in favour of the new menu setting
-    * renamed **PICOPROBE_ENABLE** to **DEBUG_OVER_UART**
-    * renamed **PICOPROBE_BAUD** to **DEBUG_UART_BAUD**
-    * renamed **PICOPROBE_TX** to **DEBUG_UART_TX**
-    * renamed **PICOPROBE_RX** to **DEBUG_UART_RX**
-    * **SUN_KTX**, **SUN_KRX**, **SUN_MTX**, and **SUN_MRX** were split into pinout v1 and v2 variants
-    * **DEBUG_OVER_UART** no longer disables logging over usb cdc (see **DEBUG_OVER_CDC**)
-    * **SUNK_ENABLE** is now configurable, and takes precedence over **DEBUG_OVER_UART** in pinout v1
-    * **SUNM_ENABLE** is now configurable
+
+<details><summary>several changes to config.h</summary>
+
+* added **DEBUG_OVER_CDC** to disable logging over usb cdc
+* added **UHID_LED_ENABLE** to opt into experimental usb hid led support
+* added **UHID_LED_TEST** to blink leds on all usb keyboards
+* added pin definitions **PINOUT_V2_PIN**, **KTX_ENABLE**, **DISPLAY_ENABLE**, **DEBUG_UART**, **SUNK_UART_V1**, **SUNK_UART_V2**, and **SUNM_UART_V1**
+* removed **SUNM_BAUD** in favour of the new menu setting
+* renamed **PICOPROBE_ENABLE** to **DEBUG_OVER_UART**
+* renamed **PICOPROBE_BAUD** to **DEBUG_UART_BAUD**
+* renamed **PICOPROBE_TX** to **DEBUG_UART_TX**
+* renamed **PICOPROBE_RX** to **DEBUG_UART_RX**
+* **SUN_KTX**, **SUN_KRX**, **SUN_MTX**, and **SUN_MRX** were split into pinout v1 and v2 variants
+* **DEBUG_OVER_UART** no longer disables logging over usb cdc (see **DEBUG_OVER_CDC**)
+* **SUNK_ENABLE** is now configurable, and takes precedence over **DEBUG_OVER_UART** in pinout v1
+* **SUNM_ENABLE** is now configurable
+</details>
 
 ### pcb rev [A3](https://github.com/delan/usb3sun/releases/tag/A3) (2023-10-15)
 
