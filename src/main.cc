@@ -51,6 +51,10 @@ struct {
   uint8_t dev_addr;
   uint8_t instance;
   uint8_t if_protocol;
+  struct {
+    bool present = false;
+    uint8_t report_id;
+  } led;
 } hid[16];
 
 std::atomic<bool> wait = true;
@@ -319,10 +323,11 @@ void loop1() {
   uint32_t message;
   if (rp2040.fifo.pop_nb(&message)) {
     for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
-      if (!hid[i].present || hid[i].if_protocol != HID_ITF_PROTOCOL_KEYBOARD)
+      if (!hid[i].present || !hid[i].led.present)
         continue;
       uint8_t dev_addr = hid[i].dev_addr;
       uint8_t instance = hid[i].instance;
+      uint8_t report_id = hid[i].led.report_id;
       uint8_t report;
       switch (message) {
         case (uint32_t)Message::UHID_LED_FROM_STATE:
@@ -346,8 +351,7 @@ void loop1() {
 #ifdef UHID_VERBOSE
       Sprintf("hid [%zu]: usb [%u:%u]: set led report %02Xh\n", i, dev_addr, instance, report);
 #endif
-      // TODO what report id? all values seem to work?
-      tuh_hid_set_report(dev_addr, instance, 6, HID_REPORT_TYPE_OUTPUT, &report, sizeof(report));
+      tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &report, sizeof(report));
 #endif
     }
   }
@@ -398,6 +402,16 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
           hid[i].dev_addr = dev_addr;
           hid[i].instance = instance;
           hid[i].if_protocol = if_protocol;
+          hid[i].led.present = false;
+          if (if_protocol == HID_ITF_PROTOCOL_KEYBOARD) {
+            for (size_t j = 0; j < reports_len; j++) {
+              if (reports[j].usage_page == 1 && reports[j].usage == 6) {
+                hid[i].led.present = true;
+                hid[i].led.report_id = reports[j].report_id;
+                Sprintf("hid [%zu]: led report_id=%u\n", i, hid[i].led.report_id);
+              }
+            }
+          }
           hid[i].present = true;
           ok = true;
           break;
