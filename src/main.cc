@@ -54,6 +54,7 @@ struct {
   struct {
     bool present = false;
     uint8_t report_id;
+    uint8_t report;
   } led;
 } hid[16];
 
@@ -328,20 +329,19 @@ void loop1() {
       uint8_t dev_addr = hid[i].dev_addr;
       uint8_t instance = hid[i].instance;
       uint8_t report_id = hid[i].led.report_id;
-      uint8_t report;
       switch (message) {
         case (uint32_t)Message::UHID_LED_FROM_STATE:
-          report =
+          hid[i].led.report =
             state.num << 0
             | state.caps << 1
             | state.scroll << 2
             | state.compose << 3;
           break;
         case (uint32_t)Message::UHID_LED_ALL_OFF:
-          report = 0x00;
+          hid[i].led.report = 0x00;
           break;
         case (uint32_t)Message::UHID_LED_ALL_ON:
-          report = 0xFF;
+          hid[i].led.report = 0xFF;
           break;
       }
 #if defined(UHID_LED_ENABLE)
@@ -349,9 +349,9 @@ void loop1() {
       Sprint("*");
 #endif
 #ifdef UHID_VERBOSE
-      Sprintf("hid [%zu]: usb [%u:%u]: set led report %02Xh\n", i, dev_addr, instance, report);
+      Sprintf("hid [%zu]: usb [%u:%u]: set led report %02Xh\n", i, dev_addr, instance, hid[i].led.report);
 #endif
-      tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &report, sizeof(report));
+      tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &hid[i].led.report, sizeof(hid[i].led.report));
 #endif
     }
   }
