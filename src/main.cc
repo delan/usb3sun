@@ -476,7 +476,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
       for (int i = 0; i < 6; i++) {
         if (kreport->keycode[i] != USBK_RESERVED && kreport->keycode[i] < USBK_FIRST_KEYCODE) {
 #ifdef UHID_VERBOSE
-          Sprintf(" !%u", kreport->keycode[i]);
+          Sprintf(" !%u\n", kreport->keycode[i]);
 #endif
           goto out;
         }
