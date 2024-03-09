@@ -5,13 +5,16 @@ firmware
 
 ## how to build the firmware
 
-1. fix the -DCFG_TUSB_CONFIG_FILE in platformio.ini for your absolute path
-2. apply patches to [Adafruit TinyUSB Library](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) (version 2.0.1)
-    1. `git apply tinyusb1.patch` — [tinyusb1.patch](tinyusb1.patch) fixes a race condition in enumeration when two devices are connected at the same time (hathach/tinyusb#1786, upstreamed in 2.0.2 as hathach/tinyusb#1960)
-    2. `git apply tinyusb2.patch` — [tinyusb2.patch](tinyusb2.patch) improves compatibility with Microsoft Wired Keyboard 600 (045E:0750) and 400 (045E:0752) when CFG_TUSB_DEBUG < 2 by adding a delay in tuh_control_xfer
-    3. `git apply debug1.patch` — [debug1.patch](debug1.patch)
-3. apply patches to [framework-arduinopico](https://github.com/earlephilhower/arduino-pico) (version 1.30101.0)
-    1. `git -C ~/.platformio/packages/framework-arduinopico apply $PWD/debug2.patch` — [debug2.patch](debug2.patch)
+1. `git apply picopiousb1.patch` ([picopiousb1.patch](../picopiousb1.patch), [#12](https://github.com/delan/usb3sun/issues/12))\
+→ improves compatibility with Microsoft Wired Keyboard 600 (045E:0750)
+2. `git apply tinyusb3.patch` ([tinyusb3.patch](../tinyusb3.patch), [#13](https://github.com/delan/usb3sun/issues/13))\
+→ fixes a bug where dummy event callbacks shadow our own callbacks ([Adafruit_TinyUSB_Arduino#296](https://github.com/adafruit/Adafruit_TinyUSB_Arduino/issues/296))
+3. `git apply debug1.patch` ([debug1.patch](../debug1.patch))\
+→ makes TinyUSB debug logging configurable at runtime
+4. `git -C ~/.platformio/packages/framework-arduinopico apply $PWD/debug2.patch` ([debug2.patch](../debug2.patch))\
+→ makes arduino-pico debug logging configurable at runtime
+5. `git -C ~/.platformio/packages/framework-arduinopico apply $PWD/debug3.patch` ([debug3.patch](../debug3.patch))\
+→ makes TinyUSB debug logging configurable at runtime
 
 ### linux users
 
@@ -19,6 +22,16 @@ if you get “patch does not apply” errors:
 
 ```sh
 $ dos2unix '.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c'
+```
+
+copy these commands to do all of the above:
+
+```sh
+dos2unix '.pio/libdeps/pico/Adafruit TinyUSB Library/src/host/usbh.c'
+git apply tinyusb1.patch
+git apply tinyusb2.patch
+git apply debug1.patch
+git -C ~/.platformio/packages/framework-arduinopico apply $PWD/debug2.patch
 ```
 
 ### windows users

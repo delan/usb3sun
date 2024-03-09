@@ -312,7 +312,7 @@ void setup1() {
   USBHost.begin(1);
 
   // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
-  pio_usb_host_add_port(USB1_DP);
+  pio_usb_host_add_port(USB1_DP, PIO_USB_PINOUT_DPDM);
 }
 
 void loop1() {

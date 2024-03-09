@@ -1,0 +1,14 @@
+diff --git a/libraries/Adafruit_TinyUSB_Arduino/src/arduino/Adafruit_TinyUSB_API.h b/libraries/Adafruit_TinyUSB_Arduino/src/arduino/Adafruit_TinyUSB_API.h
+index 1d0808c..25b5f95 100644
+--- a/libraries/Adafruit_TinyUSB_Arduino/src/arduino/Adafruit_TinyUSB_API.h
++++ b/libraries/Adafruit_TinyUSB_Arduino/src/arduino/Adafruit_TinyUSB_API.h
+@@ -27,6 +27,9 @@
+ #include <stdbool.h>
+ #include <stdint.h>
+ 
++#include <Arduino.h>
++extern Stream *TinyUSB_Serial_Debug;
++
+ // API Version, need to be updated when there is changes for
+ // TinyUSB_API, USBD_CDC, USBD_Device, USBD_Interface,
+ #define TINYUSB_API_VERSION 11600

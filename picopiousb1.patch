@@ -1,0 +1,13 @@
+diff --git a/.pio/libdeps/pico/Pico PIO USB/src/pio_usb_host.c b/.pio/libdeps/pico/Pico PIO USB/src/pio_usb_host.c
+index ae65a4a..dd8ab0a 100644
+--- a/.pio/libdeps/pico/Pico PIO USB/src/pio_usb_host.c
++++ b/.pio/libdeps/pico/Pico PIO USB/src/pio_usb_host.c
+@@ -304,7 +304,7 @@ void __not_in_flash_func(pio_usb_host_frame)(void) {
+   sof_count++;
+ 
+   // SOF counter is 11-bit
+-  uint16_t const sof_count_11b = sof_count & 0x7ff;
++  uint16_t const sof_count_11b = sof_count & 0x1ff;
+   sof_packet[2] = sof_count_11b & 0xff;
+   sof_packet[3] = (calc_usb_crc5(sof_count_11b) << 3) | (sof_count_11b >> 8);
+ }

@@ -1,34 +1,33 @@
-diff --git a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/Adafruit_TinyUSB.h b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/Adafruit_TinyUSB.h
-index 1d0808c..25b5f95 100644
---- a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/Adafruit_TinyUSB.h
-+++ b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/Adafruit_TinyUSB.h
-@@ -25,6 +25,9 @@
- #ifndef ADAFRUIT_TINYUSB_H_
- #define ADAFRUIT_TINYUSB_H_
- 
-+#include <Arduino.h>
-+extern HardwareSerial *TinyUSB_Serial_Debug;
-+
- // Error message for Core that must select TinyUSB via menu
- #if !defined(USE_TINYUSB) && ( defined(ARDUINO_ARCH_SAMD) || \
-                                (defined(ARDUINO_ARCH_RP2040) && !defined(ARDUINO_ARCH_MBED)) )
-diff --git a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/ports/rp2040/Adafruit_TinyUSB_rp2040.cpp b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/ports/rp2040/Adafruit_TinyUSB_rp2040.cpp
+diff --git a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/Adafruit_TinyUSB_API.cpp b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/Adafruit_TinyUSB_API.cpp
 index 8af08a4..b0449dd 100644
---- a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/ports/rp2040/Adafruit_TinyUSB_rp2040.cpp
-+++ b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/ports/rp2040/Adafruit_TinyUSB_rp2040.cpp
-@@ -141,13 +141,14 @@ void TinyUSB_Device_Task(void) {
+--- a/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/Adafruit_TinyUSB_API.cpp
++++ b/.pio/libdeps/pico/Adafruit TinyUSB Library/src/arduino/Adafruit_TinyUSB_API.cpp
+@@ -68,24 +68,21 @@ #ifdef USE_SEGGER_RTT
+ #include "SEGGER_RTT/RTT/SEGGER_RTT.h"
+ #endif
  
- // Debug log with Serial1
- #if CFG_TUSB_DEBUG
-+HardwareSerial *TinyUSB_Serial_Debug = nullptr;
- int serial1_printf(const char *__restrict format, ...) {
++extern "C++" {
++  Stream *TinyUSB_Serial_Debug = nullptr;
++}
+ __attribute__((used)) int CFG_TUSB_DEBUG_PRINTF(const char *__restrict format,
+                                                 ...) {
    char buf[256];
    int len;
    va_list ap;
    va_start(ap, format);
    len = vsnprintf(buf, sizeof(buf), format, ap);
--  Serial1.write(buf);
+ 
+ #ifdef USE_SEGGER_RTT
+   SEGGER_RTT_Write(0, buf, len);
+ #else
+-  static volatile bool ser_inited = false;
+-  if (!ser_inited) {
+-    ser_inited = true;
+-    SERIAL_TUSB_DEBUG.begin(115200);
+-    // SERIAL_TUSB_DEBUG.begin(921600);
+-  }
+-  SERIAL_TUSB_DEBUG.write(buf);
 +  if (TinyUSB_Serial_Debug) TinyUSB_Serial_Debug->write(buf);
+ #endif
+ 
    va_end(ap);
-   return len;
- }
