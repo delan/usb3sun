@@ -368,7 +368,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   tuh_hid_report_info_t reports[16];
   size_t reports_len = tuh_hid_parse_report_descriptor(reports, sizeof(reports) / sizeof(*reports), desc_report, desc_len);
   for (size_t i = 0; i < reports_len; i++)
-    Sprintf("    reports[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", reports[i].report_id, reports[i].usage, reports[i].usage_page);
+    Sprintf("    reports[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", i, reports[i].report_id, reports[i].usage, reports[i].usage_page);
 
   // hid_subclass_enum_t if_subclass = ...;
   uint8_t if_protocol = tuh_hid_interface_protocol(dev_addr, instance);
