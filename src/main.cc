@@ -4,7 +4,7 @@
 
 #ifdef USB3SUN_HAL_ARDUINO_PICO
 #include <Arduino.h>
-#include <Adafruit_TinyUSB.h>
+// #include <Adafruit_TinyUSB.h>
 #endif
 
 #include "bindings.h"
@@ -273,6 +273,10 @@ void setup1() {
   usb3sun_usb_init();
 }
 
+extern "C" {
+#include <pio_usb.h>
+}
+
 void loop1() {
   uint32_t message;
   if (usb3sun_fifo_pop(&message)) {
@@ -313,6 +317,17 @@ void loop1() {
     }
   }
   usb3sun_usb_task();
+
+  usb3sun_uhid_get_reports([](auto address, auto ep_num, auto data, auto len) {
+    // Sprintf("%04x:%04x EP 0x%02x:\t", vid, pid, ep_num);
+    // for (size_t i = 0; i < len; i++) {
+    //   Sprintf("%02x ", data[i]);
+    // }
+    // Sprintf("\n");
+    extern void usb3sun_usb_report_cb(uint8_t address, uint8_t ep_num, const uint8_t *data, uint16_t len);
+    usb3sun_usb_report_cb(address, ep_num, data, len);
+  });
+
   buzzer.update();
 }
 
@@ -321,20 +336,10 @@ void loop1() {
 // tuh_hid_parse_report_descriptor() can be used to parse common/simple enough
 // descriptor. Note: if report descriptor length > CFG_TUH_ENUMERATION_BUFSIZE,
 // it will be skipped therefore report_desc = NULL, desc_len = 0
-void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len) {
-  uint16_t vid, pid;
-  usb3sun_usb_vid_pid(dev_addr, &vid, &pid);
-  Sprintf("usb [%u:%u]: hid mount vid:pid=%04x:%04x\n", dev_addr, instance, vid, pid);
-
-  usb3sun_hid_report_info reports[16];
-  size_t reports_len = usb3sun_uhid_parse_report_descriptor(reports, sizeof(reports) / sizeof(*reports), desc_report, desc_len);
-  for (size_t i = 0; i < reports_len; i++)
-    Sprintf("    reports[%zu] report_id=%u usage=%02Xh usage_page=%04Xh\n", i, reports[i].report_id, reports[i].usage, reports[i].usage_page);
-
-  // hid_subclass_enum_t if_subclass = ...;
-  uint8_t if_protocol = usb3sun_uhid_interface_protocol(dev_addr, instance);
-  Sprintf("    bInterfaceProtocol=%u", if_protocol);
-  switch (if_protocol) {
+void usb3sun_usb_connected_cb(uint8_t address, uint16_t vid, uint16_t pid, uint8_t bInterfaceProtocol) {
+  Sprintf("usb [%u:?]: hid mount vid:pid=%04x:%04x\n", address, vid, pid);
+  Sprintf("    bInterfaceProtocol=%u", bInterfaceProtocol);
+  switch (bInterfaceProtocol) {
     case USB3SUN_UHID_KEYBOARD:
       Sprintln(" (boot keyboard)");
       break;
@@ -346,58 +351,46 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
   }
 
   // TODO non-boot input devices
-  switch (if_protocol) {
+  switch (bInterfaceProtocol) {
     case USB3SUN_UHID_KEYBOARD:
     case USB3SUN_UHID_MOUSE: {
       bool ok = false;
       for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
         if (!hid[i].present) {
           Sprintf(
-            "hid [%zu]: usb [%u:%u], bInterfaceProtocol=%u\n",
-            i, dev_addr, instance, if_protocol
+            "hid [%zu]: usb [%u:?], bInterfaceProtocol=%u\n",
+            i, address, bInterfaceProtocol
           );
-          hid[i].dev_addr = dev_addr;
-          hid[i].instance = instance;
-          hid[i].if_protocol = if_protocol;
+          hid[i].dev_addr = address;
+          hid[i].instance = (uint8_t) -1;
+          hid[i].if_protocol = bInterfaceProtocol;
           hid[i].led.present = false;
-          if (if_protocol == USB3SUN_UHID_KEYBOARD) {
-            for (size_t j = 0; j < reports_len; j++) {
-              if (reports[j].usage_page == 1 && reports[j].usage == 6) {
-                hid[i].led.present = true;
-                hid[i].led.report_id = reports[j].report_id;
-                Sprintf("hid [%zu]: led report_id=%u\n", i, hid[i].led.report_id);
-              }
-            }
-          }
+          // if (if_protocol == USB3SUN_UHID_KEYBOARD) {
+          //   for (size_t j = 0; j < reports_len; j++) {
+          //     if (reports[j].usage_page == 1 && reports[j].usage == 6) {
+          //       hid[i].led.present = true;
+          //       hid[i].led.report_id = reports[j].report_id;
+          //       Sprintf("hid [%zu]: led report_id=%u\n", i, hid[i].led.report_id);
+          //     }
+          //   }
+          // }
           hid[i].present = true;
           ok = true;
           break;
         }
       }
       if (!ok)
-        Sprintln("error: usb [%u:%u]: hid table full");
+        Sprintln("error: usb [%u:?]: hid table full");
     }
   }
-
-  if (!usb3sun_uhid_request_report(dev_addr, instance))
-    Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
 
   buzzer.plug();
 }
 
-// FIXME this never seems to get called?
-void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-  Sprintf("usb [%u:%u]: hid unmount\n", dev_addr, instance);
-}
-
-void tuh_mount_cb(uint8_t dev_addr) {
-  Sprintf("usb [%u]: mount\n", dev_addr);
-}
-
-void tuh_umount_cb(uint8_t dev_addr) {
-  Sprintf("usb [%u]: unmount\n", dev_addr);
+void usb3sun_usb_disconnected_cb(uint8_t address) {
+  Sprintf("usb [%u]: unmount\n", address);
   for (size_t i = 0; i < sizeof(hid) / sizeof(*hid); i++) {
-    if (hid[i].present && hid[i].dev_addr == dev_addr) {
+    if (hid[i].present && hid[i].dev_addr == address) {
       Sprintf("hid [%zu]: removing\n", i);
       hid[i].present = false;
     }
@@ -405,14 +398,14 @@ void tuh_umount_cb(uint8_t dev_addr) {
   buzzer.unplug();
 }
 
-void tuh_hid_set_protocol_complete_cb(uint8_t dev_addr, uint8_t instance, uint8_t protocol) {
-  // haven’t seen this actually get printed so far, but only tried a few devices
-  Sprintf("usb [%u:%u]: hid set protocol returned %u\n", dev_addr, instance, protocol);
-}
-
 // Invoked when received report from device via interrupt endpoint
-void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-  uint8_t if_protocol = usb3sun_uhid_interface_protocol(dev_addr, instance);
+void usb3sun_usb_report_cb(uint8_t address, uint8_t ep_num, const uint8_t *data, uint16_t len) {
+  uint8_t bInterfaceProtocol;
+  for (size_t i = 0; i < sizeof hid / sizeof *hid; i++) {
+    if (hid[i].present && hid[i].dev_addr == address) {
+      bInterfaceProtocol = hid[i].if_protocol;
+    }
+  }
 #ifdef UHID_VERBOSE
   Sprintf("usb [%u:%u]: hid report if_protocol=%u", dev_addr, instance, if_protocol);
   for (uint16_t i = 0; i < len; i++)
@@ -422,9 +415,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
   (void) len;
 #endif
 
-  switch (if_protocol) {
+  switch (bInterfaceProtocol) {
     case USB3SUN_UHID_KEYBOARD: {
-      const UsbkReport *kreport = reinterpret_cast<const UsbkReport *>(report);
+      const UsbkReport *kreport = reinterpret_cast<const UsbkReport *>(data);
 
 #ifdef DEBUG_TIMINGS
       unsigned long t = usb3sun_micros();
@@ -489,7 +482,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         state.lastKeys[i] = changes.kreport.keycode[i];
     } break;
     case USB3SUN_UHID_MOUSE: {
-      const UsbmReport *mreport = reinterpret_cast<const UsbmReport *>(report);
+      const UsbmReport *mreport = reinterpret_cast<const UsbmReport *>(data);
 #ifdef UHID_VERBOSE
       Sprintf(" buttons=%u x=%d y=%d", mreport->buttons, mreport->x, mreport->y);
 #endif
@@ -516,9 +509,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     } break;
   }
 out:
-  // continue to request to receive report
-  if (!usb3sun_uhid_request_report(dev_addr, instance))
-    Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
+  ;
+  // // continue to request to receive report
+  // if (!usb3sun_uhid_request_report(dev_addr, instance))
+  //   Sprintf("error: usb [%u:%u]: failed to request to receive report\n", dev_addr, instance);
 }
 
 #ifdef USB3SUN_HAL_LINUX_NATIVE

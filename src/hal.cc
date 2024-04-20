@@ -137,19 +137,19 @@ static const uint8_t adafruit_gfx_classic[]  = {
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Adafruit_TinyUSB.h>
+// #include <Adafruit_TinyUSB.h>
 
 extern "C" {
 #include <pio_usb.h>
 }
 
 static Adafruit_SSD1306 display{128, 32, &Wire, /* OLED_RESET */ -1};
-static Adafruit_USBH_Host USBHost;
+// static Adafruit_USBH_Host USBHost;
 static struct {
   size_t version = 1;
   HardwareSerial *sunk = &SUNK_UART_V1;
   HardwareSerial *sunm = &SUNM_UART_V1;
-  Adafruit_USBD_CDC *debugCdc = nullptr;
+  // Adafruit_USBD_CDC *debugCdc = nullptr;
   SerialUART *debugUart = nullptr;
   usb3sun_pin sunkTx = SUN_KTX_V1;
   usb3sun_pin sunkRx = SUN_KRX_V1;
@@ -213,60 +213,84 @@ size_t usb3sun_sunm_write(uint8_t *data, size_t len) {
   return pinout.sunm->write(data, len);
 }
 
+static usb_device_t *usb_devices = NULL;
 void usb3sun_usb_init(void) {
-  pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+  static pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+  pio_cfg.alarm_pool = (void*)alarm_pool_create(2, 1);
   pio_cfg.pin_dp = USB0_DP;
   pio_cfg.sm_tx = 1;
+  usb_devices = pio_usb_host_init(&pio_cfg);
 
   // tuh_configure -> pico pio hcd_configure -> memcpy to static global
-  USBHost.configure_pio_usb(1, &pio_cfg);
+  // USBHost.configure_pio_usb(1, &pio_cfg);
 
   // run host stack on controller (rhport) 1
   // Note: For rp2040 pico-pio-usb, calling USBHost.begin() on core1 will have most of the
   // host bit-banging processing works done in core1 to free up core0 for other works
   // tuh_init -> pico pio hcd_init -> pio_usb_host_init -> pio_usb_bus_init -> set root[0]->initialized
-  USBHost.begin(1);
+  // USBHost.begin(1);
 
   // set root[i]->initialized for the first unused i less than PIO_USB_ROOT_PORT_CNT
   pio_usb_host_add_port(USB1_DP, PIO_USB_PINOUT_DPDM);
 }
 
 void usb3sun_usb_task(void) {
-  USBHost.task();
+  // USBHost.task();
+  pio_usb_host_task();
 }
 
 bool usb3sun_usb_vid_pid(uint8_t dev_addr, uint16_t *vid, uint16_t *pid) {
-  return tuh_vid_pid_get(dev_addr, vid, pid);
+  return false; // tuh_vid_pid_get(dev_addr, vid, pid);
 }
 
 bool usb3sun_uhid_request_report(uint8_t dev_addr, uint8_t instance) {
-  return tuh_hid_receive_report(dev_addr, instance);
+  return false; // tuh_hid_receive_report(dev_addr, instance);
 }
 
 uint8_t usb3sun_uhid_interface_protocol(uint8_t dev_addr, uint8_t instance) {
-  return tuh_hid_interface_protocol(dev_addr, instance);
+  return false; // tuh_hid_interface_protocol(dev_addr, instance);
 }
 
 size_t usb3sun_uhid_parse_report_descriptor(usb3sun_hid_report_info *result, size_t result_len, const uint8_t *descriptor, size_t descriptor_len) {
-  tuh_hid_report_info_t tuh_result[16];
-  size_t tuh_result_len = tuh_hid_parse_report_descriptor(
-    tuh_result, sizeof tuh_result / sizeof *tuh_result,
-    descriptor, descriptor_len);
-  for (size_t i = 0; i < tuh_result_len && i < result_len; i++) {
-    result[i].report_id = tuh_result[i].report_id;
-    result[i].usage = tuh_result[i].usage;
-    result[i].usage_page = tuh_result[i].usage_page;
-  }
-  return tuh_result_len;
+  // tuh_hid_report_info_t tuh_result[16];
+  // size_t tuh_result_len = tuh_hid_parse_report_descriptor(
+  //   tuh_result, sizeof tuh_result / sizeof *tuh_result,
+  //   descriptor, descriptor_len);
+  // for (size_t i = 0; i < tuh_result_len && i < result_len; i++) {
+  //   result[i].report_id = tuh_result[i].report_id;
+  //   result[i].usage = tuh_result[i].usage;
+  //   result[i].usage_page = tuh_result[i].usage_page;
+  // }
+  // return tuh_result_len;
+  return 0;
 }
 
 bool usb3sun_uhid_set_led_report(uint8_t dev_addr, uint8_t instance, uint8_t report_id, uint8_t &led_report) {
-  return tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &led_report, sizeof led_report);
+  // return tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &led_report, sizeof led_report);
+  return false;
+}
+
+void usb3sun_uhid_get_reports(void (*callback)(uint8_t address, uint8_t ep_num, const uint8_t *data, size_t len)) {
+  if (!usb_devices) return;
+  for (size_t i = 0; i < PIO_USB_DEVICE_CNT; i++) {
+    auto &device = usb_devices[i];
+    if (!device.connected) continue;
+    for (size_t j = 0; j < PIO_USB_DEV_EP_CNT; j++) {
+      endpoint_t *ep = pio_usb_get_endpoint(&device, j);
+      if (!ep) break;
+      uint8_t data[64];
+      int len = pio_usb_get_in_data(ep, data, sizeof data);
+      if (len > 0) {
+        callback(device.address, ep->ep_num, data, static_cast<size_t>(len));
+      }
+    }
+  }
 }
 
 void usb3sun_debug_init(int (*printf)(const char *format, ...)) {
 #if defined(DEBUG_LOGGING)
   DEBUG_RP2040_PRINTF = printf;
+  PIO_PRINTF = printf;
 #endif
 }
 
@@ -275,18 +299,18 @@ int usb3sun_debug_uart_read(void) {
 }
 
 int usb3sun_debug_cdc_read(void) {
-  return pinout.debugCdc ? pinout.debugCdc->read() : -1;
+  return -1; // pinout.debugCdc ? pinout.debugCdc->read() : -1;
 }
 
 bool usb3sun_debug_write(const char *data, size_t len) {
   bool ok = true;
-  if (pinout.debugCdc) {
-    if (pinout.debugCdc->write(data, len) < len) {
-      ok = false;
-    } else {
-      pinout.debugCdc->flush();
-    }
-  }
+  // if (pinout.debugCdc) {
+  //   if (pinout.debugCdc->write(data, len) < len) {
+  //     ok = false;
+  //   } else {
+  //     pinout.debugCdc->flush();
+  //   }
+  // }
   if (pinout.debugUart) {
     if (pinout.debugUart->write(data, len) < len) {
       ok = false;
@@ -300,7 +324,7 @@ bool usb3sun_debug_write(const char *data, size_t len) {
 void usb3sun_allow_debug_over_cdc(void) {
   // needs to be done manually when using FreeRTOS and/or TinyUSB
   Serial.begin(115200);
-  pinout.debugCdc = &Serial;
+  // pinout.debugCdc = &Serial;
 }
 
 void usb3sun_allow_debug_over_uart(void) {

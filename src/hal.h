@@ -127,6 +127,9 @@ bool usb3sun_uhid_request_report(uint8_t dev_addr, uint8_t instance);
 uint8_t usb3sun_uhid_interface_protocol(uint8_t dev_addr, uint8_t instance);
 size_t usb3sun_uhid_parse_report_descriptor(usb3sun_hid_report_info *result, size_t result_len, const uint8_t *descriptor, size_t descriptor_len);
 bool usb3sun_uhid_set_led_report(uint8_t dev_addr, uint8_t instance, uint8_t report_id, uint8_t &led_report);
+void usb3sun_uhid_get_reports(void (*callback)(uint8_t address, uint8_t ep_num, const uint8_t *data, size_t len));
+void usb3sun_usb_connected_cb(uint8_t address, uint16_t vid, uint16_t pid, uint8_t bInterfaceProtocol);
+void usb3sun_usb_disconnected_cb(uint8_t address);
 
 void usb3sun_debug_init(int (*printf)(const char *format, ...));
 int usb3sun_debug_uart_read(void);

@@ -1,0 +1,66 @@
+diff --git a/src/pio_usb.h b/src/pio_usb.h
+index 30a87d3..62727a2 100644
+--- a/src/pio_usb.h
++++ b/src/pio_usb.h
+@@ -8,6 +8,11 @@
+  extern "C" {
+ #endif
+ 
++typedef int Printf(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
++extern Printf *PIO_PRINTF;
++void usb3sun_usb_connected_cb(uint8_t address, uint16_t vid, uint16_t pid, uint8_t bInterfaceProtocol);
++void usb3sun_usb_disconnected_cb(uint8_t address);
++
+ // Host functions
+ usb_device_t *pio_usb_host_init(const pio_usb_configuration_t *c);
+ int pio_usb_host_add_port(uint8_t pin_dp, PIO_USB_PINOUT pinout);
+diff --git a/src/pio_usb_host.c b/src/pio_usb_host.c
+index ae65a4a..da17b59 100644
+--- a/src/pio_usb_host.c
++++ b/src/pio_usb_host.c
+@@ -19,6 +19,10 @@
+ #include "usb_rx.pio.h"
+ #include "usb_tx.pio.h"
+ 
++static int dummyPrintf(const char *, ...) { return -1; }
++Printf *PIO_PRINTF = dummyPrintf;
++#define printf (*PIO_PRINTF)
++
+ static alarm_pool_t *_alarm_pool = NULL;
+ static repeating_timer_t sof_rt;
+ // The sof_count may be incremented and then read on different cores.
+@@ -304,7 +308,7 @@ void __not_in_flash_func(pio_usb_host_frame)(void) {
+   sof_count++;
+ 
+   // SOF counter is 11-bit
+-  uint16_t const sof_count_11b = sof_count & 0x7ff;
++  uint16_t const sof_count_11b = sof_count & 0x1ff;
+   sof_packet[2] = sof_count_11b & 0xff;
+   sof_packet[3] = (calc_usb_crc5(sof_count_11b) << 3) | (sof_count_11b >> 8);
+ }
+@@ -805,6 +809,8 @@ static int get_string_descriptor(usb_device_t *device, uint8_t idx,
+   return res;
+ }
+ 
++void stdio_flush(void) {}
++
+ static int enumerate_device(usb_device_t *device, uint8_t address) {
+   int res = 0;
+   uint8_t rx_buffer[512];
+@@ -938,6 +944,7 @@ static int enumerate_device(usb_device_t *device, uint8_t address) {
+             "iprotcol:%d, iface:%d\n",
+             d->inum, d->altsetting, d->numep, d->iclass, d->isubclass,
+             d->iprotocol, d->iface);
++        usb3sun_usb_connected_cb(address, device->vid, device->pid, d->iprotocol);
+         interface = d->inum;
+         class = d->iclass;
+       } break;
+@@ -1041,6 +1048,8 @@ static void device_disconnect(usb_device_t *device) {
+     }
+   }
+ 
++  usb3sun_usb_disconnected_cb(device->address);
++
+   for (int ep_idx = 0; ep_idx < PIO_USB_DEV_EP_CNT; ep_idx++) {
+     endpoint_t *ep = pio_usb_get_endpoint(device, ep_idx);
+     if (ep == NULL) {

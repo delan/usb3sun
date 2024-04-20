@@ -97,8 +97,8 @@
 //   extern int serial2_printf(const char *__restrict __format, ...);
 // }
 
-#define CFG_TUH_ENABLED 1
-#define CFG_TUH_RPI_PIO_USB 1
+#define CFG_TUH_ENABLED 0
+#define CFG_TUH_RPI_PIO_USB 0
 #define CFG_TUH_ENUMERATION_BUFSIZE 256
 #define CFG_TUH_HUB 1
 #define CFG_TUH_DEVICE_MAX 4
