@@ -407,9 +407,9 @@ void usb3sun_usb_report_cb(uint8_t address, uint8_t ep_num, const uint8_t *data,
     }
   }
 #ifdef UHID_VERBOSE
-  Sprintf("usb [%u:%u]: hid report if_protocol=%u", dev_addr, instance, if_protocol);
+  Sprintf("usb [%u:?]: hid report if_protocol=%u", address, bInterfaceProtocol);
   for (uint16_t i = 0; i < len; i++)
-    Sprintf(" %02Xh", report[i]);
+    Sprintf(" %02Xh", data[i]);
 #else
   Sprint(".");
   (void) len;

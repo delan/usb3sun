@@ -10,7 +10,7 @@
 // #define BUZZER_VERBOSE      // log buzzer state changes for debugging
 // #define SUNK_VERBOSE        // log keyboard tx for debugging
 // #define SUNM_VERBOSE        // log mouse tx for debugging
-// #define UHID_VERBOSE        // log hid reports for debugging
+#define UHID_VERBOSE        // log hid reports for debugging
 
 // #define UHID_LED_ENABLE     // enable leds on usb keyboards?
 // #define UHID_LED_TEST       // blink leds on all usb keyboards
