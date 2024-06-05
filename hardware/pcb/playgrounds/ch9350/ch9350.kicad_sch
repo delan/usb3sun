@@ -6285,7 +6285,7 @@
 		)
 		(uuid "08ee8da9-4143-4c6c-a6b4-273f0cfef7ab")
 	)
-	(label "DP"
+	(label "D+"
 		(at 236.22 137.16 180)
 		(fields_autoplaced yes)
 		(effects
@@ -6461,7 +6461,7 @@
 		)
 		(uuid "22fbebb8-4a69-4afc-af54-aa7cec91c75c")
 	)
-	(label "DP2"
+	(label "D2+"
 		(at 251.46 129.54 0)
 		(fields_autoplaced yes)
 		(effects
@@ -6538,7 +6538,7 @@
 		)
 		(uuid "3157d3e2-d0bc-4bc8-af63-e4923f527feb")
 	)
-	(label "DM2"
+	(label "D2-"
 		(at 162.56 71.12 180)
 		(fields_autoplaced yes)
 		(effects
@@ -6846,7 +6846,7 @@
 		)
 		(uuid "74f93c2d-e2fb-463d-bd72-7eb784d637ab")
 	)
-	(label "DP1"
+	(label "D1+"
 		(at 251.46 124.46 0)
 		(fields_autoplaced yes)
 		(effects
@@ -6912,7 +6912,7 @@
 		)
 		(uuid "82f59ea7-8168-4b8e-abaf-f86ebcda0d23")
 	)
-	(label "DP"
+	(label "D+"
 		(at 236.22 134.62 180)
 		(fields_autoplaced yes)
 		(effects
@@ -6956,7 +6956,7 @@
 		)
 		(uuid "87c123aa-e344-4fda-b386-34cdbf3fa3a4")
 	)
-	(label "DM1"
+	(label "D1-"
 		(at 116.84 71.12 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7000,7 +7000,7 @@
 		)
 		(uuid "8e000f88-6503-406f-91b5-4e99fd879b20")
 	)
-	(label "DP2"
+	(label "D2+"
 		(at 162.56 68.58 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7033,7 +7033,7 @@
 		)
 		(uuid "9386c1b5-9f84-4d83-99e1-f05b42d216ed")
 	)
-	(label "DP1"
+	(label "D1+"
 		(at 116.84 68.58 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7132,7 +7132,7 @@
 		)
 		(uuid "9f7b74c8-20ac-4a55-85cd-fa9262116d8d")
 	)
-	(label "DM"
+	(label "D-"
 		(at 236.22 132.08 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7165,7 +7165,7 @@
 		)
 		(uuid "a67c53db-f697-4dc0-b89e-e599ac9f3f9d")
 	)
-	(label "DM2"
+	(label "D2-"
 		(at 251.46 132.08 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7363,7 +7363,7 @@
 		)
 		(uuid "c5ec117c-c099-4b9b-947e-46fb9ff6a639")
 	)
-	(label "DM1"
+	(label "D1-"
 		(at 251.46 127 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7418,7 +7418,7 @@
 		)
 		(uuid "cc566813-6b6e-4dcf-8e37-e7fbe2ef11d6")
 	)
-	(label "DM"
+	(label "D-"
 		(at 86.36 71.12 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7572,7 +7572,7 @@
 		)
 		(uuid "ec0a83fb-26de-4173-9e20-fd15ebfb3a8f")
 	)
-	(label "DP"
+	(label "D+"
 		(at 86.36 68.58 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7605,7 +7605,7 @@
 		)
 		(uuid "f9dc596f-b912-4394-b7bc-1e6a125a9084")
 	)
-	(label "DM"
+	(label "D-"
 		(at 236.22 129.54 180)
 		(fields_autoplaced yes)
 		(effects

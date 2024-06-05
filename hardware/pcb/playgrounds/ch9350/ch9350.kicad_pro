@@ -178,7 +178,8 @@
       ],
       "track_widths": [
         0.0,
-        0.4
+        0.25,
+        0.5
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -492,10 +493,6 @@
     "netclass_patterns": [
       {
         "netclass": "power",
-        "pattern": "VSUN"
-      },
-      {
-        "netclass": "power",
         "pattern": "GNDPWR"
       },
       {
@@ -511,15 +508,15 @@
         "pattern": "/VBUSb"
       },
       {
-        "netclass": "Default",
+        "netclass": "power",
         "pattern": "/VBUS"
       },
       {
-        "netclass": "Default",
+        "netclass": "power",
         "pattern": "/VDDa"
       },
       {
-        "netclass": "Default",
+        "netclass": "power",
         "pattern": "/VDDb"
       }
     ]
