@@ -7917,7 +7917,7 @@
 				)
 			)
 		)
-		(property "Value" "USB_A_Stacked"
+		(property "Value" "USB-U267-BWS"
 			(at 271.78 111.76 0)
 			(effects
 				(font
@@ -7925,7 +7925,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_USB:USB_A_CUI_UJ2-ADH-TH_Horizontal_Stacked"
 			(at 267.97 140.97 0)
 			(effects
 				(font
@@ -7945,6 +7945,15 @@
 			)
 		)
 		(property "Description" "USB Type A connector, stacked"
+			(at 271.78 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2962392"
 			(at 271.78 127 0)
 			(effects
 				(font
@@ -8443,7 +8452,7 @@
 				)
 			)
 		)
-		(property "Value" "USB_C_Receptacle_USB2.0_16P"
+		(property "Value" "TYPE-C-31-M-12"
 			(at 210.82 111.76 0)
 			(effects
 				(font
@@ -8451,7 +8460,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
 			(at 214.63 132.08 0)
 			(effects
 				(font
@@ -8470,6 +8479,15 @@
 			)
 		)
 		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
+			(at 210.82 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C165948"
 			(at 210.82 132.08 0)
 			(effects
 				(font
@@ -9035,7 +9053,7 @@
 				)
 			)
 		)
-		(property "Value" "Conn_02x08_Odd_Even"
+		(property "Value" "Conn_02x10_Odd_Even"
 			(at 138.43 113.03 0)
 			(effects
 				(font
@@ -9043,7 +9061,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical"
 			(at 137.16 127 0)
 			(effects
 				(font
@@ -9308,7 +9326,7 @@
 				)
 			)
 		)
-		(property "Value" "Conn_02x08_Odd_Even"
+		(property "Value" "Conn_02x10_Odd_Even"
 			(at 62.23 113.03 0)
 			(effects
 				(font
@@ -9316,7 +9334,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical"
 			(at 60.96 127 0)
 			(effects
 				(font
@@ -9718,7 +9736,7 @@
 				)
 			)
 		)
-		(property "Value" "SW_Push"
+		(property "Value" "TS-1187A-B-A-B"
 			(at 35.56 20.32 0)
 			(effects
 				(font
@@ -9726,7 +9744,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A"
 			(at 35.56 20.32 0)
 			(effects
 				(font
@@ -9745,6 +9763,15 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
+			(at 35.56 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C318884"
 			(at 35.56 25.4 0)
 			(effects
 				(font
@@ -10131,74 +10158,6 @@
 			(project "ch9350"
 				(path "/7f205840-aa3b-4791-816b-13824847f659"
 					(reference "#PWR01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 35.56 35.56 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "9e4feac5-8f97-4a54-be5b-3ed895f8bb17")
-		(property "Reference" "SW2"
-			(at 35.56 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "SW_Push"
-			(at 35.56 30.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 35.56 30.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 35.56 30.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Push button switch, generic, two pins"
-			(at 35.56 35.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "8cf26e09-7c32-44bc-b8a9-c0db0f55d58d")
-		)
-		(pin "1"
-			(uuid "b966db22-de34-430b-a514-9de5b25f52b6")
-		)
-		(instances
-			(project "ch9350"
-				(path "/7f205840-aa3b-4791-816b-13824847f659"
-					(reference "SW2")
 					(unit 1)
 				)
 			)
@@ -10997,7 +10956,7 @@
 				)
 			)
 		)
-		(property "Value" "Conn_02x04_Odd_Even"
+		(property "Value" "Conn_02x08_Odd_Even"
 			(at 100.33 113.03 0)
 			(effects
 				(font
@@ -11005,7 +10964,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical"
 			(at 99.06 124.46 0)
 			(effects
 				(font
@@ -11681,6 +11640,83 @@
 			(project "ch9350"
 				(path "/7f205840-aa3b-4791-816b-13824847f659"
 					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 35.56 35.56 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "fcd3f929-f9f0-4951-ad19-9770cb8b0b4f")
+		(property "Reference" "SW2"
+			(at 35.56 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TS-1187A-B-A-B"
+			(at 35.56 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A"
+			(at 35.56 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 35.56 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 35.56 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C318884"
+			(at 35.56 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "d8905af8-3b74-44c9-8f83-e1ca3f933b6d")
+		)
+		(pin "1"
+			(uuid "1a6eb7bd-71ae-4004-8f31-4a74ddec2df5")
+		)
+		(instances
+			(project "ch9350"
+				(path "/7f205840-aa3b-4791-816b-13824847f659"
+					(reference "SW2")
 					(unit 1)
 				)
 			)
