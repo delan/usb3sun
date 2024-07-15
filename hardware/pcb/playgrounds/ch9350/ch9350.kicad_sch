@@ -6967,7 +6967,7 @@
 		)
 		(uuid "8803e79a-53de-4181-b14c-6a2dd76f6525")
 	)
-	(label "RXDa"
+	(label "RXDb"
 		(at 83.82 132.08 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7088,7 +7088,7 @@
 		)
 		(uuid "9afc270e-c80a-4844-8502-5724c1f7c71d")
 	)
-	(label "TXDb"
+	(label "TXDa"
 		(at 116.84 132.08 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7220,7 +7220,7 @@
 		)
 		(uuid "ad7cbe8f-9b45-434a-851b-1cae0ebbb552")
 	)
-	(label "RXDb"
+	(label "RXDa"
 		(at 116.84 134.62 180)
 		(fields_autoplaced yes)
 		(effects
@@ -7528,7 +7528,7 @@
 		)
 		(uuid "e0bdb406-9441-4d3d-b05f-1a1b7e042d94")
 	)
-	(label "TXDa"
+	(label "TXDb"
 		(at 83.82 134.62 0)
 		(fields_autoplaced yes)
 		(effects
