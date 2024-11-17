@@ -10672,7 +10672,7 @@
 		)
 		(uuid "175eb570-d2d6-4257-92c6-bbde82a00864")
 	)
-	(label "D1-"
+	(label "D2-"
 		(at 251.46 35.56 180)
 		(fields_autoplaced yes)
 		(effects
@@ -10903,7 +10903,7 @@
 		)
 		(uuid "7a54df1d-ebbc-4d43-aaaf-3fe57229991e")
 	)
-	(label "D2+"
+	(label "D1+"
 		(at 215.9 33.02 0)
 		(fields_autoplaced yes)
 		(effects
@@ -11123,7 +11123,7 @@
 		)
 		(uuid "c332f801-6709-46fd-bc4e-0258144f11ce")
 	)
-	(label "D2-"
+	(label "D1-"
 		(at 215.9 35.56 0)
 		(fields_autoplaced yes)
 		(effects
@@ -11222,7 +11222,7 @@
 		)
 		(uuid "dc767700-57c8-4619-a0ca-0310222a4239")
 	)
-	(label "D1+"
+	(label "D2+"
 		(at 251.46 33.02 180)
 		(fields_autoplaced yes)
 		(effects
