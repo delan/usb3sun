@@ -2,4 +2,5 @@
   (version 7)
   (lib (name "usb3sun")(type "KiCad")(uri "${KIPRJMOD}/usb3sun.kicad_sym")(options "")(descr ""))
   (lib (name "marbastlib-various")(type "KiCad")(uri "${KIPRJMOD}/KiCad-marbastlib/symbols/marbastlib-various.kicad_sym")(options "")(descr ""))
+  (lib (name "ch9350")(type "KiCad")(uri "${KIPRJMOD}/playgrounds/ch9350/ch9350.kicad_sym")(options "")(descr ""))
 )
