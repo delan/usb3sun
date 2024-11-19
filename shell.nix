@@ -17,7 +17,7 @@
 # - https://community.platformio.org/t/non-standard-platformio-core-settings-ignored-by-vscode-extension/34265
 { pkgs ? import (builtins.fetchTarball {
     # NixOS/nixpkgs#237313 = ppenguin:refactor-platformio-fix-ide
-    url = "https://github.com/NixOS/nixpkgs/archive/3592b10a67b518700002f1577e301d73905704fe.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/a1cd5e36101993f28efecc851a1152665420c8c6.tar.gz";
   }) {},
 }:
 let
