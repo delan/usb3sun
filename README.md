@@ -91,6 +91,7 @@ release notes
 ### firmware ?.? (????-??-??)
 
 * added experimental support for **leds on your usb keyboard** — led updates are not yet reliable, and currently has bugs that can cause usb devices to stop responding
+* [#15](https://github.com/delan/usb3sun/issues/15) — fixed “The IDPROM contents are invalid” when reprogramming the idprom on some machines, including the Ultra5
 
 ### pcb rev B0 (2024-05-25)
 

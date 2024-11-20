@@ -215,7 +215,11 @@ void MenuView::sel(uint8_t usbkSelector) {
           // version 1
           sunkSend("1 %x mkp\n", i++);
 
-          // hostid byte 1/4 (system type)
+          // hostid byte 1/4 (system type), falling back to 80h for machines without
+          // real-machine-type, such as the ultra1 and ultra5
+          // <https://funny.computer.daz.cat/sun/nvram-hostid-faq.txt> (“80 SPARCstation Classic, LX, 4, 5, SS1000, Voyager, Ultra 1”)
+          // <https://docs.oracle.com/cd/E19127-01/ultra5.ws/805-7763-12/805-7763-12.pdf> (“Host ID: 808e7a85”, “808e7bb1”)
+          sunkSend("80 %x mkp\n", i); // real-machine-type fallback, as above
           sunkSend("real-machine-type %x mkp\n", i++);
 
           // ethernet address oui (always 08:00:20)
@@ -231,6 +235,7 @@ void MenuView::sel(uint8_t usbkSelector) {
 
           // set date of manufacture such that the system type byte
           // cancels it out in the checksum
+          sunkSend("80 %x mkp\n", i); // real-machine-type fallback, as above
           sunkSend("real-machine-type %x mkp\n", i++);
           sunkSend("0 %x mkp\n", i++);
           sunkSend("0 %x mkp\n", i++);
