@@ -106,7 +106,11 @@ void Pinout::begin() {
 void Pinout::beginSun() {
 #if defined(SUNK_ENABLE)
   usb3sun_sunk_init();
-
+#endif
+#if defined(SUNK_SNIFFER_ENABLE)
+  usb3sun_sunk_sniffer_init();
+#endif
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
   if (usb3sun_pinout_version() == 2) {
     // break preventer: set KTX_ENABLE# low to connect sun keyboard tx.
     // the pin is high on reset and boot, which pulls INT_KTX low, which keeps the

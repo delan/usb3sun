@@ -194,11 +194,18 @@ void loop() {
   while ((input = usb3sun_debug_uart_read()) != -1) {
     handleCliInput(input);
   }
+#ifdef SUNK_SNIFFER_ENABLE
+  while ((input = usb3sun_sunk_sniff_tx()) != -1) {
+    uint8_t command = input;
+    Sprintf("sunk: sniff tx %02Xh (%d)\n", command, command);
+  }
+#endif
+
 
   usb3sun_sleep_micros(10'000);
 }
 
-#ifdef SUNK_ENABLE
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
 void sunkEvent() {
   int result;
   while ((result = usb3sun_sunk_read()) != -1) {
@@ -206,11 +213,13 @@ void sunkEvent() {
     Sprintf("sunk: rx %02Xh\n", command);
     switch (command) {
       case SUNK_RESET: {
+#ifndef SUNK_SNIFFER_ENABLE
         // self test fail:
         // usb3sun_sunk_write(0x7E);
         // usb3sun_sunk_write(0x01);
         uint8_t response[]{SUNK_RESET_RESPONSE, 0x04, 0x7F}; // TODO optional make code
         usb3sun_sunk_write(response, sizeof response);
+#endif
       } break;
       case SUNK_BELL_ON:
         state.bell = true;
@@ -240,9 +249,11 @@ void sunkEvent() {
         usb3sun_fifo_push((uint32_t)Message::UHID_LED_FROM_STATE);
       } break;
       case SUNK_LAYOUT: {
+#ifndef SUNK_SNIFFER_ENABLE
         // UNITED STATES (TODO alternate layouts)
         uint8_t response[]{SUNK_LAYOUT_RESPONSE, 0b00000000};
         usb3sun_sunk_write(response, sizeof response);
+#endif
       } break;
     }
   }
@@ -250,13 +261,13 @@ void sunkEvent() {
 #endif
 
 void serialEvent1() {
-#if defined(SUNK_ENABLE)
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
   sunkEvent();
 #endif
 }
 
 void serialEvent2() {
-#if defined(SUNK_ENABLE)
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
   sunkEvent();
 #endif
 }
@@ -531,7 +542,7 @@ out:
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define TEST_REQUIRES(expr) do { fprintf(stderr, ">>> skipping test (%s)\n", #expr); return true; } while (0)
+#define TEST_REQUIRES(expr) do { fprintf(stderr, ">>> skipping test (requires %s)\n", #expr); return true; } while (0)
 #define TEST_ASSERT_EQ(actual, expected) do { if (actual != expected) { std::cerr << "\n" __FILE__ ":" << __LINE__ << ": assertion failed: " #actual "\n    actual: " << actual << "\n    expected: " << expected << "\n"; return false; } } while (0)
 static bool assert_then_clear_test_history(const char *file, size_t line, const std::vector<Op> &expected) {
   const std::vector<Entry> &actual = usb3sun_test_get_history();
@@ -598,7 +609,7 @@ static std::vector<uint8_t> bytes(size_t len, const char *data) {
 
 static bool run_test(const char *test_name) {
   if (!strcmp(test_name, "setup_pinout_v1")) {
-    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id);
+    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id);
     usb3sun_mock_gpio_read(PINOUT_V2_PIN, false);
     setup();
     return assert_then_clear_test_history(std::vector<Op> {
@@ -606,6 +617,9 @@ static bool run_test(const char *test_name) {
       GpioReadOp {PINOUT_V2_PIN, false},
 #ifdef SUNK_ENABLE
       SunkInitOp {},
+#endif
+#ifdef SUNK_SNIFFER_ENABLE
+      SunkSnifferInitOp {},
 #endif
 #ifdef SUNM_ENABLE
       SunmInitOp {9600},
@@ -615,7 +629,7 @@ static bool run_test(const char *test_name) {
   }
 
   if (!strcmp(test_name, "setup_pinout_v2")) {
-    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id);
+    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id);
     usb3sun_mock_gpio_read(PINOUT_V2_PIN, true);
     setup();
     return assert_then_clear_test_history(std::vector<Op> {
@@ -625,6 +639,11 @@ static bool run_test(const char *test_name) {
       GpioWriteOp {DISPLAY_ENABLE, true},
 #ifdef SUNK_ENABLE
       SunkInitOp {},
+#endif
+#ifdef SUNK_SNIFFER_ENABLE
+      SunkSnifferInitOp {},
+#endif
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
       GpioWriteOp {KTX_ENABLE, false},
 #endif
 #ifdef SUNM_ENABLE
@@ -635,8 +654,8 @@ static bool run_test(const char *test_name) {
   }
 
   if (!strcmp(test_name, "sunk_reset")) {
-#ifndef SUNK_ENABLE
-    TEST_REQUIRES(SUNK_ENABLE);
+#if !defined(SUNK_ENABLE) && !defined(SUNK_SNIFFER_ENABLE)
+    TEST_REQUIRES(SUNK_ENABLE or SUNK_SNIFFER_ENABLE);
 #endif
     usb3sun_test_init(SunkReadOp::id | SunkWriteOp::id);
     usb3sun_mock_sunk_read("\x01", 1); // SUNK_RESET
@@ -646,10 +665,14 @@ static bool run_test(const char *test_name) {
       serialEvent2();
     }
     return assert_then_clear_test_history(std::vector<Op> {
+#if defined(SUNK_ENABLE) || defined(SUNK_SNIFFER_ENABLE)
       SunkReadOp {},
+#ifndef SUNK_SNIFFER_ENABLE
       SunkWriteOp {{0xFF, 0x04, 0x7F}},
+#endif
       SunkReadOp {},
       SunkReadOp {},
+#endif
     });
   }
 
@@ -681,8 +704,8 @@ static bool run_test(const char *test_name) {
   }
 
   if (!strcmp(test_name, "buzzer_bell")) {
-#ifndef SUNK_ENABLE
-    TEST_REQUIRES(SUNK_ENABLE);
+#if !defined(SUNK_ENABLE) && !defined(SUNK_SNIFFER_ENABLE)
+    TEST_REQUIRES(SUNK_ENABLE or SUNK_SNIFFER_ENABLE);
 #endif
     usb3sun_test_init(BuzzerStartOp::id | GpioWriteOp::id);
     usb3sun_mock_sunk_read("\x01\x02\x03", 3); // SUNK_RESET, SUNK_BELL_ON, SUNK_BELL_OFF
@@ -702,8 +725,8 @@ static bool run_test(const char *test_name) {
   }
 
   if (!strcmp(test_name, "buzzer_click")) {
-#ifndef SUNK_ENABLE
-    TEST_REQUIRES(SUNK_ENABLE);
+#if !defined(SUNK_ENABLE) && !defined(SUNK_SNIFFER_ENABLE)
+    TEST_REQUIRES(SUNK_ENABLE or SUNK_SNIFFER_ENABLE);
 #endif
     const auto pumpSunkInput = []() {
       while (usb3sun_mock_sunk_read_has_input()) {

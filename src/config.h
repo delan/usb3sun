@@ -53,9 +53,19 @@
 #define POWER_KEY 15        // ...any
                             // pin 8: +5 Vdc (orange)
 
+// the following should generally be set in platformio.ini only, but remember
+// to update compile_commands.json (pio run -t compiledb) when changing these,
+// so clangd knows what features are enabled.
 // -DSUNK_ENABLE in platformio.ini to enable sun keyboard interface
 // -DSUNM_ENABLE in platformio.ini to enable sun mouse interface
+// -DSUNK_SNIFFER_ENABLE in platform.ini to enable sun keyboard sniffer
 // -DWIPE_SETTINGS in platformio.ini to wipe settings on every boot
+
+#if defined(SUNK_ENABLE) || defined(SUNM_ENABLE)
+#ifdef SUNK_SNIFFER_ENABLE
+#error SUNK_ENABLE and SUNM_ENABLE are not allowed when SUNK_SNIFFER_ENABLE is set
+#endif
+#endif
 
 #if defined(DEBUG_LOGGING)
 #define Sprint(...) do { pinout.debugPrint(__VA_ARGS__); } while (0)

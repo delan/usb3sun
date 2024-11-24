@@ -46,6 +46,8 @@ typedef struct {
     struct FsWriteOp { static const uint64_t id = 1 << 11; std::string path; std::vector<uint8_t> data; };
     struct RebootOp { static const uint64_t id = 1 << 12; };
     struct AlarmOp { static const uint64_t id = 1 << 13; uint32_t ms; };
+    struct SunkSnifferInitOp { static const uint64_t id = 1 << 14; };
+    struct SunkSniffTxOp { static const uint64_t id = 1 << 15; };
     using Op = std::variant<
       PinoutV2Op,
       SunkInitOp,
@@ -60,7 +62,9 @@ typedef struct {
       FsReadOp,
       FsWriteOp,
       RebootOp,
-      AlarmOp>;
+      AlarmOp,
+      SunkSnifferInitOp,
+      SunkSniffTxOp>;
     struct Entry {
       uint64_t micros;
       Op op;
@@ -93,6 +97,8 @@ typedef struct {
     DERIVE_OP(FsWriteOp, p.path == q.path && p.data == q.data, "fs_write " << o.path << " " << o.data);
     DERIVE_OP(RebootOp, ((void) p, (void) q, true), ((void) o, "reboot"));
     DERIVE_OP(AlarmOp, p.ms == q.ms, "alarm " << o.ms);
+    DERIVE_OP(SunkSnifferInitOp, ((void) p, (void) q, true), ((void) o, "sunk_sniffer_init"));
+    DERIVE_OP(SunkSniffTxOp, ((void) p, (void) q, true), ((void) o, "sunk_sniff_tx"));
     void usb3sun_test_init(uint64_t history_filter_mask);
     void usb3sun_mock_gpio_read(usb3sun_pin pin, bool value);
     void usb3sun_mock_sunk_read(const char *data, size_t len);
@@ -116,6 +122,9 @@ void usb3sun_pinout_v2(void);
 void usb3sun_sunk_init(void);
 int usb3sun_sunk_read(void);
 size_t usb3sun_sunk_write(uint8_t *data, size_t len);
+
+void usb3sun_sunk_sniffer_init(void);
+int usb3sun_sunk_sniff_tx(void);
 
 void usb3sun_sunm_init(uint32_t baud);
 size_t usb3sun_sunm_write(uint8_t *data, size_t len);

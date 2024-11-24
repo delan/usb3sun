@@ -145,9 +145,12 @@ extern "C" {
 
 static Adafruit_SSD1306 display{128, 32, &Wire, /* OLED_RESET */ -1};
 static Adafruit_USBH_Host USBHost;
+static SerialPIO sunkTxSnifferV1{SerialPIO::NOPIN, SUN_KTX_V1};
+static SerialPIO sunkTxSnifferV2{SerialPIO::NOPIN, SUN_KTX_V2};
 static struct {
   size_t version = 1;
   HardwareSerial *sunk = &SUNK_UART_V1;
+  HardwareSerial *sunkTxSniffer = &sunkTxSnifferV1;
   HardwareSerial *sunm = &SUNM_UART_V1;
   Adafruit_USBD_CDC *debugCdc = nullptr;
   SerialUART *debugUart = nullptr;
@@ -170,6 +173,7 @@ size_t usb3sun_pinout_version(void) {
 void usb3sun_pinout_v2(void) {
   pinout.version = 2;
   pinout.sunk = &SUNK_UART_V2;
+  pinout.sunkTxSniffer = &sunkTxSnifferV2;
   pinout.sunm = &pinout.sunmV2;
   pinout.sunkTx = SUN_KTX_V2;
   pinout.sunkRx = SUN_KRX_V2;
@@ -192,6 +196,22 @@ int usb3sun_sunk_read(void) {
 
 size_t usb3sun_sunk_write(uint8_t *data, size_t len) {
   return pinout.sunk->write(data, len);
+}
+
+void usb3sun_sunk_sniffer_init(void) {
+  pinout.sunk->end();
+  // SerialUART api requires both tx and rx pins, but we can detach tx afterwards
+  pinout.sunkUart->setPinout(pinout.sunkTx, pinout.sunkRx);
+  pinout.sunk->begin(1200, SERIAL_8N1);
+  // SerialPIO has no such requirement; this call detaches tx from hardware uart
+  pinout.sunkTxSniffer->begin(1200, SERIAL_8N1);
+  // gpio invert must be set *after* setPinout/begin
+  usb3sun_gpio_set_as_inverted(pinout.sunkTx);
+  usb3sun_gpio_set_as_inverted(pinout.sunkRx);
+}
+
+int usb3sun_sunk_sniff_tx(void) {
+  return pinout.sunkTxSniffer->read();
 }
 
 void usb3sun_sunm_init(uint32_t baud) {
@@ -650,6 +670,15 @@ void usb3sun_sunm_init(uint32_t baud) {
 size_t usb3sun_sunm_write(uint8_t *data, size_t len) {
   push_history(SunmWriteOp {{data, data+len}});
   return 0;
+}
+
+void usb3sun_sunk_sniffer_init(void) {
+  push_history(SunkSnifferInitOp {});
+}
+
+int usb3sun_sunk_sniff_tx(void) {
+  push_history(SunkSniffTxOp {});
+  return -1;
 }
 
 void usb3sun_usb_init(void) {}
