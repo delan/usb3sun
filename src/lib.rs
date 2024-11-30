@@ -1,7 +1,6 @@
-// Remove if STD is supported for your platform and you plan to use it
-#![no_std]
+#![cfg_attr(target_os = "none", no_std)]
 
-// Remove if STD is supported for your platform and you plan to use it
+#[cfg(target_os = "none")]
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
     loop {}
