@@ -10,3 +10,7 @@ name = "usb3sun"
 edition = "2021"
 crate-type = ["staticlib"]
 required-features = []
+
+[build-dependencies]
+bindgen = "0.69.5"
+embuild = { git = "https://github.com/delan/embuild.git", branch = "pio-native", version = "0.32.0", features = ["bindgen", "pio"] }

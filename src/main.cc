@@ -148,9 +148,11 @@ struct DefaultView : View {
 
 static DefaultView DEFAULT_VIEW{};
 
+extern "C" void hello_rust();
 void setup() {
   // pico led on, then configure pin modes
   pinout.begin();
+  hello_rust();
   Sprintln("usb3sun " USB3SUN_VERSION);
   Sprintf("pinout: v%zu\n", usb3sun_pinout_version());
 

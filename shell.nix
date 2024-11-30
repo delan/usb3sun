@@ -56,5 +56,9 @@ in
   # clear LD_LIBRARY_PATH (NixOS/nixpkgs#263201, NixOS/nixpkgs#262775, NixOS/nixpkgs#262080)
   # then add path for platformio debugging in vscode
   # (ldd ~/.platformio/packages/toolchain-rp2040-earlephilhower/bin/arm-none-eabi-gdb)
-  runScript = "env LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [ pkgs.ncurses5 ]} bash";
+  runScript = "env LD_LIBRARY_PATH=${
+    pkgs.lib.makeLibraryPath [ pkgs.ncurses5 ]
+  } LIBCLANG_PATH=${
+    pkgs.lib.makeLibraryPath [ pkgs.llvmPackages.clang-unwrapped.lib ]
+  } bash";
 }).env
