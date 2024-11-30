@@ -1,0 +1,12 @@
+[package]
+name = "usb3sun"
+edition = "2021"
+version = "2.0.0"
+readme = "README.md"
+
+[lib]
+path = "src/lib.rs"
+name = "usb3sun"
+edition = "2021"
+crate-type = ["staticlib"]
+required-features = []
