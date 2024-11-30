@@ -3887,7 +3887,7 @@ traditional_chinese:key 127	 all idle numl idle up reset
 ## appendix: type 4 keyboard variants
 
 - K1 is a key to the right of [<kbd>F12</kbd>] on US type 4
-- K2 is an extra key to the right of K2 on US type 4
+- K2 is an extra key to the right of K1 on US type 4
 - K3 is an extra key to the right of left [<kbd>Shift</kbd>] on US type 4
 
 |  | type 4 (107-key) | type 4 (109-key) |
