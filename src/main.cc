@@ -282,7 +282,8 @@ void setup1() {
     usb3sun_panic("error: cpu frequency %u, set [env:pico] board_build.f_cpu = 120000000L\n", cpu_hz);
   }
 
-  usb3sun_usb_init();
+  // usb3sun_usb_init();
+  usb3sun_ch9350_init();
 }
 
 void loop1() {
@@ -324,7 +325,48 @@ void loop1() {
 #endif
     }
   }
-  usb3sun_usb_task();
+
+  // usb3sun_usb_task();
+  // int usbRx;
+  // while ((usbRx = usb3sun_ch9350_read()) != -1) {
+  //   Sprintf("%02Xh\n", usbRx);
+  // }
+  auto taskResponse = usb3sun_ch9350_task();
+  // Sprintf("%02Xh\n", taskResponse.tag);
+  switch (taskResponse.tag) {
+    case TaskResponseTag::Idle:
+      break;
+    case TaskResponseTag::Frame:
+      switch (taskResponse.Frame.tag) {
+        case FrameTag::Unknown:
+          Sprintf("Unknown %02Xh\n", taskResponse.Frame.Unknown);
+          break;
+        case FrameTag::StatusRequest:
+          // Sprintf("StatusRequest %02Xh\n", taskResponse.Frame.StatusRequest);
+          break;
+        case FrameTag::StatusChange:
+          Sprintf("StatusChange %01Xh %01Xh\n", taskResponse.Frame.StatusChange.report_id, taskResponse.Frame.StatusChange.id0_id1_status);
+          break;
+        case FrameTag::DeviceDisconnect:
+          Sprintf("DeviceDisconnect\n");
+          break;
+        case FrameTag::ValidKeyValue:
+          Sprintf("ValidKeyValue %02Xh %02Xh %02Xh %02Xh\n",
+            taskResponse.Frame.ValidKeyValue.length,
+            taskResponse.Frame.ValidKeyValue.labeling,
+            taskResponse.Frame.ValidKeyValue.serial,
+            taskResponse.Frame.ValidKeyValue.check);
+          break;
+        default:
+          Sprintf("Frame %02Xh\n", static_cast<uint8_t>(taskResponse.Frame.tag));
+          break;
+      }
+      break;
+    default:
+      Sprintf("TaskResponse %02Xh\n", static_cast<uint8_t>(taskResponse.tag));
+      break;
+  }
+
   buzzer.update();
 }
 

@@ -137,6 +137,10 @@ uint8_t usb3sun_uhid_interface_protocol(uint8_t dev_addr, uint8_t instance);
 size_t usb3sun_uhid_parse_report_descriptor(usb3sun_hid_report_info *result, size_t result_len, const uint8_t *descriptor, size_t descriptor_len);
 bool usb3sun_uhid_set_led_report(uint8_t dev_addr, uint8_t instance, uint8_t report_id, uint8_t &led_report);
 
+void usb3sun_ch9350_init(void);
+int usb3sun_ch9350_read(void);
+size_t usb3sun_ch9350_write(uint8_t *data, size_t len);
+
 void usb3sun_debug_init(int (*printf)(const char *format, ...));
 int usb3sun_debug_uart_read(void);
 int usb3sun_debug_cdc_read(void);

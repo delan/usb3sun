@@ -21,6 +21,8 @@
 #define USB0_DM (USB_DP+1)  // GP# number for USB root port 0 D- (always D+ GP# + 1)
 #define USB1_DP 4           // GP# number for USB root port 1 D+
 #define USB1_DM (USB_DP+1)  // GP# number for USB root port 1 D- (always D+ GP# + 1)
+#define CH9350_TX 2         // GP# number for TX to CH9350L
+#define CH9350_RX 3         // GP# number for RX from CH9350L
 #define BUZZER_PIN 28       // GP# number for positive of passive piezo buzzer
 #define PINOUT_V2_PIN 7     // GP# number for detecting pinout v2 (rev A4+)
 #define LED_PIN 25          // GP# number for pico’s built-in led

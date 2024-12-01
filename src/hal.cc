@@ -147,6 +147,7 @@ static Adafruit_SSD1306 display{128, 32, &Wire, /* OLED_RESET */ -1};
 static Adafruit_USBH_Host USBHost;
 static SerialPIO sunkTxSnifferV1{SerialPIO::NOPIN, SUN_KTX_V1};
 static SerialPIO sunkTxSnifferV2{SerialPIO::NOPIN, SUN_KTX_V2};
+static SerialPIO ch9350{CH9350_TX, CH9350_RX};
 static struct {
   size_t version = 1;
   HardwareSerial *sunk = &SUNK_UART_V1;
@@ -282,6 +283,18 @@ size_t usb3sun_uhid_parse_report_descriptor(usb3sun_hid_report_info *result, siz
 
 bool usb3sun_uhid_set_led_report(uint8_t dev_addr, uint8_t instance, uint8_t report_id, uint8_t &led_report) {
   return tuh_hid_set_report(dev_addr, instance, report_id, HID_REPORT_TYPE_OUTPUT, &led_report, sizeof led_report);
+}
+
+void usb3sun_ch9350_init(void) {
+  ch9350.begin(115200, SERIAL_8N1);
+}
+
+int usb3sun_ch9350_read(void) {
+  return ch9350.read();
+}
+
+size_t usb3sun_ch9350_write(uint8_t *data, size_t len) {
+  return ch9350.write(data, len);
 }
 
 void usb3sun_debug_init(int (*printf)(const char *format, ...)) {
