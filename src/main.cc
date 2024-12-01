@@ -13,6 +13,7 @@
 #include "hal.h"
 #include "menu.h"
 #include "pinout.h"
+#include "rust.h"
 #include "settings.h"
 #include "state.h"
 #include "sunm.h"
