@@ -2250,7 +2250,7 @@
 				)
 			)
 		)
-		(property "Value" "USB-U267-BWS"
+		(property "Value" "USB-269-BRW"
 			(at -2.2 14.18 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2274,7 +2274,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.cuidevices.com/product/resource/uj2-adh-th.pdf"
+		(property "Datasheet" ""
 			(at 0 0 -90)
 			(layer "F.Fab")
 			(hide yes)
@@ -2286,7 +2286,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "USB Type A connector, stacked"
 			(at 0 0 -90)
 			(layer "F.Fab")
 			(hide yes)
@@ -2298,7 +2298,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C2962392"
+		(property "LCSC" "C720548"
 			(at 41.275 122.555 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2327,6 +2327,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "565bbb04-f508-40be-8dcc-b26d96ef9f0e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "compatible 3" "C2962392 - Hanbo Electric USB-U267-BWS"
+			(at 0 0 -90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1227ebad-180e-4237-b274-ab99efe27663")
 			(effects
 				(font
 					(size 1 1)

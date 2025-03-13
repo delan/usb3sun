@@ -9579,7 +9579,6 @@
 	)
 	(label "KRX"
 		(at 106.68 175.26 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9590,7 +9589,6 @@
 	)
 	(label "INT_D1-"
 		(at 129.54 101.6 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9601,7 +9599,6 @@
 	)
 	(label "UART_RX"
 		(at 213.36 93.98 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9612,7 +9609,6 @@
 	)
 	(label "DISPLAY_ENABLE"
 		(at 15.24 66.04 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.1113 1.1113)
@@ -9623,7 +9619,6 @@
 	)
 	(label "VBUS_REF"
 		(at 190.5 33.02 270)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 0.635 0.635)
@@ -9634,7 +9629,6 @@
 	)
 	(label "BUZZER"
 		(at 81.28 50.8 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9645,7 +9639,6 @@
 	)
 	(label "INT_D2+"
 		(at 129.54 93.98 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9656,7 +9649,6 @@
 	)
 	(label "CC2"
 		(at 160.02 35.56 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9667,7 +9659,6 @@
 	)
 	(label "KTX_ENABLE#"
 		(at 22.86 157.48 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9678,7 +9669,6 @@
 	)
 	(label "INT_D1+"
 		(at 15.24 45.72 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9689,7 +9679,6 @@
 	)
 	(label "D-"
 		(at 208.28 48.26 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9700,7 +9689,6 @@
 	)
 	(label "D-"
 		(at 81.28 33.02 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9711,7 +9699,6 @@
 	)
 	(label "D2+"
 		(at 147.32 93.98 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9722,7 +9709,6 @@
 	)
 	(label "D2-"
 		(at 68.58 127 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9733,7 +9719,6 @@
 	)
 	(label "UART_RX"
 		(at 15.24 38.1 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9744,7 +9729,6 @@
 	)
 	(label "D1+"
 		(at 134.62 132.08 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9755,7 +9739,6 @@
 	)
 	(label "SWDIO"
 		(at 213.36 91.44 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9766,7 +9749,6 @@
 	)
 	(label "UART_TX"
 		(at 213.36 96.52 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9777,7 +9759,6 @@
 	)
 	(label "INT_KRX"
 		(at 15.24 58.42 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9788,7 +9769,6 @@
 	)
 	(label "CC1"
 		(at 160.02 33.02 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9799,7 +9779,6 @@
 	)
 	(label "MTX"
 		(at 40.64 193.04 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9810,7 +9789,6 @@
 	)
 	(label "SWCLK"
 		(at 81.28 40.64 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9821,7 +9799,6 @@
 	)
 	(label "D+"
 		(at 81.28 30.48 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9832,7 +9809,6 @@
 	)
 	(label "INT_D2+"
 		(at 15.24 40.64 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9843,7 +9819,6 @@
 	)
 	(label "D2+"
 		(at 68.58 132.08 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9854,7 +9829,6 @@
 	)
 	(label "INT_KTX"
 		(at 55.88 132.08 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9865,7 +9839,6 @@
 	)
 	(label "D-"
 		(at 170.18 43.18 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9876,7 +9849,6 @@
 	)
 	(label "SWCLK"
 		(at 213.36 88.9 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9887,7 +9859,6 @@
 	)
 	(label "VBUS1"
 		(at 147.32 86.36 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9898,7 +9869,6 @@
 	)
 	(label "VBUS2"
 		(at 147.32 88.9 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9909,7 +9879,6 @@
 	)
 	(label "KTX"
 		(at 48.26 177.8 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9920,7 +9889,6 @@
 	)
 	(label "VRAW"
 		(at 266.7 124.46 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9931,7 +9899,6 @@
 	)
 	(label "INT_MTX"
 		(at 15.24 71.12 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9942,7 +9909,6 @@
 	)
 	(label "D1-"
 		(at 134.62 127 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9953,7 +9919,6 @@
 	)
 	(label "D+"
 		(at 170.18 48.26 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9964,7 +9929,6 @@
 	)
 	(label "INT_MTX"
 		(at 134.62 190.5 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9975,7 +9939,6 @@
 	)
 	(label "PINOUT_V2"
 		(at 15.24 53.34 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9986,7 +9949,6 @@
 	)
 	(label "SPOWER"
 		(at 142.24 170.18 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -9997,7 +9959,6 @@
 	)
 	(label "INT_KTX"
 		(at 15.24 55.88 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10008,7 +9969,6 @@
 	)
 	(label "INT_D1-"
 		(at 15.24 48.26 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10019,7 +9979,6 @@
 	)
 	(label "D1-"
 		(at 147.32 101.6 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10030,7 +9989,6 @@
 	)
 	(label "D1+"
 		(at 147.32 99.06 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10041,7 +9999,6 @@
 	)
 	(label "INT_KRX"
 		(at 106.68 190.5 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10052,7 +10009,6 @@
 	)
 	(label "RESET"
 		(at 81.28 45.72 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10063,7 +10019,6 @@
 	)
 	(label "INT_D1+"
 		(at 129.54 99.06 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10074,7 +10029,6 @@
 	)
 	(label "INT_D2-"
 		(at 129.54 96.52 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10085,7 +10039,6 @@
 	)
 	(label "DISPLAY_SDA"
 		(at 81.28 73.66 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10096,7 +10049,6 @@
 	)
 	(label "KRX"
 		(at 17.78 180.34 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10107,7 +10059,6 @@
 	)
 	(label "SPOWER"
 		(at 48.26 170.18 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10118,7 +10069,6 @@
 	)
 	(label "UART_TX"
 		(at 15.24 35.56 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10129,7 +10079,6 @@
 	)
 	(label "DISPLAY_GND"
 		(at 88.9 83.82 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10140,7 +10089,6 @@
 	)
 	(label "VBUS2"
 		(at 142.24 144.78 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10151,7 +10099,6 @@
 	)
 	(label "INT_SPOWER"
 		(at 142.24 175.26 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10162,7 +10109,6 @@
 	)
 	(label "PINOUT_V2"
 		(at 15.24 81.28 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10173,7 +10119,6 @@
 	)
 	(label "D+"
 		(at 208.28 53.34 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10184,7 +10129,6 @@
 	)
 	(label "KTX_ENABLE#"
 		(at 15.24 68.58 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10195,7 +10139,6 @@
 	)
 	(label "DISPLAY_SCL"
 		(at 81.28 71.12 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10206,7 +10149,6 @@
 	)
 	(label "DISPLAY_ENABLE"
 		(at 101.6 88.9 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10217,7 +10159,6 @@
 	)
 	(label "INT_SPOWER"
 		(at 15.24 73.66 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10228,7 +10169,6 @@
 	)
 	(label "VBUS1"
 		(at 142.24 142.24 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10239,7 +10179,6 @@
 	)
 	(label "INT_D2-"
 		(at 15.24 43.18 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10250,7 +10189,6 @@
 	)
 	(label "D2-"
 		(at 147.32 96.52 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10261,7 +10199,6 @@
 	)
 	(label "SWDIO"
 		(at 81.28 38.1 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10272,7 +10209,6 @@
 	)
 	(label "MTX"
 		(at 134.62 175.26 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10283,7 +10219,6 @@
 	)
 	(label "KTX"
 		(at 43.18 114.3 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10811,14 +10746,16 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 			)
 		)
-		(property "Value" "USB-U267-BWS"
+		(property "Value" "USB-269-BRW"
 			(at 167.64 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
@@ -10828,34 +10765,37 @@
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify bottom)
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://www.cuidevices.com/product/resource/uj2-adh-th.pdf"
+		(property "Datasheet" ""
 			(at 162.56 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "USB Type A connector, stacked"
 			(at 167.64 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2962392"
+		(property "LCSC" "C720548"
 			(at 167.64 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
@@ -10865,6 +10805,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
@@ -10874,6 +10815,17 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "compatible 3" "C2962392 - Hanbo Electric USB-U267-BWS"
+			(at 167.64 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
 				(hide yes)
 			)
 		)
