@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "usb3sun")
-		(rev "B0")
+		(rev "B1")
 	)
 	(lib_symbols
 		(symbol "Analog_Switch:MAX40200AUK"
@@ -15718,6 +15718,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 233.68 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C37208"
 			(at 233.68 93.98 0)
 			(effects
 				(font
