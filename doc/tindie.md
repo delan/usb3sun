@@ -1,7 +1,3 @@
-|  |
-| --- |
-| **note:** rev A3 has some [minor errata](https://github.com/delan/usb3sun/blob/default/doc/manual.md#errata) related to resetting the adapter, and lacks support for debugging with the sun keyboard interface enabled, but for most people it should still be more than usable. help us move the last few and get **20 USD off!** |
-
 SPARCstations have [a unique serial-like interface](https://deskthority.net/wiki/Sun_keyboard/mouse_interface) for keyboard and mouse input, using a single 8-pin mini-din port. **usb3sun** allows you to use an ordinary USB keyboard and mouse with your SPARCstation!
 
 in addition to the adapter itself, you will also need a male-to-male 8-pin mini-din cable (available as an option or [sold separately](https://www.tindie.com/products/funnycomputer/sun-mini-din-cable-2-metres/)), and your own USB keyboard and mouse (see below for compatibility).
