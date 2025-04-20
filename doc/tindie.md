@@ -47,7 +47,7 @@ usb3sun has an **oled display** that shows:
 * visual buzzer (click, bell)
 * the settings menu
 
-usb3sun has an **onboard reset button** in case the firmware gets stuck, and a **0.1″ debug header** (pins available as an option) that allows you to power the adapter externally for flashing or debugging.
+usb3sun has an **onboard reset button** in case the firmware gets stuck, and a **0.1″ debug header** with pins that allow you to power the adapter externally for flashing or debugging.
 
 ### firmware features
 
