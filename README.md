@@ -93,6 +93,12 @@ release notes
 * added experimental support for **leds on your usb keyboard** — led updates are not yet reliable, and currently has bugs that can cause usb devices to stop responding
 * [#15](https://github.com/delan/usb3sun/issues/15) — fixed “The IDPROM contents are invalid” when reprogramming the idprom on some machines, including the Ultra5
 
+### pcb rev B1 (2025-04-20)
+
+* this board **requires firmware 2.0** or newer
+* changed J1 from [USB-U267-BWS](https://jlcpcb.com/partdetail/HanboElectronic-USB_U267BWS/C2962392) to the compatible [USB-269-BRW](https://jlcpcb.com/partdetail/Xunpu-USB_268BRY/C720548) due to stock shortage
+* migrated from kicad 7 to kicad 8
+
 ### pcb rev B0 (2024-05-25)
 
 * this board **requires firmware 2.0** or newer

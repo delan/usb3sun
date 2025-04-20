@@ -22,6 +22,8 @@ in addition to the adapter itself, you will also need a male-to-male 8-pin mini-
 
 **rev B0** allows for debug logging (and the new debug cli) **without disabling the sun keyboard interface**, and fixes some [minor bugs](https://github.com/delan/usb3sun/blob/B0/doc/manual.md#errata) that happen when resetting the adapter.
 
+**rev B1** is the same as rev B0, but with the USB-A connector changed due to stock shortage.
+
 new in **firmware 2.0**:
 
 - support for **NeXTSTEP** and **Plan 9**, which require the mouse to run at 1200 baud
