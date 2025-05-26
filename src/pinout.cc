@@ -73,12 +73,16 @@ void Pinout::v2() {
 
   // set DISPLAY_ENABLE high to turn on the display via Q7.
   // some display modules need delay to start reliably. for example, i have one module with a C9 on
-  // its pcb that needs no delay, but i have another without C9 that stays black every other reset
-  // unless given 15 ms of delay. tested with Q7 = 2N7000, R18 = 4K7, resetting the pico in three
-  // different patterns (reset/run ms): 50/200, 250/750, 3000/1000. let’s double that just in case.
+  // its pcb that needs no delay, another without C9 that stays black every other reset unless given
+  // 15 ms of delay [1], and another with C9 (“Ver1.6”) that stays black on cold starts unless given
+  // a whopping 45 ms of delay (#20) [2]. let’s add 50% just in case.
+  //
+  // [1] tested on a breadboard with Q7 = 2N7000, R18 = 4K7, resetting the pico in three different
+  //     patterns (reset/run ms): 50/200, 250/750, 3000/1000
+  // [2] tested on a rev B1 with Q7a = 2N7000DW, R18 = 20K, cold start on VBUS with 5 seconds rest
   usb3sun_gpio_set_as_output(DISPLAY_ENABLE);
   usb3sun_gpio_write(DISPLAY_ENABLE, true);
-  usb3sun_sleep_micros(30'000);
+  usb3sun_sleep_micros(70'000);
 }
 
 void Pinout::begin() {

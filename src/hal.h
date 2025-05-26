@@ -48,6 +48,7 @@ typedef struct {
     struct AlarmOp { static const uint64_t id = 1 << 13; uint32_t ms; };
     struct SunkSnifferInitOp { static const uint64_t id = 1 << 14; };
     struct SunkSniffTxOp { static const uint64_t id = 1 << 15; };
+    struct SleepMicrosOp { static const uint64_t id = 1 << 16; uint64_t micros; };
     using Op = std::variant<
       PinoutV2Op,
       SunkInitOp,
@@ -64,7 +65,8 @@ typedef struct {
       RebootOp,
       AlarmOp,
       SunkSnifferInitOp,
-      SunkSniffTxOp>;
+      SunkSniffTxOp,
+      SleepMicrosOp>;
     struct Entry {
       uint64_t micros;
       Op op;
@@ -99,6 +101,7 @@ typedef struct {
     DERIVE_OP(AlarmOp, p.ms == q.ms, "alarm " << o.ms);
     DERIVE_OP(SunkSnifferInitOp, ((void) p, (void) q, true), ((void) o, "sunk_sniffer_init"));
     DERIVE_OP(SunkSniffTxOp, ((void) p, (void) q, true), ((void) o, "sunk_sniff_tx"));
+    DERIVE_OP(SleepMicrosOp, p.micros == q.micros, "sleep_micros " << o.micros);
     void usb3sun_test_init(uint64_t history_filter_mask);
     void usb3sun_mock_gpio_read(usb3sun_pin pin, bool value);
     void usb3sun_mock_sunk_read(const char *data, size_t len);

@@ -825,6 +825,7 @@ uint64_t usb3sun_micros(void) {
 }
 
 void usb3sun_sleep_micros(uint64_t micros) {
+  push_history(SleepMicrosOp {micros});
   struct timespec ts;
   if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
     ts.tv_nsec += micros * 1'000;

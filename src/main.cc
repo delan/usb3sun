@@ -610,7 +610,7 @@ static std::vector<uint8_t> bytes(size_t len, const char *data) {
 
 static bool run_test(const char *test_name) {
   if (!strcmp(test_name, "setup_pinout_v1")) {
-    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id);
+    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id | SleepMicrosOp::id);
     usb3sun_mock_gpio_read(PINOUT_V2_PIN, false);
     setup();
     return assert_then_clear_test_history(std::vector<Op> {
@@ -630,7 +630,7 @@ static bool run_test(const char *test_name) {
   }
 
   if (!strcmp(test_name, "setup_pinout_v2")) {
-    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id);
+    usb3sun_test_init(PinoutV2Op::id | SunkInitOp::id | SunmInitOp::id | GpioWriteOp::id | GpioReadOp::id | SunkSnifferInitOp::id | SleepMicrosOp::id);
     usb3sun_mock_gpio_read(PINOUT_V2_PIN, true);
     setup();
     return assert_then_clear_test_history(std::vector<Op> {
@@ -638,6 +638,7 @@ static bool run_test(const char *test_name) {
       GpioReadOp {PINOUT_V2_PIN, true},
       PinoutV2Op {},
       GpioWriteOp {DISPLAY_ENABLE, true},
+      SleepMicrosOp {70000},
 #ifdef SUNK_ENABLE
       SunkInitOp {},
 #endif
