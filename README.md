@@ -95,6 +95,7 @@ release notes
 
 ### firmware 2.1 (2025-05-26)
 
+* [pio_pkg_list.txt](https://github.com/delan/usb3sun/blob/2.1/pio_pkg_list.txt) = dependency tree at time of release
 * [#15](https://github.com/delan/usb3sun/issues/15) — fixed “The IDPROM contents are invalid” when reprogramming the idprom on some machines, including the Ultra5
 * [#20](https://github.com/delan/usb3sun/issues/20) — fixed a bug where the display may not work correctly on a cold start (affects rev B0 units starting from B1#7)
 
