@@ -1,19 +1,21 @@
 ********************************************************************************
-Obsolete PIO Core v6.1.6 is used (previous was 6.1.7)
+Obsolete PIO Core v6.1.11 is used (previous was 6.1.17)
 Please remove multiple PIO Cores from a system:
 https://docs.platformio.org/en/latest/core/installation/troubleshooting.html
 ********************************************************************************
+Warning! Ignore unknown configuration option `rust_lib` in section [env]
+Warning! Ignore unknown configuration option `rust_target` in section [env:pico]
 Resolving pico dependencies...
-Platform raspberrypi @ 1.11.0+sha.60d6ae8 (required: git+https://github.com/maxgerhardt/platform-raspberrypi.git)
+Platform raspberrypi @ 1.14.0+sha.5e87ae3 (required: git+https://github.com/maxgerhardt/platform-raspberrypi.git#v1.2.0-gcc12)
 ├── framework-arduinopico @ 1.30101.0+sha.c276a36 (required: git+https://github.com/earlephilhower/arduino-pico.git#3.1.1)
 ├── tool-mklittlefs-rp2040-earlephilhower @ 5.100300.230216 (required: earlephilhower/tool-mklittlefs-rp2040-earlephilhower @ ~5.100300.0)
-├── tool-openocd-rp2040-earlephilhower @ 5.120300.240125 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.openocd-4d87f6dca.240125.tar.gz)
-├── tool-rp2040tools @ 1.0.2 (required: platformio/tool-rp2040tools @ ~1.0.2)
+├── tool-openocd-rp2040-earlephilhower @ 5.120300.240818 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.openocd-ebec9504d.240818.tar.gz)
+├── tool-picotool-rp2040-earlephilhower @ 5.120300.240818 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.picotool-8a9af99.240818.tar.gz)
 └── toolchain-rp2040-earlephilhower @ 5.120300.240125 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.arm-none-eabi-028e019.240125.tar.gz)
 
 Libraries
 ├── Adafruit GFX Library @ 1.11.5+sha.5ea4be3 (required: git+https://github.com/adafruit/Adafruit-GFX-Library.git#1.11.5)
-│   └── Adafruit BusIO @ 1.16.0 (required: Adafruit BusIO)
+│   └── Adafruit BusIO @ 1.17.0 (required: Adafruit BusIO)
 ├── Adafruit SSD1306 @ 2.5.7+sha.88711ef (required: git+https://github.com/adafruit/Adafruit_SSD1306.git#2.5.7)
 ├── Adafruit TinyUSB Library @ 0.0.0+sha.2ebb6ab (required: git+https://github.com/adafruit/Adafruit_TinyUSB_Arduino.git#3.1.0)
 └── Pico PIO USB @ 0.5.3+sha.e2c862b (required: git+https://github.com/sekigon-gonnoc/Pico-PIO-USB.git#0.5.3)
@@ -23,8 +25,8 @@ Platform native @ 1.2.1 (required: native)
 ├── contrib-piohome @ 3.4.4 (required: platformio/contrib-piohome)
 ├── framework-arduinopico @ 1.30101.0+sha.c276a36 (required: git+https://github.com/earlephilhower/arduino-pico.git#3.1.1)
 ├── tool-mklittlefs-rp2040-earlephilhower @ 5.100300.230216 (required: earlephilhower/tool-mklittlefs-rp2040-earlephilhower)
-├── tool-openocd-rp2040-earlephilhower @ 5.120300.240125 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.openocd-4d87f6dca.240125.tar.gz)
-├── tool-rp2040tools @ 1.0.2 (required: platformio/tool-rp2040tools)
+├── tool-openocd-rp2040-earlephilhower @ 5.120300.240818 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.openocd-ebec9504d.240818.tar.gz)
+├── tool-picotool-rp2040-earlephilhower @ 5.120300.240818 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.picotool-8a9af99.240818.tar.gz)
 ├── tool-scons @ 4.40502.0 (required: platformio/tool-scons)
 └── toolchain-rp2040-earlephilhower @ 5.120300.240125 (required: https://github.com/earlephilhower/pico-quick-toolchain/releases/download/2.2.0/x86_64-linux-gnu.arm-none-eabi-028e019.240125.tar.gz)
 

@@ -91,11 +91,16 @@ release notes
 ### firmware ?.? (????-??-??)
 
 * added experimental support for **leds on your usb keyboard** — led updates are not yet reliable, and currently has bugs that can cause usb devices to stop responding
+* added experimental support for **analysing other sun keyboards** — this allows us to improve our firmware by observing the behaviour of real sun keyboards
+
+### firmware 2.1 (2025-05-26)
+
 * [#15](https://github.com/delan/usb3sun/issues/15) — fixed “The IDPROM contents are invalid” when reprogramming the idprom on some machines, including the Ultra5
+* [#20](https://github.com/delan/usb3sun/issues/20) — fixed a bug where the display may not work correctly on a cold start (affects rev B0 units starting from B1#7)
 
 ### pcb rev B1 (2025-04-20)
 
-* this board **requires firmware 2.0** or newer
+* this board **requires firmware 2.1** or newer — firmware 2.0 is affected by [#20](https://github.com/delan/usb3sun/issues/20)
 * changed J1 from [USB-U267-BWS](https://jlcpcb.com/partdetail/HanboElectronic-USB_U267BWS/C2962392) to the compatible [USB-269-BRW](https://jlcpcb.com/partdetail/Xunpu-USB_268BRY/C720548) due to stock shortage
 * migrated from kicad 7 to kicad 8
 
