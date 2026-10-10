@@ -1,5 +1,5 @@
-usb3sun
-=======
+moved to <https://codeberg.org/shuppy/usb3sun>
+==============================================
 
 usb3sun is an adapter that allows you to connect USB keyboards and mice to the Sun 8-pin mini-DIN interface.
 
