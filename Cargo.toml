@@ -10,3 +10,6 @@ name = "usb3sun"
 edition = "2021"
 crate-type = ["staticlib"]
 required-features = []
+
+[dependencies]
+paste = "1.0.15"
